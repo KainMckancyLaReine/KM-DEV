@@ -122,6 +122,7 @@
     .tier-name{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gray);margin-bottom:14px;}
     .tier-card.featured .tier-name{color:rgba(255,255,255,.55);}
     .tier-price{font-family:'Space Grotesk',sans-serif;font-size:42px;font-weight:700;letter-spacing:-.02em;margin-bottom:6px;}
+    .price-loop{font-variant-numeric:tabular-nums;display:inline-block;min-width:7ch;}
     .tier-price span{font-size:14px;font-weight:500;color:var(--gray);}
     .tier-card.featured .tier-price span{color:rgba(255,255,255,.5);}
     .tier-desc{font-size:14.5px;color:var(--gray);margin-bottom:26px;line-height:1.6;}
@@ -779,17 +780,24 @@
         document.body.style.overflow = 'auto';
     });
 
-    // ---------- Looping price counter (Enterprise: €25k → €45k) ----------
+    // ---------- Looping price counter (Enterprise: €25k → €45k, holds at peak) ----------
     document.querySelectorAll('.price-loop').forEach(el => {
         const min = parseInt(el.dataset.min, 10);
         const max = parseInt(el.dataset.max, 10);
-        const duration = 4000;
+        const countDuration = 3500; // ms to count from min to max
+        const holdDuration = 2200;  // ms to hold at max before looping
+        const total = countDuration + holdDuration;
         let start = null;
         function frame(ts){
             if (start === null) start = ts;
-            const elapsed = (ts - start) % duration;
-            const progress = elapsed / duration;
-            const value = Math.round(min + (max - min) * progress);
+            const elapsed = (ts - start) % total;
+            let value;
+            if (elapsed < countDuration){
+                const progress = elapsed / countDuration;
+                value = Math.round(min + (max - min) * progress);
+            } else {
+                value = max;
+            }
             el.textContent = '€' + value.toLocaleString('en-US');
             requestAnimationFrame(frame);
         }

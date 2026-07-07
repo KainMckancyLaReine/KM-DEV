@@ -240,6 +240,7 @@
     .pricing-type{background:var(--ink);color:#fff;padding:6px 12px;border-radius:15px;font-size:11px;font-weight:600;text-transform:uppercase;}
     .pricing-details{font-size:14px;color:var(--gray);}
     .pricing-price{font-size:18px;font-weight:700;font-family:'Space Grotesk',sans-serif;}
+    .price-loop{font-variant-numeric:tabular-nums;display:inline-block;min-width:7ch;}
     .pricing-duration{font-size:12px;color:var(--muted);margin-left:6px;}
     .pricing-footer{text-align:center;margin-top:30px;padding-top:22px;border-top:1px solid var(--line);}
     .pricing-cta{background:var(--ink);color:#fff;padding:15px 30px;border-radius:25px;text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:8px;transition:all .3s ease;border:none;cursor:pointer;font-size:14px;}
@@ -886,17 +887,24 @@
     const statsGrid = document.querySelector('.stats-grid');
     if (statsGrid) statsObserver.observe(statsGrid);
 
-    // ---------- Looping price counter (Enterprise: €25k → €45k) ----------
+    // ---------- Looping price counter (Enterprise: €25k → €45k, holds at peak) ----------
     document.querySelectorAll('.price-loop').forEach(el => {
         const min = parseInt(el.dataset.min, 10);
         const max = parseInt(el.dataset.max, 10);
-        const duration = 4000;
+        const countDuration = 3500; // ms to count from min to max
+        const holdDuration = 2200;  // ms to hold at max before looping
+        const total = countDuration + holdDuration;
         let start = null;
         function frame(ts){
             if (start === null) start = ts;
-            const elapsed = (ts - start) % duration;
-            const progress = elapsed / duration;
-            const value = Math.round(min + (max - min) * progress);
+            const elapsed = (ts - start) % total;
+            let value;
+            if (elapsed < countDuration){
+                const progress = elapsed / countDuration;
+                value = Math.round(min + (max - min) * progress);
+            } else {
+                value = max;
+            }
             el.textContent = '€' + value.toLocaleString('en-US');
             requestAnimationFrame(frame);
         }
