@@ -412,7 +412,7 @@
 <main class="main-content">
     <div class="container">
 
-        <section class="section-block">
+        <section class="section-block section-stats">
             <div class="section-head">
                 <h2 class="two-tone"><span class="muted">The data behind</span><br><span class="strong">the decision.</span></h2>
                 <p class="section-sub">A good product isn't enough on its own. Design, recognition and consistency directly drive trust, choice and price perception.</p>
@@ -440,7 +440,7 @@
             </div>
         </section>
 
-        <section class="section-block">
+        <section class="section-block section-values">
             <div class="section-head">
                 <h2 class="two-tone"><span class="muted">Why founders</span><br><span class="strong">work with us.</span></h2>
             </div>
@@ -463,7 +463,7 @@
             </div>
         </section>
 
-        <section class="section-block">
+        <section class="section-block section-process">
             <div class="section-head">
                 <h2 class="two-tone"><span class="strong">From first call</span><br><span class="muted">to launch.</span></h2>
             </div>
@@ -798,9 +798,9 @@
                 });
             });
         }
-        revealSection('.section-block:has(.stats-grid)', '.section-head > *, .stat-card');
-        revealSection('.section-block:has(.values-grid)', '.section-head > *, .value-card');
-        revealSection('.section-block:has(.process-grid)', '.section-head > *, .process-item');
+        revealSection('.section-stats', '.section-head > *, .stat-card');
+        revealSection('.section-values', '.section-head > *, .value-card');
+        revealSection('.section-process', '.section-head > *, .process-item');
         revealSection('.footer', ':scope .footer-top > div, :scope .footer-top > .footer-col');
 
         gsap.from('.philosophy-content > *', {
