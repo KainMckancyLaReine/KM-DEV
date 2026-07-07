@@ -35,7 +35,7 @@ Kmap_Modern landingpage/
 ├── foto's/
 │   ├── nexafoto.png              ← real screenshot, NEXA project card
 │   ├── kainmckancylareinefoto.png ← real screenshot, portfolio project card
-│   └── Schermafbeelding 2026-07-07 om 11.51.59 AM.png ← real screenshot, Huize Feniks project card
+│   └── huizefeniks.png            ← real screenshot, Huize Feniks project card
 ├── Kmap.html               ← legacy duplicate of the homepage, kept for
 │                             backward compatibility, no longer linked from
 │                             anywhere — safe to delete once you're sure
@@ -51,7 +51,7 @@ Each card links out to the real, live project and uses a real screenshot of that
 2. **NEXA** — [kainmckancylareine.github.io/NEXA](https://kainmckancylareine.github.io/NEXA/index.html) — AI workforce OS dashboard concept (image: `foto's/nexafoto.png`)
 3. **Kain Mckancy La Reine** — [kainmckancylareine.github.io/Mckancy.mc](https://kainmckancylareine.github.io/Mckancy.mc/) — personal portfolio (image: `foto's/kainmckancylareinefoto.png`)
 4. **TJEZ Photography** — [kainmckancylareine.github.io/tjez-photo](https://kainmckancylareine.github.io/tjez-photo/index.html) — photography studio site (image via live thum.io screenshot)
-5. **Huize Feniks** — [kainmckancylareine.github.io/huize-feniks-concept](https://kainmckancylareine.github.io/huize-feniks-concept/) — music academy &amp; studio brand (image: `foto's/Schermafbeelding 2026-07-07 om 11.51.59 AM.png`)
+5. **Huize Feniks** — [kainmckancylareine.github.io/huize-feniks-concept](https://kainmckancylareine.github.io/huize-feniks-concept/) — music academy &amp; studio brand (image: `foto's/huizefeniks.png`)
 
 Two cards use [thum.io](https://www.thum.io/) — a free screenshot-as-a-service — to render a live screenshot on every page load (`https://image.thum.io/get/width/1200/crop/900/<url>`). If a target site changes or thum.io is unreachable, swap that `<img src>` for a static image in `foto's/` the same way NEXA and the portfolio card already work.
 
