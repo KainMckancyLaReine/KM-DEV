@@ -1,0 +1,11 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&amp;display=swap');
+      .mark-text { font-family: 'Space Grotesk', Arial, Helvetica, sans-serif; font-weight: 700; }
+    </style>
+  </defs>
+  <rect width="200" height="200" rx="46" fill="#0d0d0d"/>
+  <text x="100" y="114" text-anchor="middle" class="mark-text" font-size="82" fill="#ffffff" letter-spacing="-3">KM</text>
+  <rect x="64" y="132" width="72" height="9" rx="4.5" fill="#c6ff4a"/>
+</svg>
