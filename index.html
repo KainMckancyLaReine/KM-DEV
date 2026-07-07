@@ -126,6 +126,47 @@
     .eyebrow-badge{display:inline-flex;align-items:center;gap:8px;background:var(--paper);border:1px solid var(--line);padding:8px 16px;border-radius:20px;font-size:12.5px;font-weight:600;margin-bottom:26px;}
     .eyebrow-badge .dot{width:7px;height:7px;border-radius:50%;background:#ff8a3d;display:inline-block;}
 
+    /* ---------- Intro Preloader ---------- */
+    :root{--intro-duration:3.2s;}
+    .intro-overlay{position:fixed;inset:0;background:var(--ink);z-index:99999;display:flex;align-items:center;justify-content:center;overflow:hidden;transition:opacity .6s ease;}
+    .intro-overlay.fade-out{opacity:0;pointer-events:none;}
+    .intro-stage{position:relative;display:flex;align-items:center;justify-content:center;width:100%;height:100%;}
+    .intro-word{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(40px,9vw,110px);letter-spacing:-.02em;color:#3a3a38;display:flex;align-items:baseline;transition:color .5s ease,text-shadow .5s ease;position:relative;z-index:1;}
+    .intro-overlay.impact .intro-word{color:#fff;}
+    .intro-overlay.lit .intro-word{color:#fff;text-shadow:0 0 40px rgba(198,255,74,.35);}
+    .intro-dot{color:var(--accent);display:inline-block;transform-origin:center 78%;}
+    .intro-overlay.playing .intro-dot{animation:introDotSquash var(--intro-duration) ease-in-out forwards;}
+    .intro-lamp{position:absolute;left:50%;top:50%;width:min(20vw,150px);transform:translate(calc(-50% - 230px),-155%);filter:drop-shadow(0 14px 22px rgba(0,0,0,.5));z-index:2;}
+    .intro-overlay.playing .intro-lamp{animation:introLampHop var(--intro-duration) cubic-bezier(.45,0,.55,1) forwards;}
+    .intro-lamp .lamp-base,.intro-lamp .lamp-arm,.intro-lamp .lamp-joint{fill:var(--accent);}
+    .intro-lamp .lamp-shade{fill:var(--bg);}
+    .intro-lamp .lamp-bulb{fill:#fff;filter:drop-shadow(0 0 10px var(--accent)) drop-shadow(0 0 22px var(--accent));}
+    .intro-skip{position:absolute;bottom:28px;right:28px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.15);padding:9px 18px;border-radius:20px;font-size:12.5px;font-weight:600;cursor:pointer;z-index:3;transition:all .3s ease;}
+    .intro-skip:hover{background:rgba(255,255,255,.16);color:#fff;}
+    @keyframes introLampHop{
+        0%{transform:translate(calc(-50% - 230px),-155%) scale(1,1);}
+        7%{transform:translate(calc(-50% - 170px),-230%) scale(1,1);}
+        14%{transform:translate(calc(-50% - 110px),-150%) scale(1.18,.8);}
+        19%{transform:translate(calc(-50% - 110px),-155%) scale(1,1);}
+        27%{transform:translate(calc(-50% - 40px),-235%) scale(1,1);}
+        34%{transform:translate(calc(-50% + 20px),-150%) scale(1.18,.8);}
+        39%{transform:translate(calc(-50% + 20px),-155%) scale(1,1);}
+        48%{transform:translate(calc(-50% + 90px),-250%) scale(1,1);}
+        56%{transform:translate(calc(-50% + 148px),-150%) scale(1.32,.68);}
+        65%{transform:translate(calc(-50% + 148px),-150%) scale(1.32,.68);}
+        72%{transform:translate(calc(-50% + 148px),-190%) scale(.92,1.14);}
+        82%{transform:translate(calc(-50% + 230px),-260%) scale(1,1);}
+        92%{transform:translate(calc(-50% + 340px),-150%) scale(1,1);}
+        100%{transform:translate(calc(-50% + 340px),-150%) scale(1,1);opacity:0;}
+    }
+    @keyframes introDotSquash{
+        0%,53%{transform:scale(1,1);color:var(--accent);}
+        58%{transform:scale(1.9,.3);color:#fff;}
+        65%{transform:scale(1.9,.3);color:#fff;}
+        74%{transform:scale(.85,1.2);color:var(--accent);}
+        82%,100%{transform:scale(1,1);color:var(--accent);}
+    }
+
     /* ---------- Hero ---------- */
     .hero{padding:170px 0 100px;}
     .hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:60px;align-items:center;}
@@ -385,6 +426,37 @@
 </style>
 </head>
 <body>
+
+<!-- Intro Preloader (first visit only) -->
+<div class="intro-overlay" id="introOverlay">
+    <div class="intro-stage">
+        <svg class="intro-lamp" id="introLamp" viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg">
+            <ellipse class="lamp-base" cx="100" cy="205" rx="44" ry="11"/>
+            <rect class="lamp-arm" x="90" y="118" width="16" height="82" rx="8" transform="rotate(-14 100 200)"/>
+            <circle class="lamp-joint" cx="99" cy="150" r="12"/>
+            <rect class="lamp-arm" x="58" y="58" width="16" height="92" rx="8" transform="rotate(38 100 150)"/>
+            <circle class="lamp-joint" cx="70" cy="72" r="11"/>
+            <path class="lamp-shade" d="M38 68 L106 52 L114 94 L34 100 Z"/>
+            <circle class="lamp-bulb" cx="70" cy="82" r="9"/>
+        </svg>
+        <div class="intro-word" id="introWord">KM<span class="intro-dot" id="introDot">.</span>dev</div>
+        <button class="intro-skip" id="introSkip">Skip →</button>
+    </div>
+</div>
+<script>
+    // Runs immediately (before paint) so returning visitors never see a flash of the intro.
+    (function(){
+        var overlay = document.getElementById('introOverlay');
+        try{
+            if(localStorage.getItem('kmdevIntroSeen')){
+                overlay.style.display = 'none';
+            } else {
+                localStorage.setItem('kmdevIntroSeen', '1');
+                document.body.style.overflow = 'hidden';
+            }
+        }catch(e){ overlay.style.display = 'none'; }
+    })();
+</script>
 
 <!-- Pill Nav -->
 <div class="pill-nav">
@@ -700,6 +772,37 @@
 </footer>
 
 <script>
+    // ---------- Intro preloader (Pixar-lamp homage, first visit only) ----------
+    (function(){
+        var overlay = document.getElementById('introOverlay');
+        if(!overlay || overlay.style.display === 'none') return; // already skipped for returning visitors
+
+        var skipBtn = document.getElementById('introSkip');
+        var DURATION = 3.2;
+        var finished = false;
+
+        function endIntro(){
+            if(finished) return;
+            finished = true;
+            overlay.classList.add('fade-out');
+            setTimeout(function(){
+                overlay.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }, 650);
+        }
+
+        function playIntro(){
+            document.documentElement.style.setProperty('--intro-duration', DURATION + 's');
+            overlay.classList.add('playing');
+            setTimeout(function(){ overlay.classList.add('impact'); }, DURATION * 1000 * 0.56);
+            setTimeout(function(){ overlay.classList.add('lit'); }, DURATION * 1000 * 0.9);
+            setTimeout(endIntro, DURATION * 1000 + 100);
+        }
+
+        skipBtn && skipBtn.addEventListener('click', endIntro);
+        playIntro();
+    })();
+
     // ---------- Hamburger + menu overlay ----------
     const hamburgerBtn = document.getElementById('hamburgerBtn');
     const menuOverlay = document.getElementById('menuOverlay');
