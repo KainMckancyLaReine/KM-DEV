@@ -106,17 +106,25 @@
     .projects-intro h1 .muted{color:var(--muted);}
     .projects-intro p{font-size:18px;color:var(--gray);max-width:600px;margin:0 auto;}
 
-    /* Projects grid (same component as the homepage highlights) */
+    /* Projects grid */
     .projects{padding:20px 0 100px;}
-    .projects-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(500px,1fr));gap:28px;}
-    .project-card{position:relative;background:var(--ink);border-radius:26px;overflow:hidden;height:400px;box-shadow:0 20px 45px -25px rgba(20,18,14,.4);display:block;text-decoration:none;color:inherit;}
-    .project-card:hover{transform:translateY(-8px);}
-    .project-card img{width:100%;height:100%;object-fit:cover;object-position:top;opacity:.88;transition:transform .6s ease,opacity .4s ease;}
-    .project-card:hover img{transform:scale(1.06);opacity:1;}
-    .project-badge{position:absolute;top:22px;left:22px;background:rgba(13,13,13,.75);backdrop-filter:blur(6px);color:#fff;padding:8px 16px;border-radius:20px;font-size:12px;font-weight:600;z-index:2;}
-    .project-footer{position:absolute;left:0;right:0;bottom:0;padding:24px 26px;display:flex;justify-content:space-between;align-items:flex-end;z-index:2;background:linear-gradient(0deg,rgba(0,0,0,.65),transparent);}
-    .project-name{color:#fff;font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:600;}
-    .project-view{display:flex;align-items:center;gap:6px;color:#fff;font-size:13.5px;font-weight:600;text-decoration:none;}
+    .projects-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:28px;align-items:stretch;}
+    .project-card{position:relative;background:var(--paper);border:1px solid var(--line);border-radius:26px;overflow:hidden;box-shadow:0 20px 45px -30px rgba(20,18,14,.35);display:flex;flex-direction:column;text-decoration:none;color:inherit;transition:transform .35s ease,box-shadow .35s ease;}
+    .project-card:hover{transform:translateY(-8px);box-shadow:0 30px 55px -25px rgba(20,18,14,.45);}
+    .project-thumb{position:relative;height:230px;overflow:hidden;background:var(--ink);flex-shrink:0;}
+    .project-thumb img{width:100%;height:100%;object-fit:cover;object-position:top;opacity:.92;transition:transform .6s ease,opacity .4s ease;}
+    .project-card:hover .project-thumb img{transform:scale(1.06);opacity:1;}
+    .project-badge{position:absolute;top:18px;left:18px;background:rgba(13,13,13,.75);backdrop-filter:blur(6px);color:#fff;padding:7px 15px;border-radius:20px;font-size:11.5px;font-weight:600;z-index:2;}
+    .project-body{padding:24px 26px 26px;display:flex;flex-direction:column;gap:14px;flex:1;}
+    .project-body-top{display:flex;justify-content:space-between;align-items:center;gap:12px;}
+    .project-name{font-family:'Space Grotesk',sans-serif;font-size:21px;font-weight:600;letter-spacing:-.01em;}
+    .project-view{display:flex;align-items:center;gap:6px;color:var(--gray);font-size:13px;font-weight:600;text-decoration:none;white-space:nowrap;transition:color .3s ease;}
+    .project-card:hover .project-view{color:var(--ink);}
+    .project-view span{transition:transform .3s ease;}
+    .project-card:hover .project-view span{transform:translate(2px,-2px);}
+    .project-desc{font-size:14.5px;color:var(--gray);line-height:1.6;}
+    .project-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:auto;padding-top:4px;}
+    .project-tag{background:var(--bg);border:1px solid var(--line);padding:5px 13px;border-radius:14px;font-size:11.5px;font-weight:600;color:var(--gray);}
 
     /* CTA band */
     .cta-band{background:var(--ink);color:#fff;border-radius:36px;padding:90px 50px;margin:0 0 100px;text-align:center;position:relative;overflow:hidden;}
@@ -225,7 +233,7 @@
         .quick-actions{right:14px;bottom:14px;}
         .calendar-main{overflow-x:auto;}
         .calendar-grid,.week-header,.week-body{min-width:520px;}
-        .project-card{height:300px;}
+        .project-thumb{height:190px;}
     }
     @media (max-width:480px){
         .projects-intro h1{font-size:26px;}
@@ -343,39 +351,81 @@
     <div class="container">
         <div class="projects-grid">
             <a href="https://kainmckancylareine.github.io/Wildcore-concept1/" target="_blank" rel="noopener" class="project-card">
-                <div class="project-badge">Outdoor &amp; retreat brand</div>
-                <img src="https://image.thum.io/get/width/1200/crop/900/https://kainmckancylareine.github.io/Wildcore-concept1/" alt="Wildcore trail-running retreat landing page" loading="lazy">
-                <div class="project-footer"><span class="project-name">Wildcore Retreats</span><span class="project-view">Visit site <span>↗</span></span></div>
+                <div class="project-thumb">
+                    <div class="project-badge">Outdoor &amp; retreat brand</div>
+                    <img src="https://image.thum.io/get/width/1200/crop/900/https://kainmckancylareine.github.io/Wildcore-concept1/" alt="Wildcore trail-running retreat landing page" loading="lazy">
+                </div>
+                <div class="project-body">
+                    <div class="project-body-top"><span class="project-name">Wildcore Retreats</span><span class="project-view">Visit site <span>↗</span></span></div>
+                    <p class="project-desc">Trail-running en outdoor retreats brand met een ruige, natuurlijke identiteit en een boekingsgerichte landingspagina.</p>
+                    <div class="project-tags"><span class="project-tag">Outdoor</span><span class="project-tag">Retreats</span><span class="project-tag">Booking</span></div>
+                </div>
             </a>
             <a href="https://kainmckancylareine.github.io/NEXA/index.html" target="_blank" rel="noopener" class="project-card">
-                <div class="project-badge">AI SaaS platform</div>
-                <img src="foto's/nexafoto.png" alt="NEXA AI workforce operating system dashboard" loading="lazy">
-                <div class="project-footer"><span class="project-name">NEXA</span><span class="project-view">Visit site <span>↗</span></span></div>
+                <div class="project-thumb">
+                    <div class="project-badge">AI SaaS platform</div>
+                    <img src="foto's/nexafoto.png" alt="NEXA AI workforce operating system dashboard" loading="lazy" style="object-position:left;">
+                </div>
+                <div class="project-body">
+                    <div class="project-body-top"><span class="project-name">NEXA</span><span class="project-view">Visit site <span>↗</span></span></div>
+                    <p class="project-desc">AI workforce operating system — dashboard om AI-medewerkers aan te sturen en te monitoren, met live ROI-tracking.</p>
+                    <div class="project-tags"><span class="project-tag">SaaS</span><span class="project-tag">AI</span><span class="project-tag">Dashboard</span></div>
+                </div>
             </a>
             <a href="https://kainmckancylareine.github.io/Mckancy.mc/" target="_blank" rel="noopener" class="project-card">
-                <div class="project-badge">Personal portfolio</div>
-                <img src="foto's/kainmckancylareinefoto.png" alt="Kain Mckancy La Reine portfolio site" loading="lazy">
-                <div class="project-footer"><span class="project-name">Kain Mckancy La Reine</span><span class="project-view">Visit site <span>↗</span></span></div>
+                <div class="project-thumb">
+                    <div class="project-badge">Personal portfolio</div>
+                    <img src="foto's/kainmckancylareinefoto.png" alt="Kain Mckancy La Reine portfolio site" loading="lazy">
+                </div>
+                <div class="project-body">
+                    <div class="project-body-top"><span class="project-name">Kain Mckancy La Reine</span><span class="project-view">Visit site <span>↗</span></span></div>
+                    <p class="project-desc">Persoonlijk portfolio met case studies, werkwijze en een directe contactflow voor freelance opdrachten.</p>
+                    <div class="project-tags"><span class="project-tag">Portfolio</span><span class="project-tag">Personal brand</span></div>
+                </div>
             </a>
             <a href="https://kainmckancylareine.github.io/tjez-photo/index.html" target="_blank" rel="noopener" class="project-card">
-                <div class="project-badge">Photography studio</div>
-                <img src="https://image.thum.io/get/width/1200/crop/900/wait/3/https://kainmckancylareine.github.io/tjez-photo/index.html" alt="TJEZ Photography landing page" loading="lazy">
-                <div class="project-footer"><span class="project-name">TJEZ Photography</span><span class="project-view">Visit site <span>↗</span></span></div>
+                <div class="project-thumb">
+                    <div class="project-badge">Photography studio</div>
+                    <img src="https://image.thum.io/get/width/1200/crop/900/wait/3/https://kainmckancylareine.github.io/tjez-photo/index.html" alt="TJEZ Photography landing page" loading="lazy">
+                </div>
+                <div class="project-body">
+                    <div class="project-body-top"><span class="project-name">TJEZ Photography</span><span class="project-view">Visit site <span>↗</span></span></div>
+                    <p class="project-desc">Fotografiestudio landingspagina met portfolio-showcase en boekingsopties voor shoots.</p>
+                    <div class="project-tags"><span class="project-tag">Photography</span><span class="project-tag">Studio</span><span class="project-tag">Booking</span></div>
+                </div>
             </a>
             <a href="https://kainmckancylareine.github.io/huize-feniks-concept/" target="_blank" rel="noopener" class="project-card">
-                <div class="project-badge">Music academy &amp; studio brand</div>
-                <img src="foto's/huizefeniks.png" alt="Huize Feniks music academy landing page" loading="lazy">
-                <div class="project-footer"><span class="project-name">Huize Feniks</span><span class="project-view">Visit site <span>↗</span></span></div>
+                <div class="project-thumb">
+                    <div class="project-badge">Music academy &amp; studio brand</div>
+                    <img src="foto's/huizefeniks.png" alt="Huize Feniks music academy landing page" loading="lazy">
+                </div>
+                <div class="project-body">
+                    <div class="project-body-top"><span class="project-name">Huize Feniks</span><span class="project-view">Visit site <span>↗</span></span></div>
+                    <p class="project-desc">Muziekacademie en studio brand met lesaanbod, studioverhuur en een inschrijfformulier.</p>
+                    <div class="project-tags"><span class="project-tag">Music</span><span class="project-tag">Education</span><span class="project-tag">Studio</span></div>
+                </div>
             </a>
             <a href="https://kainmckancylareine.github.io/AURORA-DESIGN/" target="_blank" rel="noopener" class="project-card">
-                <div class="project-badge">Fashion &amp; retail brand</div>
-                <img src="foto's/aurora.png" alt="Aurora Design premium fashion brand landing page" loading="lazy">
-                <div class="project-footer"><span class="project-name">Aurora Design</span><span class="project-view">Visit site <span>↗</span></span></div>
+                <div class="project-thumb">
+                    <div class="project-badge">Fashion &amp; retail brand</div>
+                    <img src="foto's/aurora.png" alt="Aurora Design premium fashion brand landing page" loading="lazy">
+                </div>
+                <div class="project-body">
+                    <div class="project-body-top"><span class="project-name">Aurora Design</span><span class="project-view">Visit site <span>↗</span></span></div>
+                    <p class="project-desc">Premium fashion house uit Amsterdam met seizoenscollecties, shop en een duurzaamheidsverhaal.</p>
+                    <div class="project-tags"><span class="project-tag">Fashion</span><span class="project-tag">E-commerce</span><span class="project-tag">Retail</span></div>
+                </div>
             </a>
             <a href="https://kainmckancylareine.github.io/Fit_BY_ZAALMAN/" target="_blank" rel="noopener" class="project-card">
-                <div class="project-badge">Physiotherapy &amp; personal training</div>
-                <img src="foto's/fit-by.png" alt="Fit by Zaalman physiotherapy and personal training landing page" loading="lazy" style="object-position:left;">
-                <div class="project-footer"><span class="project-name">Fit by Zaalman</span><span class="project-view">Visit site <span>↗</span></span></div>
+                <div class="project-thumb">
+                    <div class="project-badge">Physiotherapy &amp; personal training</div>
+                    <img src="foto's/fit-by.png" alt="Fit by Zaalman physiotherapy and personal training landing page" loading="lazy" style="object-position:left;">
+                </div>
+                <div class="project-body">
+                    <div class="project-body-top"><span class="project-name">Fit by Zaalman</span><span class="project-view">Visit site <span>↗</span></span></div>
+                    <p class="project-desc">BIG-geregistreerde fysiotherapeut en personal trainer met diensten, tarieven en een afsprakenflow.</p>
+                    <div class="project-tags"><span class="project-tag">Health</span><span class="project-tag">Fysiotherapie</span><span class="project-tag">Booking</span></div>
+                </div>
             </a>
         </div>
     </div>
