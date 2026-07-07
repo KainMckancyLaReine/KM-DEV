@@ -1,12 +1,14 @@
 # KM.dev — Marketing Website
 
-A three-page marketing site for **KM.dev**, a (fictional/portfolio) brand-systems studio. Built as static HTML/CSS/JS — no framework, no build step, no dependencies to install. Open the files directly or serve the folder with any static file server.
+A marketing site for **KM.dev**, a (fictional/portfolio) brand-systems studio. Built as static HTML/CSS/JS — no framework, no build step, no dependencies to install. Open the files directly or serve the folder with any static file server.
 
 Live pages:
 
 | Page | File | Purpose |
 |---|---|---|
-| Home | `index.html` | Hero, capabilities, projects, stats, process, CTA |
+| Home | `index.html` | Hero, capabilities, projects (top 4), stats, process, CTA |
+| Projects | `projects.html` | Full portfolio — every shipped project, linked from "See all projects →" on the homepage |
+| Pricing | `pricing.html` | Tier cards, comparison table, FAQ |
 | About | `about.html` | Positioning/philosophy, stats, values, process, CTA |
 | Contact | `contact.html` | Contact form, contact details, booking calendar |
 
@@ -25,6 +27,8 @@ Live pages:
 ```
 Kmap_Modern landingpage/
 ├── index.html              ← homepage (canonical entry point)
+├── projects.html           ← full project portfolio
+├── pricing.html
 ├── about.html
 ├── contact.html
 ├── km-dev-mark.svg         ← favicon / square logo mark
@@ -43,15 +47,17 @@ Kmap_Modern landingpage/
 ├── kmap.png, kmap1.png     ← old logo assets, unreferenced, safe to remove
 ```
 
-## Featured projects (homepage `#projects` section)
+## Projects
+
+The homepage `#projects` section shows a curated top **4** (capped intentionally so the grid never gets crowded). `projects.html` shows **all** shipped projects — currently the same 4 plus Huize Feniks — and is where any new project should go once the homepage grid is at 4. Both pages use the identical `.project-card` component, so a card can be copy-pasted between them freely.
 
 Each card links out to the real, live project and uses a real screenshot of that project as its image:
 
-1. **Wildcore Retreats** — [kainmckancylareine.github.io/Wildcore-concept1](https://kainmckancylareine.github.io/Wildcore-concept1/) — outdoor/trail-running retreat concept (image via live thum.io screenshot)
-2. **NEXA** — [kainmckancylareine.github.io/NEXA](https://kainmckancylareine.github.io/NEXA/index.html) — AI workforce OS dashboard concept (image: `foto's/nexafoto.png`)
-3. **Kain Mckancy La Reine** — [kainmckancylareine.github.io/Mckancy.mc](https://kainmckancylareine.github.io/Mckancy.mc/) — personal portfolio (image: `foto's/kainmckancylareinefoto.png`)
-4. **TJEZ Photography** — [kainmckancylareine.github.io/tjez-photo](https://kainmckancylareine.github.io/tjez-photo/index.html) — photography studio site (image via live thum.io screenshot)
-5. **Huize Feniks** — [kainmckancylareine.github.io/huize-feniks-concept](https://kainmckancylareine.github.io/huize-feniks-concept/) — music academy &amp; studio brand (image: `foto's/huizefeniks.png`)
+1. **Wildcore Retreats** — [kainmckancylareine.github.io/Wildcore-concept1](https://kainmckancylareine.github.io/Wildcore-concept1/) — outdoor/trail-running retreat concept (image via live thum.io screenshot) — *homepage + projects.html*
+2. **NEXA** — [kainmckancylareine.github.io/NEXA](https://kainmckancylareine.github.io/NEXA/index.html) — AI workforce OS dashboard concept (image: `foto's/nexafoto.png`) — *homepage + projects.html*
+3. **Kain Mckancy La Reine** — [kainmckancylareine.github.io/Mckancy.mc](https://kainmckancylareine.github.io/Mckancy.mc/) — personal portfolio (image: `foto's/kainmckancylareinefoto.png`) — *homepage + projects.html*
+4. **TJEZ Photography** — [kainmckancylareine.github.io/tjez-photo](https://kainmckancylareine.github.io/tjez-photo/index.html) — photography studio site (image via live thum.io screenshot) — *homepage + projects.html*
+5. **Huize Feniks** — [kainmckancylareine.github.io/huize-feniks-concept](https://kainmckancylareine.github.io/huize-feniks-concept/) — music academy &amp; studio brand (image: `foto's/huizefeniks.png`) — *projects.html only*
 
 Two cards use [thum.io](https://www.thum.io/) — a free screenshot-as-a-service — to render a live screenshot on every page load (`https://image.thum.io/get/width/1200/crop/900/<url>`). If a target site changes or thum.io is unreachable, swap that `<img src>` for a static image in `foto's/` the same way NEXA and the portfolio card already work.
 
@@ -88,7 +94,7 @@ Every page ships with:
 - JSON-LD structured data (`ProfessionalService` on the homepage, `AboutPage` / `ContactPage` on the other two)
 - `sitemap.xml` and `robots.txt` at the project root
 
-**Before going live**, replace the placeholder domain `https://www.km.dev/` in the following files with your real deployed URL: `index.html`, `about.html`, `contact.html`, `sitemap.xml`, `robots.txt`. (Find-and-replace `www.km.dev` across the folder.)
+**Before going live**, replace the placeholder domain `https://www.km.dev/` in the following files with your real deployed URL: `index.html`, `projects.html`, `pricing.html`, `about.html`, `contact.html`, `sitemap.xml`, `robots.txt`. (Find-and-replace `www.km.dev` across the folder.)
 
 ## Known limitations / next steps
 
