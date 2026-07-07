@@ -146,6 +146,7 @@
     .compare-table svg.yes{color:var(--accent-ink);}
     .compare-table .dash{color:var(--muted);}
     .compare-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+    .compare-scroll-hint{display:none;font-size:11.5px;color:var(--gray);margin-bottom:10px;}
 
     /* FAQ */
     .faq{padding:20px 0 100px;}
@@ -265,6 +266,10 @@
         .quick-actions{right:14px;bottom:14px;}
         .calendar-main{overflow-x:auto;}
         .calendar-grid,.week-header,.week-body{min-width:520px;}
+        .compare-wrap{margin:0 -24px;padding:0 24px 6px;position:relative;}
+        .compare-table{min-width:600px;border-radius:16px;}
+        .compare-table th,.compare-table td{padding:12px 14px;font-size:12.5px;}
+        .compare-scroll-hint{display:block;}
     }
     @media (max-width:480px){
         .pricing-intro h1{font-size:26px;}
@@ -414,7 +419,7 @@
             </div>
             <div class="tier-card">
                 <div class="tier-name">Enterprise</div>
-                <div class="tier-price">€25,000 <span>/ project</span></div>
+                <div class="tier-price"><span class="price-loop" data-min="25000" data-max="45000">€25,000</span> <span>/ project</span></div>
                 <p class="tier-desc">For custom web applications and platforms that go well beyond a marketing site.</p>
                 <ul class="tier-features">
                     <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Everything in Premium</li>
@@ -436,6 +441,7 @@
             <h2 class="two-tone"><span class="muted">Compare</span> <span class="strong">what's included.</span></h2>
             <p class="section-sub">A closer look at exactly what ships with each package, side by side.</p>
         </div>
+        <div class="compare-scroll-hint mono">Swipe to see all columns →</div>
         <div class="compare-wrap">
             <table class="compare-table">
                 <thead>
@@ -771,6 +777,23 @@
         document.getElementById('selectedTimeDisplay').style.display = 'none';
         calendarModal.classList.remove('active');
         document.body.style.overflow = 'auto';
+    });
+
+    // ---------- Looping price counter (Enterprise: €25k → €45k) ----------
+    document.querySelectorAll('.price-loop').forEach(el => {
+        const min = parseInt(el.dataset.min, 10);
+        const max = parseInt(el.dataset.max, 10);
+        const duration = 4000;
+        let start = null;
+        function frame(ts){
+            if (start === null) start = ts;
+            const elapsed = (ts - start) % duration;
+            const progress = elapsed / duration;
+            const value = Math.round(min + (max - min) * progress);
+            el.textContent = '€' + value.toLocaleString('en-US');
+            requestAnimationFrame(frame);
+        }
+        requestAnimationFrame(frame);
     });
 
     // ---------- FAQ accordion ----------
