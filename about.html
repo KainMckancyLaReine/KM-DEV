@@ -858,5 +858,25 @@
         }
     });
 </script>
+
+<!-- Safety net: runs independently of the script above, so it still works
+     even if GSAP/ScrollTrigger fails to load or a scroll-reveal never fires
+     for some reason. Forces any stuck-invisible section content back to
+     visible a couple seconds after the page finishes loading. -->
+<script>
+    window.addEventListener('load', function(){
+        setTimeout(function(){
+            var selector = '.value-card, .process-item, .stat-card, .section-head > *, '
+                + '.footer-top > div, .footer-top > .footer-col, .philosophy-content > *, '
+                + '.philosophy-visual, .cta-band-inner > *';
+            document.querySelectorAll(selector).forEach(function(el){
+                if (window.getComputedStyle(el).opacity === '0'){
+                    el.style.setProperty('opacity', '1', 'important');
+                    el.style.setProperty('transform', 'none', 'important');
+                }
+            });
+        }, 2500);
+    });
+</script>
 </body>
 </html>
