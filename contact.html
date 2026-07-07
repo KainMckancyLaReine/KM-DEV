@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0d0d0d">
+<title>Contact — KM.dev</title>
+<meta name="description" content="Get in touch with KM.dev — the brand system for founders ready to scale, based in Amsterdam, Netherlands.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://www.km.dev/contact.html">
+<link rel="icon" type="image/svg+xml" href="km-dev-mark.svg">
+<link rel="apple-touch-icon" href="km-dev-mark.svg">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="KM.dev">
+<meta property="og:title" content="Contact — KM.dev">
+<meta property="og:description" content="Have a project in mind? Get in touch with KM.dev, based in Amsterdam, Netherlands.">
+<meta property="og:url" content="https://www.km.dev/contact.html">
+<meta property="og:image" content="https://images.unsplash.com/photo-1584003564911-a7a321c84e1c?q=80&w=1200&auto=format&fit=crop">
+<meta property="og:locale" content="en_US">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Contact — KM.dev">
+<meta name="twitter:description" content="Get in touch with KM.dev, based in Amsterdam, Netherlands.">
+<meta name="twitter:image" content="https://images.unsplash.com/photo-1584003564911-a7a321c84e1c?q=80&w=1200&auto=format&fit=crop">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ContactPage",
+  "name": "Contact KM.dev",
+  "url": "https://www.km.dev/contact.html",
+  "isPartOf": { "@type": "WebSite", "name": "KM.dev", "url": "https://www.km.dev/" },
+  "mainEntity": {
+    "@type": "Organization",
+    "name": "KM.dev",
+    "email": "hello@km.dev",
+    "telephone": "+31612345678",
+    "address": { "@type": "PostalAddress", "addressLocality": "Amsterdam", "addressCountry": "NL" }
+  }
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>
+    :root{
+        --bg:#f4f3ef;--paper:#ffffff;--ink:#0d0d0d;--muted:#b6b4ac;--gray:#6f6d66;
+        --line:#e4e2d9;--accent:#c6ff4a;--accent-ink:#3f5a17;--radius:28px;
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    html{scroll-behavior:smooth;}
+    body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+    h1,h2,h3,h4{font-family:'Space Grotesk',sans-serif;}
+    .mono{font-family:'Space Mono',monospace;}
+    img{display:block;max-width:100%;}
+    a{color:inherit;}
+    .container{max-width:1280px;margin:0 auto;padding:0 24px;}
+
+    .btn-primary{background:var(--ink);color:#fff;padding:16px 28px;border-radius:30px;text-decoration:none;font-weight:600;font-size:14.5px;transition:all .3s ease;display:inline-flex;align-items:center;gap:10px;border:1px solid var(--ink);}
+    .btn-primary .chev{width:22px;height:22px;border-radius:50%;background:var(--accent);color:var(--ink);display:flex;align-items:center;justify-content:center;font-size:12px;transition:transform .3s ease;}
+    .btn-primary:hover .chev{transform:translateX(3px);}
+    .btn-primary:hover{background:#222;}
+    .btn-primary,.quick-btn,.form-submit{transition:background .3s ease,color .3s ease,border-color .3s ease;}
+
+    /* Pill nav */
+    .pill-nav{position:fixed;top:22px;left:22px;z-index:1000;display:flex;align-items:center;gap:6px;background:var(--ink);border-radius:40px;padding:8px 8px 8px 20px;box-shadow:0 10px 30px -10px rgba(0,0,0,.35);}
+    .pill-logo{display:flex;align-items:center;gap:2px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:19px;color:#fff;text-decoration:none;letter-spacing:-.5px;}
+    .pill-logo .dot{color:var(--accent);}
+    .hamburger{width:42px;height:42px;border-radius:50%;background:#1c1c1c;border:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;margin-left:10px;transition:background .3s ease;}
+    .hamburger:hover{background:#2a2a2a;}
+    .hamburger span{width:16px;height:2px;background:#fff;border-radius:2px;transition:all .3s ease;}
+    .hamburger.open span:nth-child(1){transform:translateY(6px) rotate(45deg);}
+    .hamburger.open span:nth-child(2){opacity:0;}
+    .hamburger.open span:nth-child(3){transform:translateY(-6px) rotate(-45deg);}
+
+    .menu-overlay{position:fixed;inset:0;background:var(--ink);z-index:999;opacity:0;visibility:hidden;transition:opacity .5s ease,visibility .5s ease;display:flex;flex-direction:column;justify-content:center;padding:100px 24px;}
+    .menu-overlay.open{opacity:1;visibility:visible;}
+    .menu-inner{max-width:1280px;margin:0 auto;width:100%;display:flex;justify-content:space-between;gap:60px;flex-wrap:wrap;}
+    .menu-links{display:flex;flex-direction:column;gap:8px;}
+    .menu-links a{color:#fff;text-decoration:none;font-family:'Space Grotesk',sans-serif;font-size:56px;font-weight:600;letter-spacing:-.02em;opacity:.4;transition:opacity .3s ease;padding:6px 0;}
+    .menu-links a:hover,.menu-links a.active{opacity:1;}
+    .menu-side{display:flex;flex-direction:column;justify-content:space-between;color:rgba(255,255,255,.5);font-size:14.5px;min-width:220px;}
+    .menu-side a{color:#fff;text-decoration:none;}
+    .menu-side .menu-cta{margin-top:24px;}
+    .menu-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);color:#fff;padding:8px 16px;border-radius:20px;font-size:12.5px;font-weight:600;margin-bottom:26px;width:fit-content;}
+    .menu-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block;}
+    .menu-socials{display:flex;gap:10px;margin-top:18px;}
+    .menu-socials a{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;transition:background .3s ease;}
+    .menu-socials a:hover{background:var(--accent);color:var(--ink);}
+    @media (max-width:860px){ .menu-links a{font-size:34px;} .menu-inner{gap:30px;} }
+
+    .quick-actions{position:fixed;right:22px;bottom:22px;z-index:998;display:flex;flex-direction:column;gap:10px;}
+    .quick-btn{width:52px;height:52px;border-radius:50%;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;text-decoration:none;box-shadow:0 10px 25px -8px rgba(0,0,0,.4);transition:all .3s ease;border:none;cursor:pointer;}
+    .quick-btn:hover{background:var(--accent);color:var(--ink);transform:translateY(-3px);}
+
+    .eyebrow-badge{display:inline-flex;align-items:center;gap:8px;background:var(--paper);border:1px solid var(--line);padding:8px 16px;border-radius:20px;font-size:12.5px;font-weight:600;margin-bottom:26px;}
+    .eyebrow-badge .dot{width:7px;height:7px;border-radius:50%;background:#ff8a3d;display:inline-block;}
+
+    /* Intro */
+    .contact-intro{padding:170px 0 40px;text-align:center;}
+    .contact-intro h1{font-size:48px;font-weight:600;letter-spacing:-.02em;margin-bottom:16px;}
+    .contact-intro h1 .muted{color:var(--muted);}
+    .contact-intro p{font-size:18px;color:var(--gray);max-width:560px;margin:0 auto;}
+
+    .contact-banner{border-radius:var(--radius);overflow:hidden;height:260px;margin:40px 0 90px;box-shadow:0 30px 60px -30px rgba(20,18,14,.3);}
+    .contact-banner img{width:100%;height:100%;object-fit:cover;}
+
+    .contact{padding-bottom:110px;}
+    .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;}
+    .contact-details{margin-bottom:30px;}
+    .contact-item{display:flex;align-items:flex-start;gap:16px;margin-bottom:22px;}
+    .contact-icon{width:44px;height:44px;background:var(--ink);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+    .contact-item-content h3{font-size:16px;font-weight:600;margin-bottom:4px;}
+    .contact-item-content p,.contact-item-content a{font-size:15.5px;color:var(--gray);text-decoration:none;transition:color .3s ease;}
+    .contact-item-content a:hover{color:var(--ink);}
+    .social-links{display:flex;gap:12px;margin-top:26px;}
+    .social-link{width:42px;height:42px;border-radius:50%;background:var(--paper);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--ink);transition:all .3s ease;}
+    .social-link:hover{background:var(--ink);color:#fff;transform:translateY(-3px);}
+
+    .contact-form-container{background:var(--paper);padding:44px;border-radius:26px;box-shadow:0 20px 55px -30px rgba(20,18,14,.3);border:1px solid var(--line);}
+    .form-group{margin-bottom:20px;}
+    .form-label{display:block;margin-bottom:8px;font-weight:600;font-size:14px;}
+    .form-input,.form-textarea{width:100%;padding:14px 15px;border:1px solid var(--line);border-radius:12px;font-size:15px;transition:all .3s ease;font-family:inherit;background:var(--bg);}
+    .form-input:focus,.form-textarea:focus{outline:none;border-color:var(--ink);background:var(--paper);}
+    .form-textarea{min-height:140px;resize:vertical;}
+    .form-submit{background:var(--ink);color:#fff;padding:15px 30px;border:none;border-radius:30px;font-size:15px;font-weight:600;cursor:pointer;transition:all .3s ease;width:100%;}
+    .form-submit:hover{background:var(--accent);color:var(--ink);}
+    .form-success{display:none;text-align:center;padding:30px 10px;}
+    .form-success.active{display:block;}
+    .form-success-icon{font-size:38px;margin-bottom:16px;}
+    .form-success h3{font-size:20px;margin-bottom:8px;}
+    .form-success p{color:var(--gray);font-size:14.5px;}
+
+    /* Footer */
+    .footer{background:var(--ink);color:rgba(255,255,255,.65);padding:0 0 30px;}
+    .footer-top{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;padding:60px 0;border-bottom:1px solid rgba(255,255,255,.1);}
+    .footer-logo{display:flex;align-items:center;gap:2px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:24px;color:#fff;margin-bottom:16px;}
+    .footer-logo .dot{color:var(--accent);}
+    .footer-tag{font-size:14.5px;max-width:280px;color:rgba(255,255,255,.5);}
+    .footer-col h4{color:#fff;font-size:14px;margin-bottom:18px;font-weight:600;}
+    .footer-col ul{list-style:none;display:flex;flex-direction:column;gap:12px;}
+    .footer-col a{text-decoration:none;color:rgba(255,255,255,.55);font-size:14.5px;transition:color .3s ease;}
+    .footer-col a:hover{color:#fff;}
+    .footer-social{display:flex;gap:10px;margin-top:8px;}
+    .footer-social a{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .3s ease;}
+    .footer-social a:hover{background:var(--accent);color:var(--ink);}
+    .footer-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:26px;font-size:13px;color:rgba(255,255,255,.4);flex-wrap:wrap;gap:10px;}
+
+    /* Calendar Modal */
+    .calendar-modal{position:fixed;inset:0;background:rgba(13,13,13,.7);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;z-index:10000;opacity:0;visibility:hidden;transition:all .3s ease;}
+    .calendar-modal.active{opacity:1;visibility:visible;}
+    .calendar-content{background:var(--paper);border-radius:28px;padding:0;max-width:900px;width:95%;max-height:90vh;overflow:hidden;position:relative;transform:scale(.94);transition:transform .3s ease;display:flex;}
+    .calendar-modal.active .calendar-content{transform:scale(1);}
+    .calendar-sidebar{width:300px;background:var(--bg);padding:32px;border-radius:28px 0 0 28px;flex-shrink:0;overflow-y:auto;max-height:90vh;}
+    .calendar-main{flex:1;padding:32px;overflow-y:auto;}
+    .calendar-close{position:absolute;top:20px;right:20px;width:32px;height:32px;border-radius:50%;background:var(--bg);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;color:var(--gray);transition:all .3s ease;z-index:2;}
+    .calendar-close:hover{background:var(--ink);color:#fff;}
+    .calendar-header .pill-logo{color:var(--ink);font-size:20px;margin-bottom:12px;}
+    .calendar-header .pill-logo .dot{color:var(--accent-ink);}
+    .calendar-title{font-size:20px;font-weight:700;margin-bottom:8px;}
+    .calendar-subtitle{color:var(--gray);font-size:13.5px;line-height:1.5;margin-bottom:20px;}
+    .calendar-duration{display:flex;align-items:center;gap:8px;margin-bottom:20px;font-size:13.5px;color:var(--gray);}
+    .calendar-duration-icon{width:20px;height:20px;background:var(--ink);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;}
+    .calendar-view-selector{display:flex;background:var(--line);border-radius:25px;padding:4px;margin-bottom:26px;}
+    .view-btn{flex:1;padding:9px 14px;border:none;background:transparent;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;transition:all .3s ease;color:var(--gray);}
+    .view-btn.active{background:var(--ink);color:#fff;}
+    .calendar-navigation{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+    .nav-btn{background:var(--bg);border:none;border-radius:8px;padding:8px 12px;cursor:pointer;font-size:13px;transition:all .3s ease;}
+    .nav-btn:hover{background:var(--line);}
+    .current-month{font-size:17px;font-weight:700;}
+    .calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:var(--line);border-radius:14px;overflow:hidden;}
+    .calendar-day-header{background:var(--bg);padding:13px 6px;text-align:center;font-size:11px;font-weight:600;color:var(--gray);text-transform:uppercase;}
+    .calendar-day{background:var(--paper);min-height:76px;padding:8px;cursor:pointer;transition:all .3s ease;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;}
+    .calendar-day:hover{background:var(--bg);}
+    .calendar-day.other-month{background:#fbfaf8;color:#ccc;}
+    .calendar-day.today{background:var(--ink);color:#fff;}
+    .calendar-day.selected{background:var(--accent);color:var(--ink);}
+    .day-number{font-size:13px;font-weight:600;margin-bottom:5px;}
+    .time-slots{display:flex;flex-direction:column;gap:2px;width:100%;}
+    .time-slot{background:rgba(0,0,0,.06);padding:2px 4px;border-radius:4px;font-size:9.5px;text-align:center;cursor:pointer;transition:all .3s ease;}
+    .time-slot:hover{background:rgba(0,0,0,.15);}
+    .time-slot.available{background:rgba(198,255,74,.35);color:#3f5a17;}
+    .time-slot.selected{background:var(--ink);color:#fff;}
+    .week-view{display:none;}
+    .week-view.active{display:block;}
+    .week-header{display:grid;grid-template-columns:80px repeat(7,1fr);gap:1px;background:var(--line);border-radius:14px 14px 0 0;overflow:hidden;}
+    .week-time-label,.week-day-header{background:var(--bg);padding:13px 6px;text-align:center;font-size:11px;font-weight:600;color:var(--gray);}
+    .week-body{display:grid;grid-template-columns:80px repeat(7,1fr);gap:1px;background:var(--line);border-radius:0 0 14px 14px;overflow:hidden;}
+    .week-time{background:var(--bg);padding:13px 6px;text-align:center;font-size:11px;color:var(--gray);border-bottom:1px solid var(--line);}
+    .week-day-cell{background:var(--paper);padding:8px;min-height:56px;cursor:pointer;transition:all .3s ease;position:relative;display:flex;flex-direction:column;gap:4px;}
+    .week-day-cell:hover{background:var(--bg);}
+    .booking-form{display:none;margin-top:26px;padding:20px;background:var(--paper);border-radius:14px;border:1px solid var(--line);}
+    .booking-form.active{display:block;}
+    .selected-time{background:var(--ink);color:#fff;padding:15px;border-radius:14px;margin-bottom:20px;text-align:center;}
+    .selected-time h3{margin:0;font-size:15px;font-weight:600;}
+    .selected-time p{margin:5px 0 0;font-size:13.5px;opacity:.85;}
+    .form-submit-cal{background:var(--ink);color:#fff;padding:12px 30px;border:none;border-radius:25px;font-weight:600;cursor:pointer;transition:all .3s ease;width:100%;font-size:14px;}
+    .form-submit-cal:hover{background:var(--accent);color:var(--ink);}
+
+    .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease;}
+    .reveal.visible{opacity:1;transform:translateY(0);}
+
+    @media (max-width:1000px){.footer-top{grid-template-columns:1fr 1fr;}}
+    @media (max-width:860px){
+        .contact-intro{padding:150px 0 20px;}
+        .contact-intro h1{font-size:34px;}
+        .contact-grid{grid-template-columns:1fr;}
+        .contact-banner{height:180px;}
+        .calendar-content{flex-direction:column;max-height:85vh;overflow-y:auto;}
+        .calendar-sidebar{width:100%;border-radius:28px 28px 0 0;max-height:none;overflow-y:visible;}
+    }
+    @media (max-width:600px){
+        .footer-top{grid-template-columns:1fr;}
+        .contact-form-container{padding:28px;}
+        .pill-nav{top:14px;left:14px;}
+        .quick-actions{right:14px;bottom:14px;}
+        .calendar-main{overflow-x:auto;}
+        .calendar-grid,.week-header,.week-body{min-width:520px;}
+    }
+    @media (max-width:480px){
+        .contact-intro{padding:120px 0 16px;}
+        .contact-intro h1{font-size:27px;}
+        .contact-intro p{font-size:15.5px;}
+        .eyebrow-badge{font-size:11.5px;padding:7px 13px;}
+        .contact-banner{height:150px;margin:28px 0 60px;}
+        .menu-links a{font-size:26px;}
+        .menu-overlay{padding:80px 20px;}
+        .footer-social a,.menu-socials a{width:34px;height:34px;}
+        .contact-form-container{padding:22px;}
+    }
+    @media (max-width:360px){
+        .contact-intro h1{font-size:23px;}
+        .quick-btn{width:46px;height:46px;}
+    }
+</style>
+</head>
+<body>
+
+<!-- Pill Nav -->
+<div class="pill-nav">
+    <a href="index.html" class="pill-logo">KM<span class="dot">.</span>dev</a>
+    <button class="hamburger" id="hamburgerBtn" aria-label="Menu"><span></span><span></span><span></span></button>
+</div>
+
+<!-- Fullscreen menu overlay -->
+<div class="menu-overlay" id="menuOverlay">
+    <div class="menu-inner">
+        <nav class="menu-links">
+            <a href="index.html">Home</a>
+            <a href="index.html#projects">Projects</a>
+            <a href="pricing.html">Pricing</a>
+            <a href="about.html">About</a>
+            <a href="contact.html" class="active">Contact</a>
+        </nav>
+        <div class="menu-side">
+            <div>
+                <div class="menu-badge"><span class="dot"></span> 1 spot open — Q3</div>
+                <div class="mono" style="font-size:13px;color:rgba(255,255,255,.4);">Based in Amsterdam, NL</div>
+                <div class="menu-socials">
+                    <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="0.6" fill="currentColor" stroke="none"/></svg></a>
+                    <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 10v7M8 7v.01M12 17v-4.5a2.5 2.5 0 0 1 5 0V17"/></svg></a>
+                    <a href="#" aria-label="X / Twitter"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l16 16M20 4 4 20"/></svg></a>
+                </div>
+            </div>
+            <div class="menu-cta">
+                <a href="mailto:hello@km.dev">hello@km.dev</a><br><br>
+                <a href="#" class="btn-primary" id="menuScheduleCall" style="background:var(--accent);color:var(--ink);border-color:var(--accent);">Plan a call <span class="chev" style="background:var(--ink);color:var(--accent);">→</span></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Floating quick actions -->
+<div class="quick-actions">
+    <a href="mailto:hello@km.dev" class="quick-btn" aria-label="Email us"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></a>
+    <button class="quick-btn" id="quickCalendar" aria-label="Schedule a call"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg></button>
+</div>
+
+<!-- Calendar Modal -->
+<div class="calendar-modal" id="calendarModal">
+    <div class="calendar-content">
+        <button class="calendar-close" id="closeCalendar">&times;</button>
+        <div class="calendar-sidebar">
+            <div class="calendar-header">
+                <div class="pill-logo">KM<span class="dot">.</span>dev</div>
+                <h2 class="calendar-title">Schedule a Call</h2>
+                <p class="calendar-subtitle">Select a date and time that works for you. We'll send a confirmation email with the meeting details.</p>
+                <div class="calendar-duration"><div class="calendar-duration-icon">30</div><span>30 minute meeting</span></div>
+            </div>
+            <div class="calendar-view-selector">
+                <button class="view-btn active" id="monthViewBtn">Month</button>
+                <button class="view-btn" id="weekViewBtn">Week</button>
+            </div>
+            <div class="selected-time" id="selectedTimeDisplay" style="display:none;">
+                <h3 id="selectedDate">Selected Date</h3>
+                <p id="selectedTime">Selected Time</p>
+            </div>
+            <div class="booking-form" id="bookingForm">
+                <div class="form-group"><label for="calName" class="form-label">Your Name</label><input type="text" id="calName" class="form-input" placeholder="Enter your name"></div>
+                <div class="form-group"><label for="calEmail" class="form-label">Email Address</label><input type="email" id="calEmail" class="form-input" placeholder="Enter your email"></div>
+                <div class="form-group"><label for="calMessage" class="form-label">Project Details (Optional)</label><textarea id="calMessage" class="form-textarea" placeholder="Tell us about your project"></textarea></div>
+                <button class="form-submit-cal" id="confirmBooking">Confirm Booking</button>
+            </div>
+        </div>
+        <div class="calendar-main">
+            <div class="calendar-navigation">
+                <button class="nav-btn" id="prevMonth">&lt; Previous</button>
+                <div class="current-month" id="currentMonth">Month Year</div>
+                <button class="nav-btn" id="nextMonth">Next &gt;</button>
+            </div>
+            <div id="monthView">
+                <div class="calendar-grid">
+                    <div class="calendar-day-header">Mo</div><div class="calendar-day-header">Tu</div><div class="calendar-day-header">We</div><div class="calendar-day-header">Th</div><div class="calendar-day-header">Fr</div><div class="calendar-day-header">Sa</div><div class="calendar-day-header">Su</div>
+                </div>
+            </div>
+            <div class="week-view" id="weekView">
+                <div class="week-header">
+                    <div class="week-time-label">Time</div>
+                    <div class="week-day-header">Mo</div><div class="week-day-header">Tu</div><div class="week-day-header">We</div><div class="week-day-header">Th</div><div class="week-day-header">Fr</div><div class="week-day-header">Sa</div><div class="week-day-header">Su</div>
+                </div>
+                <div class="week-body" id="weekBody"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="contact-intro reveal visible">
+    <div class="container">
+        <div class="eyebrow-badge"><span class="dot"></span> Get in touch</div>
+        <h1>Let's create <span class="muted">something amazing together.</span></h1>
+        <p>Have a project in mind or want to discuss how we can help your brand stand out? Fill out the form below or reach out directly — we'd love to hear from you.</p>
+        <div class="contact-banner">
+            <img src="https://images.unsplash.com/photo-1584003564911-a7a321c84e1c?q=80&w=1600&auto=format&fit=crop" alt="Amsterdam canal houses">
+        </div>
+    </div>
+</section>
+
+<section class="contact">
+    <div class="container">
+        <div class="contact-grid">
+            <div class="contact-info">
+                <div class="contact-details">
+                    <div class="contact-item">
+                        <div class="contact-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></div>
+                        <div class="contact-item-content"><h3>Email</h3><a href="mailto:hello@km.dev">hello@km.dev</a></div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 4h4l1.5 5-2.5 1.5a12 12 0 0 0 6 6L15 14l5 1.5v4a2 2 0 0 1-2.2 2A17 17 0 0 1 2.5 6.2 2 2 0 0 1 4.5 4Z"/></svg></div>
+                        <div class="contact-item-content"><h3>Phone</h3><a href="tel:+31612345678">+31 6 1234 5678</a></div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.6 7-11.5A7 7 0 0 0 5 9.5C5 14.4 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.3"/></svg></div>
+                        <div class="contact-item-content"><h3>Office</h3><p>Amsterdam, Netherlands</p></div>
+                    </div>
+                </div>
+                <div class="social-links">
+                    <a href="#" class="social-link" aria-label="Instagram"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="0.6" fill="currentColor" stroke="none"/></svg></a>
+                    <a href="#" class="social-link" aria-label="LinkedIn"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 10v7M8 7v.01M12 17v-4.5a2.5 2.5 0 0 1 5 0V17"/></svg></a>
+                    <a href="#" class="social-link" aria-label="X / Twitter"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l16 16M20 4 4 20"/></svg></a>
+                </div>
+            </div>
+
+            <div class="contact-form-container">
+                <form id="contactForm">
+                    <div class="form-group"><label for="name" class="form-label">Your Name</label><input type="text" id="name" class="form-input" placeholder="Enter your name" required></div>
+                    <div class="form-group"><label for="email" class="form-label">Email Address</label><input type="email" id="email" class="form-input" placeholder="Enter your email" required></div>
+                    <div class="form-group"><label for="subject" class="form-label">Subject</label><input type="text" id="subject" class="form-input" placeholder="What's this about?"></div>
+                    <div class="form-group"><label for="message" class="form-label">Your Message</label><textarea id="message" class="form-textarea" placeholder="Tell us about your project" required></textarea></div>
+                    <button type="submit" class="form-submit">Send message →</button>
+                </form>
+                <div class="form-success" id="formSuccess">
+                    <div class="form-success-icon">✓</div>
+                    <h3>Thank you for reaching out</h3>
+                    <p>We've received your message and will get back to you within one business day.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer class="footer">
+    <div class="container">
+        <div class="footer-top">
+            <div>
+                <div class="footer-logo">KM<span class="dot">.</span>dev</div>
+                <p class="footer-tag">The brand system — strategy, identity and website as one — for founders ready to scale.</p>
+                <div class="footer-social">
+                    <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="0.6" fill="currentColor" stroke="none"/></svg></a>
+                    <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 10v7M8 7v.01M12 17v-4.5a2.5 2.5 0 0 1 5 0V17"/></svg></a>
+                    <a href="#" aria-label="X / Twitter"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l16 16M20 4 4 20"/></svg></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Sitemap</h4>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="index.html#projects">Projects</a></li>
+                    <li><a href="pricing.html">Pricing</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Brand system</h4>
+                <ul>
+                    <li><a href="#">Strategy</a></li>
+                    <li><a href="#">Identity</a></li>
+                    <li><a href="#">Website</a></li>
+                    <li><a href="#">Brand assets</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Get in touch</h4>
+                <ul>
+                    <li><a href="mailto:hello@km.dev">hello@km.dev</a></li>
+                    <li><a href="tel:+31612345678">+31 6 1234 5678</a></li>
+                    <li><a href="#">Amsterdam, Netherlands</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© 2026 KM.dev. All rights reserved.</span>
+            <span>Terms of service · Privacy policy</span>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // ---------- Hamburger + overlay ----------
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const menuOverlay = document.getElementById('menuOverlay');
+    hamburgerBtn.addEventListener('click', function(){
+        const isOpen = menuOverlay.classList.toggle('open');
+        hamburgerBtn.classList.toggle('open', isOpen);
+        document.body.style.overflow = isOpen ? 'hidden' : 'auto';
+    });
+    menuOverlay.querySelectorAll('a').forEach(a => {
+        a.addEventListener('click', function(){
+            menuOverlay.classList.remove('open');
+            hamburgerBtn.classList.remove('open');
+            document.body.style.overflow = 'auto';
+        });
+    });
+
+    // ---------- Calendar ----------
+    let currentDate = new Date();
+    let selectedDate = null;
+    let selectedTime = null;
+    const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const dayNames = ['Mo','Tu','We','Th','Fr','Sa','Su'];
+    const availableTimes = ['09:00','10:00','11:00','14:00','15:00','16:00'];
+
+    const calendarModal = document.getElementById('calendarModal');
+    const quickCalendarBtn = document.getElementById('quickCalendar');
+    const menuScheduleCallBtn = document.getElementById('menuScheduleCall');
+    const closeCalendarBtn = document.getElementById('closeCalendar');
+
+    [quickCalendarBtn, menuScheduleCallBtn].forEach(btn => {
+        btn.addEventListener('click', function(e){ e.preventDefault(); openCalendar(); });
+    });
+
+    function openCalendar(){
+        calendarModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        generateCalendar();
+    }
+    closeCalendarBtn.addEventListener('click', function(){
+        calendarModal.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    });
+    calendarModal.addEventListener('click', function(e){
+        if(e.target === calendarModal){ calendarModal.classList.remove('active'); document.body.style.overflow = 'auto'; }
+    });
+
+    function generateCalendar(){
+        const monthView = document.getElementById('monthView').querySelector('.calendar-grid');
+        document.getElementById('currentMonth').textContent = `${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+        const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+        const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth()+1, 0);
+        while (monthView.children.length > 7) monthView.removeChild(monthView.lastChild);
+        const startingDay = firstDay.getDay() === 0 ? 6 : firstDay.getDay()-1;
+        for (let i=0;i<startingDay;i++){
+            const emptyDay = document.createElement('div');
+            emptyDay.className = 'calendar-day other-month';
+            monthView.appendChild(emptyDay);
+        }
+        const today = new Date(); today.setHours(0,0,0,0);
+        for (let i=1;i<=lastDay.getDate();i++){
+            const day = document.createElement('div');
+            const dayDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), i);
+            day.className = 'calendar-day';
+            if (dayDate.getTime() === today.getTime()) day.classList.add('today');
+            const dayNumber = document.createElement('div');
+            dayNumber.className = 'day-number';
+            dayNumber.textContent = i;
+            day.appendChild(dayNumber);
+            const timeSlots = document.createElement('div');
+            timeSlots.className = 'time-slots';
+            availableTimes.forEach(time => {
+                const timeSlot = document.createElement('div');
+                timeSlot.className = 'time-slot available';
+                timeSlot.textContent = time;
+                timeSlot.addEventListener('click', function(e){ e.stopPropagation(); selectTime(dayDate, time); });
+                timeSlots.appendChild(timeSlot);
+            });
+            day.appendChild(timeSlots);
+            day.addEventListener('click', function(){ selectDate(dayDate); });
+            monthView.appendChild(day);
+        }
+        generateWeekView();
+    }
+
+    function generateWeekView(){
+        const weekBody = document.getElementById('weekBody');
+        weekBody.innerHTML = '';
+        availableTimes.forEach(time => {
+            const timeRow = document.createElement('div');
+            timeRow.className = 'week-time';
+            timeRow.textContent = time;
+            weekBody.appendChild(timeRow);
+            for (let i=0;i<7;i++){
+                const dayCell = document.createElement('div');
+                dayCell.className = 'week-day-cell';
+                const currentDayOfWeek = currentDate.getDay() === 0 ? 6 : currentDate.getDay()-1;
+                const weekStart = new Date(currentDate);
+                weekStart.setDate(currentDate.getDate()-currentDayOfWeek);
+                const cellDate = new Date(weekStart);
+                cellDate.setDate(weekStart.getDate()+i);
+                const dayNumber = document.createElement('div');
+                dayNumber.textContent = cellDate.getDate();
+                dayCell.appendChild(dayNumber);
+                const timeSlot = document.createElement('div');
+                timeSlot.className = 'time-slot available';
+                timeSlot.textContent = 'Available';
+                timeSlot.addEventListener('click', function(){ selectTime(cellDate, time); });
+                dayCell.appendChild(timeSlot);
+                timeRow.appendChild(dayCell);
+            }
+        });
+    }
+
+    function selectDate(date){
+        selectedDate = date;
+        const days = document.querySelectorAll('.calendar-day');
+        days.forEach(day => day.classList.remove('selected'));
+        const selectedDay = Array.from(days).find(day => {
+            const dayNumber = parseInt(day.querySelector('.day-number')?.textContent);
+            if (!dayNumber) return false;
+            const dayDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), dayNumber);
+            return dayDate.getTime() === date.getTime();
+        });
+        if (selectedDay) selectedDay.classList.add('selected');
+    }
+
+    function selectTime(date, time){
+        selectedDate = date; selectedTime = time;
+        const selectedTimeDisplay = document.getElementById('selectedTimeDisplay');
+        document.getElementById('selectedDate').textContent = `${dayNames[date.getDay() === 0 ? 6 : date.getDay()-1]} ${date.getDate()} ${monthNames[date.getMonth()]}`;
+        document.getElementById('selectedTime').textContent = time;
+        selectedTimeDisplay.style.display = 'block';
+        document.getElementById('bookingForm').classList.add('active');
+        document.querySelectorAll('.time-slot.selected').forEach(slot => slot.classList.remove('selected'));
+        document.querySelectorAll('.time-slot').forEach(slot => { if (slot.textContent === time) slot.classList.add('selected'); });
+    }
+
+    document.getElementById('prevMonth').addEventListener('click', function(){ currentDate.setMonth(currentDate.getMonth()-1); generateCalendar(); });
+    document.getElementById('nextMonth').addEventListener('click', function(){ currentDate.setMonth(currentDate.getMonth()+1); generateCalendar(); });
+    document.getElementById('monthViewBtn').addEventListener('click', function(){
+        document.getElementById('monthView').style.display = 'block';
+        document.getElementById('weekView').classList.remove('active');
+        this.classList.add('active');
+        document.getElementById('weekViewBtn').classList.remove('active');
+    });
+    document.getElementById('weekViewBtn').addEventListener('click', function(){
+        document.getElementById('monthView').style.display = 'none';
+        document.getElementById('weekView').classList.add('active');
+        this.classList.add('active');
+        document.getElementById('monthViewBtn').classList.remove('active');
+    });
+    document.getElementById('confirmBooking').addEventListener('click', function(){
+        const name = document.getElementById('calName').value;
+        const email = document.getElementById('calEmail').value;
+        if (!name || !email || !selectedDate || !selectedTime){ alert('Please select a time and fill in your name and email'); return; }
+        alert(`Booking confirmed!\n\nDate: ${selectedDate.toDateString()}\nTime: ${selectedTime}\n\nWe'll send a confirmation to ${email}`);
+        document.getElementById('bookingForm').classList.remove('active');
+        document.getElementById('selectedTimeDisplay').style.display = 'none';
+        calendarModal.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    });
+    generateCalendar();
+
+    // ---------- Contact form ----------
+    document.getElementById('contactForm').addEventListener('submit', function(e){
+        e.preventDefault();
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const subject = document.getElementById('subject').value;
+        const message = document.getElementById('message').value;
+        console.log('Form submitted:', { name, email, subject, message });
+        this.style.display = 'none';
+        document.getElementById('formSuccess').classList.add('active');
+    });
+
+    // ---------- Reveal ----------
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+    }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // ---------- GSAP effects ----------
+    gsap.registerPlugin(ScrollTrigger);
+
+    gsap.set('.pill-nav', { y: -40, opacity: 0 });
+    gsap.to('.pill-nav', { y: 0, opacity: 1, duration: .8, ease: 'power3.out', delay: .1 });
+
+    const introTl = gsap.timeline({ delay: .2, defaults: { ease: 'power3.out' } });
+    introTl
+        .from('.eyebrow-badge', { y: 20, opacity: 0, duration: .6 })
+        .from('.contact-intro h1', { y: 30, opacity: 0, duration: .8 }, '-=.35')
+        .from('.contact-intro p', { y: 20, opacity: 0, duration: .6 }, '-=.5')
+        .from('.contact-banner', { y: 30, opacity: 0, scale: .97, duration: .8 }, '-=.4');
+
+    // All ScrollTrigger-based reveals are set up only after every image has
+    // finished loading (window 'load'), then refreshed once more. This avoids
+    // ScrollTrigger calculating trigger positions against a page that hasn't
+    // reached its final height yet (the #1 cause of "sections stay invisible").
+    function initScrollReveals(){
+        gsap.from('.contact-item', {
+            y: 24, opacity: 0, duration: .6, stagger: .1, ease: 'power2.out',
+            scrollTrigger: { trigger: '.contact-info', start: 'top 90%' }
+        });
+        gsap.from('.social-links a', {
+            y: 16, opacity: 0, duration: .5, stagger: .08, ease: 'power2.out',
+            scrollTrigger: { trigger: '.social-links', start: 'top 95%' }
+        });
+        gsap.from('.contact-form-container', {
+            y: 30, opacity: 0, scale: .98, duration: .8, ease: 'power3.out',
+            scrollTrigger: { trigger: '.contact-form-container', start: 'top 90%' }
+        });
+
+        function staggerReveal(gridSelector, itemSelector){
+            document.querySelectorAll(gridSelector).forEach(grid => {
+                const items = grid.querySelectorAll(itemSelector);
+                if (!items.length) return;
+                gsap.from(items, {
+                    y: 30, opacity: 0, duration: .7, stagger: .08, ease: 'power2.out',
+                    scrollTrigger: { trigger: grid, start: 'top 90%' }
+                });
+            });
+        }
+        staggerReveal('.footer-top', ':scope > div, :scope > .footer-col');
+
+        ScrollTrigger.refresh();
+    }
+    if (document.readyState === 'complete'){ initScrollReveals(); }
+    else { window.addEventListener('load', initScrollReveals); }
+    window.addEventListener('load', () => setTimeout(() => ScrollTrigger.refresh(), 500));
+
+    document.querySelectorAll('.btn-primary, .quick-btn').forEach(btn => {
+        const strength = 16;
+        btn.addEventListener('mousemove', (e) => {
+            const r = btn.getBoundingClientRect();
+            const x = (e.clientX - r.left - r.width / 2) / r.width;
+            const y = (e.clientY - r.top - r.height / 2) / r.height;
+            gsap.to(btn, { x: x * strength, y: y * strength, duration: .4, ease: 'power2.out' });
+        });
+        btn.addEventListener('mouseleave', () => gsap.to(btn, { x: 0, y: 0, duration: .6, ease: 'elastic.out(1,0.4)' }));
+    });
+
+    hamburgerBtn.addEventListener('click', function(){
+        if (menuOverlay.classList.contains('open')){
+            gsap.fromTo('.menu-links a, .menu-side > *', { y: 36, opacity: 0 }, { y: 0, opacity: 1, duration: .6, stagger: .06, ease: 'power3.out', delay: .15 });
+        }
+    });
+</script>
+</body>
+</html>

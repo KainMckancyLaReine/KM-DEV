@@ -23,7 +23,7 @@ Live pages:
 ## File structure
 
 ```
-KM-DEV/
+Kmap_Modern landingpage/
 ├── index.html              ← homepage (canonical entry point)
 ├── about.html
 ├── contact.html
@@ -32,9 +32,14 @@ KM-DEV/
 ├── sitemap.xml
 ├── robots.txt
 ├── README.md
-└── foto's/
-    ├── nexafoto.png              ← real screenshot, NEXA project card
-    └── kainmckancylareinefoto.png ← real screenshot, portfolio project card
+├── foto's/
+│   ├── nexafoto.png              ← real screenshot, NEXA project card
+│   └── kainmckancylareinefoto.png ← real screenshot, portfolio project card
+├── Kmap.html               ← legacy duplicate of the homepage, kept for
+│                             backward compatibility, no longer linked from
+│                             anywhere — safe to delete once you're sure
+│                             nothing external points to it
+├── kmap.png, kmap1.png     ← old logo assets, unreferenced, safe to remove
 ```
 
 ## Featured projects (homepage `#projects` section)
@@ -87,6 +92,7 @@ Every page ships with:
 
 - The booking calendar and contact form are front-end only — "Confirm Booking" and "Send message" show a success state but don't send anything anywhere. Wire them up to a real backend, form service (Formspree, Basin), or calendar API (Cal.com, Calendly embed) before relying on them for real leads.
 - The two thum.io-powered project screenshots regenerate on a cache cycle; if a target site's design changes, the card image updates automatically within a day or so.
+- `Kmap.html`, `kmap.png`, and `kmap1.png` are legacy files kept only for safety — nothing links to them anymore, they can be deleted once you've confirmed nothing external (bookmarks, shared links) depends on the old filename.
 - No analytics are wired up. If you want visit tracking, add Plausible/Fathom/GA4's snippet to the `<head>` of all three pages.
 
 ## Credits
