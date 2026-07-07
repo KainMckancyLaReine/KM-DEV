@@ -50,6 +50,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
     :root{
         --bg:#f4f3ef;
@@ -126,43 +127,23 @@
     .eyebrow-badge{display:inline-flex;align-items:center;gap:8px;background:var(--paper);border:1px solid var(--line);padding:8px 16px;border-radius:20px;font-size:12.5px;font-weight:600;margin-bottom:26px;}
     .eyebrow-badge .dot{width:7px;height:7px;border-radius:50%;background:#ff8a3d;display:inline-block;}
 
-    /* ---------- Intro Preloader ---------- */
+    /* ---------- Intro Preloader (Three.js lamp, on-brand palette) ---------- */
     :root{--intro-duration:3.2s;}
-    .intro-overlay{position:fixed;inset:0;background:var(--ink);z-index:99999;display:flex;align-items:center;justify-content:center;overflow:hidden;transition:opacity .6s ease;}
+    .intro-overlay{position:fixed;inset:0;background:var(--bg);z-index:99999;display:flex;align-items:center;justify-content:center;overflow:hidden;transition:opacity .6s ease;}
     .intro-overlay.fade-out{opacity:0;pointer-events:none;}
     .intro-stage{position:relative;display:flex;align-items:center;justify-content:center;width:100%;height:100%;}
-    .intro-word{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(40px,9vw,110px);letter-spacing:-.02em;color:#3a3a38;display:flex;align-items:baseline;transition:color .5s ease,text-shadow .5s ease;position:relative;z-index:1;}
-    .intro-overlay.impact .intro-word{color:#fff;}
-    .intro-overlay.lit .intro-word{color:#fff;text-shadow:0 0 40px rgba(198,255,74,.35);}
+    .intro-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:2;}
+    .intro-word{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(40px,9vw,110px);letter-spacing:-.02em;color:var(--muted);display:flex;align-items:baseline;transition:color .5s ease,text-shadow .5s ease;position:relative;z-index:1;}
+    .intro-overlay.impact .intro-word{color:var(--ink);}
+    .intro-overlay.lit .intro-word{color:var(--ink);text-shadow:0 0 36px rgba(198,255,74,.5);}
     .intro-dot{color:var(--accent);display:inline-block;transform-origin:center 78%;}
     .intro-overlay.playing .intro-dot{animation:introDotSquash var(--intro-duration) ease-in-out forwards;}
-    .intro-lamp{position:absolute;left:50%;top:50%;width:min(20vw,150px);transform:translate(calc(-50% - 230px),-155%);filter:drop-shadow(0 14px 22px rgba(0,0,0,.5));z-index:2;}
-    .intro-overlay.playing .intro-lamp{animation:introLampHop var(--intro-duration) cubic-bezier(.45,0,.55,1) forwards;}
-    .intro-lamp .lamp-base,.intro-lamp .lamp-arm,.intro-lamp .lamp-joint{fill:var(--accent);}
-    .intro-lamp .lamp-shade{fill:var(--bg);}
-    .intro-lamp .lamp-bulb{fill:#fff;filter:drop-shadow(0 0 10px var(--accent)) drop-shadow(0 0 22px var(--accent));}
-    .intro-skip{position:absolute;bottom:28px;right:28px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.15);padding:9px 18px;border-radius:20px;font-size:12.5px;font-weight:600;cursor:pointer;z-index:3;transition:all .3s ease;}
-    .intro-skip:hover{background:rgba(255,255,255,.16);color:#fff;}
-    @keyframes introLampHop{
-        0%{transform:translate(calc(-50% - 230px),-155%) scale(1,1);}
-        7%{transform:translate(calc(-50% - 170px),-230%) scale(1,1);}
-        14%{transform:translate(calc(-50% - 110px),-150%) scale(1.18,.8);}
-        19%{transform:translate(calc(-50% - 110px),-155%) scale(1,1);}
-        27%{transform:translate(calc(-50% - 40px),-235%) scale(1,1);}
-        34%{transform:translate(calc(-50% + 20px),-150%) scale(1.18,.8);}
-        39%{transform:translate(calc(-50% + 20px),-155%) scale(1,1);}
-        48%{transform:translate(calc(-50% + 90px),-250%) scale(1,1);}
-        56%{transform:translate(calc(-50% + 148px),-150%) scale(1.32,.68);}
-        65%{transform:translate(calc(-50% + 148px),-150%) scale(1.32,.68);}
-        72%{transform:translate(calc(-50% + 148px),-190%) scale(.92,1.14);}
-        82%{transform:translate(calc(-50% + 230px),-260%) scale(1,1);}
-        92%{transform:translate(calc(-50% + 340px),-150%) scale(1,1);}
-        100%{transform:translate(calc(-50% + 340px),-150%) scale(1,1);opacity:0;}
-    }
+    .intro-skip{position:absolute;bottom:28px;right:28px;background:rgba(13,13,13,.06);color:var(--gray);border:1px solid rgba(13,13,13,.15);padding:9px 18px;border-radius:20px;font-size:12.5px;font-weight:600;cursor:pointer;z-index:3;transition:all .3s ease;}
+    .intro-skip:hover{background:var(--ink);color:#fff;border-color:var(--ink);}
     @keyframes introDotSquash{
         0%,53%{transform:scale(1,1);color:var(--accent);}
-        58%{transform:scale(1.9,.3);color:#fff;}
-        65%{transform:scale(1.9,.3);color:#fff;}
+        58%{transform:scale(1.9,.3);color:var(--accent-ink);}
+        65%{transform:scale(1.9,.3);color:var(--accent-ink);}
         74%{transform:scale(.85,1.2);color:var(--accent);}
         82%,100%{transform:scale(1,1);color:var(--accent);}
     }
@@ -431,15 +412,7 @@
 <!-- Intro Preloader (first visit only) -->
 <div class="intro-overlay" id="introOverlay">
     <div class="intro-stage">
-        <svg class="intro-lamp" id="introLamp" viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg">
-            <ellipse class="lamp-base" cx="100" cy="205" rx="44" ry="11"/>
-            <rect class="lamp-arm" x="90" y="118" width="16" height="82" rx="8" transform="rotate(-14 100 200)"/>
-            <circle class="lamp-joint" cx="99" cy="150" r="12"/>
-            <rect class="lamp-arm" x="58" y="58" width="16" height="92" rx="8" transform="rotate(38 100 150)"/>
-            <circle class="lamp-joint" cx="70" cy="72" r="11"/>
-            <path class="lamp-shade" d="M38 68 L106 52 L114 94 L34 100 Z"/>
-            <circle class="lamp-bulb" cx="70" cy="82" r="9"/>
-        </svg>
+        <canvas class="intro-canvas" id="introCanvas"></canvas>
         <div class="intro-word" id="introWord">KM<span class="intro-dot" id="introDot">.</span>dev</div>
         <button class="intro-skip" id="introSkip">Skip →</button>
     </div>
@@ -773,18 +746,21 @@
 </footer>
 
 <script>
-    // ---------- Intro preloader (Pixar-lamp homage, first visit only) ----------
+    // ---------- Intro preloader (3D lamp hop via Three.js, first visit only) ----------
     (function(){
         var overlay = document.getElementById('introOverlay');
         if(!overlay || overlay.style.display === 'none') return; // already skipped for returning visitors
 
         var skipBtn = document.getElementById('introSkip');
+        var canvas = document.getElementById('introCanvas');
         var DURATION = 3.2;
         var finished = false;
+        var rafId = null;
 
         function endIntro(){
             if(finished) return;
             finished = true;
+            if(rafId) cancelAnimationFrame(rafId);
             overlay.classList.add('fade-out');
             setTimeout(function(){
                 overlay.style.display = 'none';
@@ -792,12 +768,125 @@
             }, 650);
         }
 
+        // Keyframes for the lamp's hop path: t (0-1 progress), x, y (world units), sx/sy (squash-stretch scale)
+        var KF = [
+            {t:0.00, x:-5.2, y:-0.5, sx:1,    sy:1   },
+            {t:0.07, x:-3.9, y: 1.5, sx:1,    sy:1   },
+            {t:0.14, x:-2.6, y:-0.5, sx:1.2,  sy:0.78},
+            {t:0.19, x:-2.6, y:-0.5, sx:1,    sy:1   },
+            {t:0.27, x:-1.0, y: 1.7, sx:1,    sy:1   },
+            {t:0.34, x: 0.4, y:-0.5, sx:1.2,  sy:0.78},
+            {t:0.39, x: 0.4, y:-0.5, sx:1,    sy:1   },
+            {t:0.48, x: 1.9, y: 2.0, sx:1,    sy:1   },
+            {t:0.56, x: 3.1, y:-0.5, sx:1.34, sy:0.66},
+            {t:0.65, x: 3.1, y:-0.5, sx:1.34, sy:0.66},
+            {t:0.72, x: 3.1, y: 0.5, sx:0.9,  sy:1.16},
+            {t:0.82, x: 4.7, y: 2.1, sx:1,    sy:1   },
+            {t:0.92, x: 7.0, y:-0.5, sx:1,    sy:1   },
+            {t:1.00, x: 7.0, y:-0.5, sx:1,    sy:1   }
+        ];
+        function sample(t){
+            for(var i=0;i<KF.length-1;i++){
+                if(t >= KF[i].t && t <= KF[i+1].t){
+                    var a = KF[i], b = KF[i+1];
+                    var span = (b.t - a.t) || 1;
+                    var u = (t - a.t) / span;
+                    return {
+                        x: a.x + (b.x - a.x) * u,
+                        y: a.y + (b.y - a.y) * u,
+                        sx: a.sx + (b.sx - a.sx) * u,
+                        sy: a.sy + (b.sy - a.sy) * u
+                    };
+                }
+            }
+            return KF[KF.length-1];
+        }
+
+        function buildLamp(THREE){
+            var ink = 0x0d0d0d, accent = 0xc6ff4a, paper = 0xffffff;
+            var group = new THREE.Group();
+            var armMat = new THREE.MeshStandardMaterial({color:ink, roughness:.45, metalness:.05});
+
+            var base = new THREE.Mesh(new THREE.CylinderGeometry(0.58,0.68,0.2,24), armMat);
+            base.position.y = 0.1;
+            group.add(base);
+
+            var arm1 = new THREE.Mesh(new THREE.CylinderGeometry(0.1,0.1,1.35,16), armMat);
+            arm1.position.set(0.05,0.78,0);
+            arm1.rotation.z = -0.32;
+            group.add(arm1);
+
+            var joint1 = new THREE.Mesh(new THREE.SphereGeometry(0.16,16,16), armMat);
+            joint1.position.set(0.28,1.4,0);
+            group.add(joint1);
+
+            var arm2 = new THREE.Mesh(new THREE.CylinderGeometry(0.1,0.1,1.35,16), armMat);
+            arm2.position.set(-0.38,2.0,0);
+            arm2.rotation.z = 0.55;
+            group.add(arm2);
+
+            var joint2 = new THREE.Mesh(new THREE.SphereGeometry(0.15,16,16), armMat);
+            joint2.position.set(-0.8,2.52,0);
+            group.add(joint2);
+
+            var shadeMat = new THREE.MeshStandardMaterial({color:paper, roughness:.5});
+            var shade = new THREE.Mesh(new THREE.CylinderGeometry(0.22,0.55,0.62,24,1,true), shadeMat);
+            shade.rotation.z = Math.PI * 0.62;
+            shade.position.set(-1.15,2.4,0);
+            group.add(shade);
+
+            var bulbMat = new THREE.MeshStandardMaterial({color:accent, emissive:accent, emissiveIntensity:1.6, roughness:.3});
+            var bulb = new THREE.Mesh(new THREE.SphereGeometry(0.2,16,16), bulbMat);
+            bulb.position.set(-1.15,2.18,0);
+            group.add(bulb);
+
+            var bulbLight = new THREE.PointLight(accent, 1.4, 5);
+            bulbLight.position.copy(bulb.position);
+            group.add(bulbLight);
+
+            return group;
+        }
+
         function playIntro(){
             document.documentElement.style.setProperty('--intro-duration', DURATION + 's');
             overlay.classList.add('playing');
             setTimeout(function(){ overlay.classList.add('impact'); }, DURATION * 1000 * 0.56);
             setTimeout(function(){ overlay.classList.add('lit'); }, DURATION * 1000 * 0.9);
-            setTimeout(endIntro, DURATION * 1000 + 100);
+            setTimeout(endIntro, DURATION * 1000 + 150);
+
+            if(typeof THREE === 'undefined' || !canvas) return; // graceful fallback: text/dot animation still plays
+
+            var stage = overlay.querySelector('.intro-stage');
+            var w = stage.clientWidth, h = stage.clientHeight;
+            var renderer = new THREE.WebGLRenderer({canvas:canvas, alpha:true, antialias:true});
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+            renderer.setSize(w, h);
+
+            var scene = new THREE.Scene();
+            var camera = new THREE.PerspectiveCamera(42, w/h, 0.1, 100);
+            camera.position.set(0,1.3,10);
+            camera.lookAt(0,0.7,0);
+
+            scene.add(new THREE.AmbientLight(0xffffff,0.85));
+            var dirLight = new THREE.DirectionalLight(0xffffff,0.7);
+            dirLight.position.set(3,6,5);
+            scene.add(dirLight);
+
+            var lamp = buildLamp(THREE);
+            scene.add(lamp);
+
+            var start = null;
+            function tick(now){
+                if(!start) start = now;
+                var t = Math.min((now - start) / (DURATION * 1000), 1);
+                var f = sample(t);
+                lamp.position.set(f.x, f.y, 0);
+                lamp.scale.set(f.sx, f.sy, 1);
+                lamp.rotation.z = Math.sin(t * Math.PI * 5) * 0.06;
+                renderer.render(scene, camera);
+                if(t < 1){ rafId = requestAnimationFrame(tick); }
+            }
+            rafId = requestAnimationFrame(tick);
         }
 
         skipBtn && skipBtn.addEventListener('click', endIntro);
