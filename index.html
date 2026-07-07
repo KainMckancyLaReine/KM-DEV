@@ -421,14 +421,15 @@
     // Runs immediately (before paint) so returning visitors never see a flash of the intro.
     (function(){
         var overlay = document.getElementById('introOverlay');
-        try{
-            if(localStorage.getItem('kmdevIntroSeen')){
-                overlay.style.display = 'none';
-            } else {
-                localStorage.setItem('kmdevIntroSeen', '1');
-                document.body.style.overflow = 'hidden';
-            }
-        }catch(e){ overlay.style.display = 'none'; }
+        overlay.style.display = 'none'; // PRELOAD DISABLED — remove this line + uncomment below to re-enable
+        // try{
+        //     if(localStorage.getItem('kmdevIntroSeen')){
+        //         overlay.style.display = 'none';
+        //     } else {
+        //         localStorage.setItem('kmdevIntroSeen', '1');
+        //         document.body.style.overflow = 'hidden';
+        //     }
+        // }catch(e){ overlay.style.display = 'none'; }
     })();
 </script>
 
