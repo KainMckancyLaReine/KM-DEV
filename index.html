@@ -224,28 +224,39 @@
     .footer-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:26px;font-size:13px;color:rgba(255,255,255,.4);flex-wrap:wrap;gap:10px;}
 
     /* ---------- Pricing Modal ---------- */
-    .pricing-modal{position:fixed;inset:0;background:rgba(13,13,13,.7);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;z-index:10000;opacity:0;visibility:hidden;transition:all .3s ease;}
+    .pricing-modal{position:fixed;inset:0;background:rgba(13,13,13,.7);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;z-index:10000;opacity:0;visibility:hidden;transition:all .3s ease;padding:24px;}
     .pricing-modal.active{opacity:1;visibility:visible;}
-    .pricing-content{background:var(--paper);border-radius:28px;padding:44px;max-width:520px;width:90%;max-height:90vh;overflow-y:auto;position:relative;transform:scale(.94);transition:transform .3s ease;}
+    .pricing-content{background:var(--paper);border-radius:32px;padding:0;max-width:560px;width:100%;max-height:90vh;overflow-y:auto;position:relative;transform:scale(.94);transition:transform .3s ease;box-shadow:0 40px 80px -20px rgba(0,0,0,.4);}
     .pricing-modal.active .pricing-content{transform:scale(1);}
-    .pricing-close{position:absolute;top:22px;right:22px;width:32px;height:32px;border-radius:50%;background:var(--bg);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;color:var(--gray);transition:all .3s ease;}
-    .pricing-close:hover{background:var(--ink);color:#fff;}
-    .pricing-header{text-align:center;margin-bottom:30px;}
-    .pricing-header .pill-logo{color:var(--ink);justify-content:center;font-size:24px;margin-bottom:10px;}
+    .pricing-close{position:absolute;top:22px;right:22px;width:34px;height:34px;border-radius:50%;background:var(--bg);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;color:var(--gray);transition:all .3s ease;z-index:2;}
+    .pricing-close:hover{background:var(--ink);color:#fff;transform:rotate(90deg);}
+    .pricing-header{text-align:center;padding:44px 40px 26px;background:linear-gradient(180deg,var(--bg) 0%,rgba(244,243,239,0) 100%);}
+    .pricing-header .pill-logo{color:var(--ink);justify-content:center;font-size:22px;margin-bottom:16px;}
     .pricing-header .pill-logo .dot{color:var(--accent-ink);}
-    .pricing-subtitle{color:var(--gray);font-size:14px;}
-    .pricing-item{display:flex;justify-content:space-between;align-items:center;padding:18px 0;border-bottom:1px solid var(--line);}
-    .pricing-item:last-child{border-bottom:none;}
-    .pricing-label{display:flex;align-items:center;gap:10px;}
-    .pricing-type{background:var(--ink);color:#fff;padding:6px 12px;border-radius:15px;font-size:11px;font-weight:600;text-transform:uppercase;}
-    .pricing-details{font-size:14px;color:var(--gray);}
-    .pricing-price{font-size:18px;font-weight:700;font-family:'Space Grotesk',sans-serif;}
-    .price-loop{font-variant-numeric:tabular-nums;display:inline-block;min-width:7ch;}
-    .pricing-duration{font-size:12px;color:var(--muted);margin-left:6px;}
-    .pricing-footer{text-align:center;margin-top:30px;padding-top:22px;border-top:1px solid var(--line);}
-    .pricing-cta{background:var(--ink);color:#fff;padding:15px 30px;border-radius:25px;text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:8px;transition:all .3s ease;border:none;cursor:pointer;font-size:14px;}
-    .pricing-cta:hover{background:var(--accent);color:var(--ink);}
-    .pricing-note{font-size:12px;color:var(--muted);margin-top:16px;line-height:1.5;}
+    .pricing-eyebrow{display:inline-flex;align-items:center;gap:8px;background:var(--paper);border:1px solid var(--line);padding:7px 16px;border-radius:20px;font-size:12px;font-weight:600;margin-bottom:16px;}
+    .pricing-eyebrow .dot{width:6px;height:6px;border-radius:50%;background:#ff8a3d;display:inline-block;}
+    .pricing-header h3{font-size:26px;font-weight:600;letter-spacing:-.01em;margin-bottom:8px;}
+    .pricing-subtitle{color:var(--gray);font-size:14.5px;}
+    .pricing-list{padding:6px 32px 0;display:flex;flex-direction:column;gap:14px;}
+    .pricing-item{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:20px 22px;border:1.5px solid var(--line);border-radius:20px;position:relative;transition:border-color .3s ease,background .3s ease,transform .3s ease,box-shadow .3s ease;}
+    .pricing-item:hover{border-color:var(--ink);transform:translateY(-3px);box-shadow:0 16px 30px -18px rgba(20,18,14,.35);}
+    .pricing-item.featured{border-color:var(--ink);background:var(--ink);color:#fff;}
+    .pricing-item.featured:hover{box-shadow:0 20px 40px -18px rgba(20,18,14,.55);}
+    .pricing-item.featured .pricing-details{color:rgba(255,255,255,.6);}
+    .pricing-item.featured .pricing-duration{color:rgba(255,255,255,.4);}
+    .pricing-item.featured .pricing-type{background:var(--accent);color:var(--accent-ink);}
+    .pricing-badge-popular{position:absolute;top:-11px;left:22px;background:var(--accent);color:var(--accent-ink);font-size:10px;font-weight:700;padding:5px 13px;border-radius:12px;letter-spacing:.03em;text-transform:uppercase;}
+    .pricing-label{display:flex;flex-direction:column;align-items:flex-start;gap:7px;}
+    .pricing-type{background:var(--ink);color:#fff;padding:5px 12px;border-radius:15px;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;width:fit-content;}
+    .pricing-details{font-size:13.5px;color:var(--gray);line-height:1.4;}
+    .pricing-item-right{text-align:right;flex-shrink:0;}
+    .pricing-price{font-size:21px;font-weight:700;font-family:'Space Grotesk',sans-serif;letter-spacing:-.01em;}
+    .price-loop{font-variant-numeric:tabular-nums;display:inline-block;min-width:7ch;text-align:right;}
+    .pricing-duration{font-size:11.5px;color:var(--muted);display:block;margin-top:2px;}
+    .pricing-footer{text-align:center;margin:26px 32px 0;padding:26px 8px 40px;border-top:1px solid var(--line);}
+    .pricing-cta{background:var(--ink);color:#fff;padding:16px 32px;border-radius:26px;text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:8px;transition:all .3s ease;border:none;cursor:pointer;font-size:14.5px;}
+    .pricing-cta:hover{background:var(--accent);color:var(--accent-ink);transform:translateY(-2px);}
+    .pricing-note{font-size:12px;color:var(--muted);margin-top:18px;line-height:1.6;max-width:400px;margin-left:auto;margin-right:auto;}
 
     /* ---------- Calendar Modal ---------- */
     .calendar-modal{position:fixed;inset:0;background:rgba(13,13,13,.7);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;z-index:10000;opacity:0;visibility:hidden;transition:all .3s ease;}
@@ -302,6 +313,20 @@
     .selected-time{background:var(--ink);color:#fff;padding:15px;border-radius:14px;margin-bottom:20px;text-align:center;}
     .selected-time h3{margin:0;font-size:15px;font-weight:600;}
     .selected-time p{margin:5px 0 0;font-size:13.5px;opacity:.85;}
+    .booking-error{display:none;align-items:center;gap:8px;color:#b3261e;background:rgba(179,38,30,.08);border:1px solid rgba(179,38,30,.25);padding:10px 13px;border-radius:10px;font-size:12.5px;line-height:1.4;margin-bottom:16px;}
+    .booking-error.active{display:flex;}
+    .booking-success{display:none;flex-direction:column;align-items:center;text-align:center;padding:10px 4px 4px;}
+    .booking-success.active{display:flex;animation:successFade .4s ease;}
+    @keyframes successFade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+    .booking-success-icon{width:54px;height:54px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:16px;animation:successPop .45s cubic-bezier(.2,.8,.2,1);}
+    @keyframes successPop{0%{transform:scale(0);opacity:0;}70%{transform:scale(1.15);}100%{transform:scale(1);opacity:1;}}
+    .booking-success h3{font-size:19px;font-weight:700;margin-bottom:8px;}
+    .booking-success p{font-size:13.5px;color:var(--gray);line-height:1.6;}
+    .booking-success-detail{background:var(--bg);border-radius:12px;padding:14px 16px;margin:16px 0 4px;width:100%;}
+    .booking-success-detail strong{display:block;font-size:15px;font-weight:700;margin-bottom:3px;}
+    .booking-success-detail span{font-size:13px;color:var(--gray);}
+    .booking-success-close{margin-top:20px;background:var(--ink);color:#fff;border:none;padding:12px 28px;border-radius:22px;font-weight:600;font-size:13.5px;cursor:pointer;transition:background .3s ease,color .3s ease;}
+    .booking-success-close:hover{background:var(--accent);color:var(--accent-ink);}
 
     .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease;}
     .reveal.visible{opacity:1;transform:translateY(0);}
@@ -407,19 +432,24 @@
         <button class="pricing-close" id="closePricing">&times;</button>
         <div class="pricing-header">
             <div class="pill-logo">KM<span class="dot">.</span>dev</div>
-            <p class="pricing-subtitle">One system. One fixed price.</p>
+            <div class="pricing-eyebrow"><span class="dot"></span> Pricing</div>
+            <h3>One system. One fixed price.</h3>
+            <p class="pricing-subtitle">No hourly billing, no surprises — pick the scope that fits.</p>
         </div>
-        <div class="pricing-item">
-            <div class="pricing-label"><span class="pricing-type">Standard</span><span class="pricing-details">Website design &amp; development</span></div>
-            <div><span class="pricing-price">€8,000</span><span class="pricing-duration">/ project</span></div>
-        </div>
-        <div class="pricing-item">
-            <div class="pricing-label"><span class="pricing-type">Premium</span><span class="pricing-details">Full brand identity + website</span></div>
-            <div><span class="pricing-price">€12,000</span><span class="pricing-duration">/ project</span></div>
-        </div>
-        <div class="pricing-item">
-            <div class="pricing-label"><span class="pricing-type">Enterprise</span><span class="pricing-details">Custom web application</span></div>
-            <div><span class="pricing-price price-loop" data-min="25000" data-max="45000">€25,000</span><span class="pricing-duration">/ project</span></div>
+        <div class="pricing-list">
+            <div class="pricing-item">
+                <div class="pricing-label"><span class="pricing-type">Standard</span><span class="pricing-details">Website design &amp; development</span></div>
+                <div class="pricing-item-right"><span class="pricing-price">€8,000</span><span class="pricing-duration">/ project</span></div>
+            </div>
+            <div class="pricing-item featured">
+                <span class="pricing-badge-popular">Most popular</span>
+                <div class="pricing-label"><span class="pricing-type">Premium</span><span class="pricing-details">Full brand identity + website</span></div>
+                <div class="pricing-item-right"><span class="pricing-price">€12,000</span><span class="pricing-duration">/ project</span></div>
+            </div>
+            <div class="pricing-item">
+                <div class="pricing-label"><span class="pricing-type">Enterprise</span><span class="pricing-details">Custom web application</span></div>
+                <div class="pricing-item-right"><span class="pricing-price price-loop" data-min="25000" data-max="45000">€25,000</span><span class="pricing-duration">/ project</span></div>
+            </div>
         </div>
         <div class="pricing-footer">
             <button class="pricing-cta" id="pricingScheduleCall">Schedule a call →</button>
@@ -448,10 +478,21 @@
                 <p id="selectedTime">Selected Time</p>
             </div>
             <div class="booking-form" id="bookingForm">
+                <p class="booking-error" id="bookingError"></p>
                 <div class="form-group"><label for="name" class="form-label">Your Name</label><input type="text" id="name" class="form-input" placeholder="Enter your name"></div>
                 <div class="form-group"><label for="email" class="form-label">Email Address</label><input type="email" id="email" class="form-input" placeholder="Enter your email"></div>
                 <div class="form-group"><label for="message" class="form-label">Project Details (Optional)</label><textarea id="message" class="form-textarea" placeholder="Tell us about your project"></textarea></div>
                 <button class="form-submit" id="confirmBooking">Confirm Booking</button>
+            </div>
+            <div class="booking-success" id="bookingSuccess">
+                <div class="booking-success-icon">✓</div>
+                <h3>Booking confirmed!</h3>
+                <p>We've sent a confirmation to your email.</p>
+                <div class="booking-success-detail">
+                    <strong id="successDate">—</strong>
+                    <span id="successTime">—</span>
+                </div>
+                <button class="booking-success-close" id="closeBookingSuccess">Done</button>
             </div>
         </div>
         <div class="calendar-main">
@@ -494,9 +535,9 @@
                 </div>
             </div>
             <div class="hero-visual reveal visible">
-                <div class="stack-card c3"><img src="foto's/aurora.png" alt="Aurora Design fashion brand project"></div>
+                <div class="stack-card c3"><img src="https://image.thum.io/get/width/1200/crop/900/https://kainmckancylareine.github.io/Wildcore-concept1/#top" alt="Wildcore Retreats outdoor brand project"></div>
                 <div class="stack-card c2"><img src="foto's/fit-by.png" alt="Fit by Zaalman fitness brand project" style="object-position:left;"></div>
-                <div class="stack-card c1"><img src="foto's/nexafoto.png" alt="NEXA AI dashboard design work" style="object-position:left;"></div>
+                <div class="stack-card c1"><img src="foto's/kainmckancylareinefoto.png" alt="Kain Mckancy La Reine portfolio project"></div>
             </div>
         </div>
     </div>
@@ -711,14 +752,23 @@
         document.body.style.overflow = 'hidden';
         generateCalendar();
     }
+    function resetBookingUI(){
+        document.getElementById('bookingSuccess').classList.remove('active');
+        document.getElementById('bookingError').classList.remove('active');
+        document.querySelector('.calendar-view-selector').style.display = 'flex';
+        document.getElementById('bookingForm').classList.remove('active');
+        document.getElementById('selectedTimeDisplay').style.display = 'none';
+    }
+
     closeCalendarBtn.addEventListener('click', function(){
         calendarModal.classList.remove('active');
         document.body.style.overflow = 'auto';
+        resetBookingUI();
     });
 
     pricingModal.addEventListener('click', function(e){ if(e.target === pricingModal) closePricing(); });
     calendarModal.addEventListener('click', function(e){
-        if(e.target === calendarModal){ calendarModal.classList.remove('active'); document.body.style.overflow = 'auto'; }
+        if(e.target === calendarModal){ calendarModal.classList.remove('active'); document.body.style.overflow = 'auto'; resetBookingUI(); }
     });
 
     // ---------- Calendar ----------
@@ -835,14 +885,31 @@
         document.getElementById('monthViewBtn').classList.remove('active');
     });
     document.getElementById('confirmBooking').addEventListener('click', function(){
-        const name = document.getElementById('name').value;
-        const email = document.getElementById('email').value;
-        if (!name || !email || !selectedDate || !selectedTime){ alert('Please select a time and fill in your name and email'); return; }
-        alert(`Booking confirmed!\n\nDate: ${selectedDate.toDateString()}\nTime: ${selectedTime}\n\nWe'll send a confirmation to ${email}`);
-        document.getElementById('bookingForm').classList.remove('active');
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const bookingError = document.getElementById('bookingError');
+        if (!name || !email || !selectedDate || !selectedTime){
+            bookingError.textContent = 'Vul je naam en e-mail in, en kies een datum + tijd.';
+            bookingError.classList.add('active');
+            return;
+        }
+        bookingError.classList.remove('active');
+        document.getElementById('successDate').textContent = `${dayNames[selectedDate.getDay() === 0 ? 6 : selectedDate.getDay()-1]} ${selectedDate.getDate()} ${monthNames[selectedDate.getMonth()]}`;
+        document.getElementById('successTime').textContent = `${selectedTime} · we mailen ${email}`;
+        document.querySelector('.calendar-view-selector').style.display = 'none';
         document.getElementById('selectedTimeDisplay').style.display = 'none';
+        document.getElementById('bookingForm').classList.remove('active');
+        document.getElementById('bookingSuccess').classList.add('active');
+    });
+    document.getElementById('closeBookingSuccess').addEventListener('click', function(){
         calendarModal.classList.remove('active');
         document.body.style.overflow = 'auto';
+        document.getElementById('bookingSuccess').classList.remove('active');
+        document.querySelector('.calendar-view-selector').style.display = 'flex';
+        document.getElementById('name').value = '';
+        document.getElementById('email').value = '';
+        document.getElementById('message').value = '';
+        selectedDate = null; selectedTime = null;
     });
 
     // ---------- Reveal on scroll ----------

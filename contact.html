@@ -199,6 +199,20 @@
     .selected-time{background:var(--ink);color:#fff;padding:15px;border-radius:14px;margin-bottom:20px;text-align:center;}
     .selected-time h3{margin:0;font-size:15px;font-weight:600;}
     .selected-time p{margin:5px 0 0;font-size:13.5px;opacity:.85;}
+    .booking-error{display:none;align-items:center;gap:8px;color:#b3261e;background:rgba(179,38,30,.08);border:1px solid rgba(179,38,30,.25);padding:10px 13px;border-radius:10px;font-size:12.5px;line-height:1.4;margin-bottom:16px;}
+    .booking-error.active{display:flex;}
+    .booking-success{display:none;flex-direction:column;align-items:center;text-align:center;padding:10px 4px 4px;}
+    .booking-success.active{display:flex;animation:successFade .4s ease;}
+    @keyframes successFade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+    .booking-success-icon{width:54px;height:54px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:16px;animation:successPop .45s cubic-bezier(.2,.8,.2,1);}
+    @keyframes successPop{0%{transform:scale(0);opacity:0;}70%{transform:scale(1.15);}100%{transform:scale(1);opacity:1;}}
+    .booking-success h3{font-size:19px;font-weight:700;margin-bottom:8px;}
+    .booking-success p{font-size:13.5px;color:var(--gray);line-height:1.6;}
+    .booking-success-detail{background:var(--bg);border-radius:12px;padding:14px 16px;margin:16px 0 4px;width:100%;}
+    .booking-success-detail strong{display:block;font-size:15px;font-weight:700;margin-bottom:3px;}
+    .booking-success-detail span{font-size:13px;color:var(--gray);}
+    .booking-success-close{margin-top:20px;background:var(--ink);color:#fff;border:none;padding:12px 28px;border-radius:22px;font-weight:600;font-size:13.5px;cursor:pointer;transition:background .3s ease,color .3s ease;}
+    .booking-success-close:hover{background:var(--accent);color:var(--accent-ink);}
     .form-submit-cal{background:var(--ink);color:#fff;padding:12px 30px;border:none;border-radius:25px;font-weight:600;cursor:pointer;transition:all .3s ease;width:100%;font-size:14px;}
     .form-submit-cal:hover{background:var(--accent);color:var(--ink);}
 
@@ -301,10 +315,21 @@
                 <p id="selectedTime">Selected Time</p>
             </div>
             <div class="booking-form" id="bookingForm">
+                <p class="booking-error" id="bookingError"></p>
                 <div class="form-group"><label for="calName" class="form-label">Your Name</label><input type="text" id="calName" class="form-input" placeholder="Enter your name"></div>
                 <div class="form-group"><label for="calEmail" class="form-label">Email Address</label><input type="email" id="calEmail" class="form-input" placeholder="Enter your email"></div>
                 <div class="form-group"><label for="calMessage" class="form-label">Project Details (Optional)</label><textarea id="calMessage" class="form-textarea" placeholder="Tell us about your project"></textarea></div>
                 <button class="form-submit-cal" id="confirmBooking">Confirm Booking</button>
+            </div>
+            <div class="booking-success" id="bookingSuccess">
+                <div class="booking-success-icon">✓</div>
+                <h3>Booking confirmed!</h3>
+                <p>We've sent a confirmation to your email.</p>
+                <div class="booking-success-detail">
+                    <strong id="successDate">—</strong>
+                    <span id="successTime">—</span>
+                </div>
+                <button class="booking-success-close" id="closeBookingSuccess">Done</button>
             </div>
         </div>
         <div class="calendar-main">
@@ -469,12 +494,20 @@
         document.body.style.overflow = 'hidden';
         generateCalendar();
     }
+    function resetBookingUI(){
+        document.getElementById('bookingSuccess').classList.remove('active');
+        document.getElementById('bookingError').classList.remove('active');
+        document.querySelector('.calendar-view-selector').style.display = 'flex';
+        document.getElementById('bookingForm').classList.remove('active');
+        document.getElementById('selectedTimeDisplay').style.display = 'none';
+    }
     closeCalendarBtn.addEventListener('click', function(){
         calendarModal.classList.remove('active');
         document.body.style.overflow = 'auto';
+        resetBookingUI();
     });
     calendarModal.addEventListener('click', function(e){
-        if(e.target === calendarModal){ calendarModal.classList.remove('active'); document.body.style.overflow = 'auto'; }
+        if(e.target === calendarModal){ calendarModal.classList.remove('active'); document.body.style.overflow = 'auto'; resetBookingUI(); }
     });
 
     function generateCalendar(){
@@ -583,14 +616,30 @@
         document.getElementById('monthViewBtn').classList.remove('active');
     });
     document.getElementById('confirmBooking').addEventListener('click', function(){
-        const name = document.getElementById('calName').value;
-        const email = document.getElementById('calEmail').value;
-        if (!name || !email || !selectedDate || !selectedTime){ alert('Please select a time and fill in your name and email'); return; }
-        alert(`Booking confirmed!\n\nDate: ${selectedDate.toDateString()}\nTime: ${selectedTime}\n\nWe'll send a confirmation to ${email}`);
-        document.getElementById('bookingForm').classList.remove('active');
+        const name = document.getElementById('calName').value.trim();
+        const email = document.getElementById('calEmail').value.trim();
+        const bookingError = document.getElementById('bookingError');
+        if (!name || !email || !selectedDate || !selectedTime){
+            bookingError.textContent = 'Vul je naam en e-mail in, en kies een datum + tijd.';
+            bookingError.classList.add('active');
+            return;
+        }
+        bookingError.classList.remove('active');
+        document.getElementById('successDate').textContent = `${dayNames[selectedDate.getDay() === 0 ? 6 : selectedDate.getDay()-1]} ${selectedDate.getDate()} ${monthNames[selectedDate.getMonth()]}`;
+        document.getElementById('successTime').textContent = `${selectedTime} · we mailen ${email}`;
+        document.querySelector('.calendar-view-selector').style.display = 'none';
         document.getElementById('selectedTimeDisplay').style.display = 'none';
+        document.getElementById('bookingForm').classList.remove('active');
+        document.getElementById('bookingSuccess').classList.add('active');
+    });
+    document.getElementById('closeBookingSuccess').addEventListener('click', function(){
         calendarModal.classList.remove('active');
         document.body.style.overflow = 'auto';
+        resetBookingUI();
+        document.getElementById('calName').value = '';
+        document.getElementById('calEmail').value = '';
+        document.getElementById('calMessage').value = '';
+        selectedDate = null; selectedTime = null;
     });
     generateCalendar();
 
