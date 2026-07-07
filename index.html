@@ -161,11 +161,10 @@
 
     .hero-visual{position:relative;height:440px;}
     .stack-card{position:absolute;border-radius:24px;overflow:hidden;box-shadow:0 30px 60px -20px rgba(20,18,14,.3);transition:transform .4s ease;background:var(--ink);}
-    .stack-card .card-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:blur(22px) saturate(1.15) brightness(.75);transform:scale(1.25);}
-    .stack-card .card-fg{position:relative;width:100%;height:100%;object-fit:contain;z-index:1;}
-    .stack-card.c1{width:62%;height:78%;top:10%;left:16%;transform:rotate(-6deg);z-index:3;}
-    .stack-card.c2{width:52%;height:60%;top:0;right:0;transform:rotate(9deg);z-index:2;}
-    .stack-card.c3{width:48%;height:55%;bottom:0;left:0;transform:rotate(7deg);z-index:1;}
+    .stack-card img{width:100%;height:100%;object-fit:cover;display:block;}
+    .stack-card.c1{width:64%;aspect-ratio:2867/1575;top:30%;left:12%;transform:rotate(-6deg);z-index:3;}
+    .stack-card.c2{width:54%;aspect-ratio:2860/1361;top:0;right:0;transform:rotate(9deg);z-index:2;}
+    .stack-card.c3{width:48%;aspect-ratio:4/3;bottom:4%;left:0;transform:rotate(7deg);z-index:1;}
     .hero-visual:hover .c1{transform:rotate(-3deg) translateY(-4px);}
     .hero-visual:hover .c2{transform:rotate(6deg) translateY(-4px);}
     .hero-visual:hover .c3{transform:rotate(4deg) translateY(-4px);}
@@ -582,18 +581,9 @@
                 </div>
             </div>
             <div class="hero-visual reveal visible">
-                <div class="stack-card c3">
-                    <img class="card-bg" src="https://image.thum.io/get/width/1200/crop/900/https://kainmckancylareine.github.io/Wildcore-concept1/#top" alt="" aria-hidden="true">
-                    <img class="card-fg" src="https://image.thum.io/get/width/1200/crop/900/https://kainmckancylareine.github.io/Wildcore-concept1/#top" alt="Wildcore Retreats outdoor brand project">
-                </div>
-                <div class="stack-card c2">
-                    <img class="card-bg" src="foto's/fit-by.png" alt="" aria-hidden="true">
-                    <img class="card-fg" src="foto's/fit-by.png" alt="Fit by Zaalman fitness brand project">
-                </div>
-                <div class="stack-card c1">
-                    <img class="card-bg" src="foto's/kainmckancylareinefoto.png" alt="" aria-hidden="true">
-                    <img class="card-fg" src="foto's/kainmckancylareinefoto.png" alt="Kain Mckancy La Reine portfolio project">
-                </div>
+                <div class="stack-card c3"><img src="https://image.thum.io/get/width/1200/crop/900/https://kainmckancylareine.github.io/Wildcore-concept1/#top" alt="Wildcore Retreats outdoor brand project"></div>
+                <div class="stack-card c2"><img src="foto's/fit-by.png" alt="Fit by Zaalman fitness brand project"></div>
+                <div class="stack-card c1"><img src="foto's/kainmckancylareinefoto.png" alt="Kain Mckancy La Reine portfolio project"></div>
             </div>
         </div>
     </div>
