@@ -39,6 +39,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="i18n.js"></script>
 <style>
     :root{
         --bg:#f4f3ef;--paper:#ffffff;--ink:#0d0d0d;--muted:#b6b4ac;--gray:#6f6d66;
@@ -65,6 +66,10 @@
     .pill-nav{position:fixed;top:22px;left:22px;z-index:1000;display:flex;align-items:center;gap:6px;background:var(--ink);border-radius:40px;padding:8px 8px 8px 20px;box-shadow:0 10px 30px -10px rgba(0,0,0,.35);}
     .pill-logo{display:flex;align-items:center;gap:2px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:19px;color:#fff;text-decoration:none;letter-spacing:-.5px;}
     .pill-logo .dot{color:var(--accent);}
+    .lang-toggle{display:flex;align-items:center;gap:2px;background:#1c1c1c;border-radius:20px;padding:3px;margin-left:8px;}
+    .lang-btn{background:transparent;border:none;color:rgba(255,255,255,.5);font-family:'Space Mono',monospace;font-size:11.5px;font-weight:700;padding:6px 10px;border-radius:16px;cursor:pointer;transition:background .3s ease,color .3s ease;}
+    .lang-btn.active{background:var(--accent);color:var(--ink);}
+    .lang-btn:hover:not(.active){color:#fff;}
     .hamburger{width:42px;height:42px;border-radius:50%;background:#1c1c1c;border:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;margin-left:10px;transition:background .3s ease;}
     .hamburger:hover{background:#2a2a2a;}
     .hamburger span{width:16px;height:2px;background:#fff;border-radius:2px;transition:all .3s ease;}
@@ -268,6 +273,10 @@
 <!-- Pill Nav -->
 <div class="pill-nav">
     <a href="index.html" class="pill-logo">KM<span class="dot">.</span>dev</a>
+    <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="nl">NL</button>
+    </div>
     <button class="hamburger" id="hamburgerBtn" aria-label="Menu"><span></span><span></span><span></span></button>
 </div>
 
@@ -275,16 +284,16 @@
 <div class="menu-overlay" id="menuOverlay">
     <div class="menu-inner">
         <nav class="menu-links">
-            <a href="index.html">Home</a>
-            <a href="projects.html" class="active">Projects</a>
-            <a href="pricing.html">Pricing</a>
-            <a href="about.html">About</a>
-            <a href="contact.html">Contact</a>
+            <a href="index.html" data-en="Home" data-nl="Home">Home</a>
+            <a href="projects.html" class="active" data-en="Projects" data-nl="Projecten">Projects</a>
+            <a href="pricing.html" data-en="Pricing" data-nl="Prijzen">Pricing</a>
+            <a href="about.html" data-en="About" data-nl="Over ons">About</a>
+            <a href="contact.html" data-en="Contact" data-nl="Contact">Contact</a>
         </nav>
         <div class="menu-side">
             <div>
-                <div class="menu-badge"><span class="dot"></span> 1 spot open — Q3</div>
-                <div class="mono" style="font-size:13px;color:rgba(255,255,255,.4);">Based in Amsterdam, NL</div>
+                <div class="menu-badge"><span class="dot"></span> <span data-en="1 spot open — Q3" data-nl="1 plek vrij — Q3">1 spot open — Q3</span></div>
+                <div class="mono" style="font-size:13px;color:rgba(255,255,255,.4);" data-en="Based in Amsterdam, NL" data-nl="Gevestigd in Amsterdam, NL">Based in Amsterdam, NL</div>
                 <div class="menu-socials">
                     <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="0.6" fill="currentColor" stroke="none"/></svg></a>
                     <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 10v7M8 7v.01M12 17v-4.5a2.5 2.5 0 0 1 5 0V17"/></svg></a>
@@ -293,7 +302,7 @@
             </div>
             <div class="menu-cta">
                 <a href="mailto:hello@km.dev">hello@km.dev</a><br><br>
-                <a href="#" class="btn-primary" id="menuScheduleCall" style="background:var(--accent);color:var(--ink);border-color:var(--accent);">Plan a call <span class="chev" style="background:var(--ink);color:var(--accent);">→</span></a>
+                <a href="#" class="btn-primary" id="menuScheduleCall" style="background:var(--accent);color:var(--ink);border-color:var(--accent);"><span data-en="Plan a call" data-nl="Plan een gesprek">Plan a call</span> <span class="chev" style="background:var(--ink);color:var(--accent);">→</span></a>
             </div>
         </div>
     </div>
@@ -312,51 +321,51 @@
         <div class="calendar-sidebar">
             <div class="calendar-header">
                 <div class="pill-logo">KM<span class="dot">.</span>dev</div>
-                <h2 class="calendar-title">Schedule a Call</h2>
-                <p class="calendar-subtitle">Select a date and time that works for you. We'll send a confirmation email with the meeting details.</p>
-                <div class="calendar-duration"><div class="calendar-duration-icon">30</div><span>30 minute meeting</span></div>
+                <h2 class="calendar-title" data-en="Schedule a Call" data-nl="Plan een gesprek">Schedule a Call</h2>
+                <p class="calendar-subtitle" data-en="Select a date and time that works for you. We'll send a confirmation email with the meeting details." data-nl="Kies een datum en tijd die jou uitkomt. We sturen een bevestigingsmail met de details.">Select a date and time that works for you. We'll send a confirmation email with the meeting details.</p>
+                <div class="calendar-duration"><div class="calendar-duration-icon">30</div><span data-en="30 minute meeting" data-nl="30 minuten gesprek">30 minute meeting</span></div>
             </div>
             <div class="calendar-view-selector">
-                <button class="view-btn active" id="monthViewBtn">Month</button>
-                <button class="view-btn" id="weekViewBtn">Week</button>
+                <button class="view-btn active" id="monthViewBtn" data-en="Month" data-nl="Maand">Month</button>
+                <button class="view-btn" id="weekViewBtn" data-en="Week" data-nl="Week">Week</button>
             </div>
             <div class="selected-time" id="selectedTimeDisplay" style="display:none;">
-                <h3 id="selectedDate">Selected Date</h3>
-                <p id="selectedTime">Selected Time</p>
+                <h3 id="selectedDate" data-en="Selected Date" data-nl="Gekozen datum">Selected Date</h3>
+                <p id="selectedTime" data-en="Selected Time" data-nl="Gekozen tijd">Selected Time</p>
             </div>
             <div class="booking-form" id="bookingForm">
                 <p class="booking-error" id="bookingError"></p>
-                <div class="form-group"><label for="calName" class="form-label">Your Name</label><input type="text" id="calName" class="form-input" placeholder="Enter your name"></div>
-                <div class="form-group"><label for="calEmail" class="form-label">Email Address</label><input type="email" id="calEmail" class="form-input" placeholder="Enter your email"></div>
-                <div class="form-group"><label for="calMessage" class="form-label">Project Details (Optional)</label><textarea id="calMessage" class="form-textarea" placeholder="Tell us about your project"></textarea></div>
-                <button class="form-submit" id="confirmBooking">Confirm Booking</button>
+                <div class="form-group"><label for="calName" class="form-label" data-en="Your Name" data-nl="Je naam">Your Name</label><input type="text" id="calName" class="form-input" placeholder="Enter your name" data-en-placeholder="Enter your name" data-nl-placeholder="Vul je naam in"></div>
+                <div class="form-group"><label for="calEmail" class="form-label" data-en="Email Address" data-nl="E-mailadres">Email Address</label><input type="email" id="calEmail" class="form-input" placeholder="Enter your email" data-en-placeholder="Enter your email" data-nl-placeholder="Vul je e-mail in"></div>
+                <div class="form-group"><label for="calMessage" class="form-label" data-en="Project Details (Optional)" data-nl="Projectdetails (optioneel)">Project Details (Optional)</label><textarea id="calMessage" class="form-textarea" placeholder="Tell us about your project" data-en-placeholder="Tell us about your project" data-nl-placeholder="Vertel ons over je project"></textarea></div>
+                <button class="form-submit" id="confirmBooking" data-en="Confirm Booking" data-nl="Bevestig boeking">Confirm Booking</button>
             </div>
             <div class="booking-success" id="bookingSuccess">
                 <div class="booking-success-icon">✓</div>
-                <h3>Booking confirmed!</h3>
-                <p>We've sent a confirmation to your email.</p>
+                <h3 data-en="Booking confirmed!" data-nl="Boeking bevestigd!">Booking confirmed!</h3>
+                <p data-en="We've sent a confirmation to your email." data-nl="We hebben een bevestiging naar je e-mail gestuurd.">We've sent a confirmation to your email.</p>
                 <div class="booking-success-detail">
                     <strong id="successDate">—</strong>
                     <span id="successTime">—</span>
                 </div>
-                <button class="booking-success-close" id="closeBookingSuccess">Done</button>
+                <button class="booking-success-close" id="closeBookingSuccess" data-en="Done" data-nl="Klaar">Done</button>
             </div>
         </div>
         <div class="calendar-main">
             <div class="calendar-navigation">
-                <button class="nav-btn" id="prevMonth">&lt; Previous</button>
+                <button class="nav-btn" id="prevMonth" data-en="&lt; Previous" data-nl="&lt; Vorige">&lt; Previous</button>
                 <div class="current-month" id="currentMonth">Month Year</div>
-                <button class="nav-btn" id="nextMonth">Next &gt;</button>
+                <button class="nav-btn" id="nextMonth" data-en="Next &gt;" data-nl="Volgende &gt;">Next &gt;</button>
             </div>
             <div id="monthView">
                 <div class="calendar-grid">
-                    <div class="calendar-day-header">Mo</div><div class="calendar-day-header">Tu</div><div class="calendar-day-header">We</div><div class="calendar-day-header">Th</div><div class="calendar-day-header">Fr</div><div class="calendar-day-header">Sa</div><div class="calendar-day-header">Su</div>
+                    <div class="calendar-day-header" data-en="Mo" data-nl="Ma">Mo</div><div class="calendar-day-header" data-en="Tu" data-nl="Di">Tu</div><div class="calendar-day-header" data-en="We" data-nl="Wo">We</div><div class="calendar-day-header" data-en="Th" data-nl="Do">Th</div><div class="calendar-day-header" data-en="Fr" data-nl="Vr">Fr</div><div class="calendar-day-header" data-en="Sa" data-nl="Za">Sa</div><div class="calendar-day-header" data-en="Su" data-nl="Zo">Su</div>
                 </div>
             </div>
             <div class="week-view" id="weekView">
                 <div class="week-header">
-                    <div class="week-time-label">Time</div>
-                    <div class="week-day-header">Mo</div><div class="week-day-header">Tu</div><div class="week-day-header">We</div><div class="week-day-header">Th</div><div class="week-day-header">Fr</div><div class="week-day-header">Sa</div><div class="week-day-header">Su</div>
+                    <div class="week-time-label" data-en="Time" data-nl="Tijd">Time</div>
+                    <div class="week-day-header" data-en="Mo" data-nl="Ma">Mo</div><div class="week-day-header" data-en="Tu" data-nl="Di">Tu</div><div class="week-day-header" data-en="We" data-nl="Wo">We</div><div class="week-day-header" data-en="Th" data-nl="Do">Th</div><div class="week-day-header" data-en="Fr" data-nl="Vr">Fr</div><div class="week-day-header" data-en="Sa" data-nl="Za">Sa</div><div class="week-day-header" data-en="Su" data-nl="Zo">Su</div>
                 </div>
                 <div class="week-body" id="weekBody"></div>
             </div>
@@ -366,9 +375,9 @@
 
 <section class="projects-intro reveal visible">
     <div class="container">
-        <div class="eyebrow-badge"><span class="dot"></span> Projects</div>
-        <h1>Everything we've <span class="muted">shipped so far.</span></h1>
-        <p>Every project below is real and live — click through to see the actual site, not a mockup.</p>
+        <div class="eyebrow-badge"><span class="dot"></span> <span data-en="Projects" data-nl="Projecten">Projects</span></div>
+        <h1 data-en-html="Everything we've <span class=&quot;muted&quot;>shipped so far.</span>" data-nl-html="Alles wat we tot nu toe <span class=&quot;muted&quot;>hebben gebouwd.</span>">Everything we've <span class="muted">shipped so far.</span></h1>
+        <p data-en="Every project below is real and live — click through to see the actual site, not a mockup." data-nl="Elk project hieronder is echt en live — klik door naar de daadwerkelijke site, geen mockup.">Every project below is real and live — click through to see the actual site, not a mockup.</p>
     </div>
 </section>
 
@@ -377,90 +386,90 @@
         <div class="projects-grid">
             <a href="https://kainmckancylareine.github.io/Wildcore-concept1/" target="_blank" rel="noopener" class="project-card">
                 <div class="project-thumb">
-                    <div class="project-badge">Outdoor &amp; retreat brand</div>
+                    <div class="project-badge" data-en="Outdoor &amp; retreat brand" data-nl="Outdoor- en retreatmerk">Outdoor &amp; retreat brand</div>
                     <img src="https://image.thum.io/get/width/1200/crop/900/https://kainmckancylareine.github.io/Wildcore-concept1/" alt="Wildcore trail-running retreat landing page" loading="lazy">
                 </div>
                 <div class="project-body">
-                    <div class="project-body-top"><span class="project-name">Wildcore Retreats</span><span class="project-view">Visit site <span>↗</span></span></div>
-                    <p class="project-desc">Trail-running en outdoor retreats brand met een ruige, natuurlijke identiteit en een boekingsgerichte landingspagina.</p>
-                    <div class="project-tags"><span class="project-tag">Outdoor</span><span class="project-tag">Retreats</span><span class="project-tag">Booking</span></div>
+                    <div class="project-body-top"><span class="project-name">Wildcore Retreats</span><span class="project-view"><span data-en="Visit site" data-nl="Bekijk site">Visit site</span> <span>↗</span></span></div>
+                    <p class="project-desc" data-en="Trail-running and outdoor retreats brand with a rugged, natural identity and a booking-focused landing page." data-nl="Trail-running en outdoor retreats brand met een ruige, natuurlijke identiteit en een boekingsgerichte landingspagina.">Trail-running en outdoor retreats brand met een ruige, natuurlijke identiteit en een boekingsgerichte landingspagina.</p>
+                    <div class="project-tags"><span class="project-tag" data-en="Outdoor" data-nl="Outdoor">Outdoor</span><span class="project-tag" data-en="Retreats" data-nl="Retreats">Retreats</span><span class="project-tag" data-en="Booking" data-nl="Boekingen">Booking</span></div>
                 </div>
             </a>
             <a href="https://kainmckancylareine.github.io/NEXA/index.html" target="_blank" rel="noopener" class="project-card">
                 <div class="project-thumb">
-                    <div class="project-badge">AI SaaS platform</div>
+                    <div class="project-badge" data-en="AI SaaS platform" data-nl="AI SaaS-platform">AI SaaS platform</div>
                     <img src="foto's/nexafoto.png" alt="NEXA AI workforce operating system dashboard" loading="lazy" style="object-position:left;">
                 </div>
                 <div class="project-body">
-                    <div class="project-body-top"><span class="project-name">NEXA</span><span class="project-view">Visit site <span>↗</span></span></div>
-                    <p class="project-desc">AI workforce operating system — dashboard om AI-medewerkers aan te sturen en te monitoren, met live ROI-tracking.</p>
-                    <div class="project-tags"><span class="project-tag">SaaS</span><span class="project-tag">AI</span><span class="project-tag">Dashboard</span></div>
+                    <div class="project-body-top"><span class="project-name">NEXA</span><span class="project-view"><span data-en="Visit site" data-nl="Bekijk site">Visit site</span> <span>↗</span></span></div>
+                    <p class="project-desc" data-en="AI workforce operating system — a dashboard to manage and monitor AI employees, with live ROI tracking." data-nl="AI workforce operating system — dashboard om AI-medewerkers aan te sturen en te monitoren, met live ROI-tracking.">AI workforce operating system — dashboard om AI-medewerkers aan te sturen en te monitoren, met live ROI-tracking.</p>
+                    <div class="project-tags"><span class="project-tag" data-en="SaaS" data-nl="SaaS">SaaS</span><span class="project-tag" data-en="AI" data-nl="AI">AI</span><span class="project-tag" data-en="Dashboard" data-nl="Dashboard">Dashboard</span></div>
                 </div>
             </a>
             <a href="https://kainmckancylareine.github.io/Mckancy.mc/" target="_blank" rel="noopener" class="project-card">
                 <div class="project-thumb">
-                    <div class="project-badge">Personal portfolio</div>
+                    <div class="project-badge" data-en="Personal portfolio" data-nl="Persoonlijk portfolio">Personal portfolio</div>
                     <img src="foto's/kainmckancylareinefoto.png" alt="Kain Mckancy La Reine portfolio site" loading="lazy">
                 </div>
                 <div class="project-body">
-                    <div class="project-body-top"><span class="project-name">Kain Mckancy La Reine</span><span class="project-view">Visit site <span>↗</span></span></div>
-                    <p class="project-desc">Persoonlijk portfolio met case studies, werkwijze en een directe contactflow voor freelance opdrachten.</p>
-                    <div class="project-tags"><span class="project-tag">Portfolio</span><span class="project-tag">Personal brand</span></div>
+                    <div class="project-body-top"><span class="project-name">Kain Mckancy La Reine</span><span class="project-view"><span data-en="Visit site" data-nl="Bekijk site">Visit site</span> <span>↗</span></span></div>
+                    <p class="project-desc" data-en="Personal portfolio with case studies, way of working and a direct contact flow for freelance projects." data-nl="Persoonlijk portfolio met case studies, werkwijze en een directe contactflow voor freelance opdrachten.">Persoonlijk portfolio met case studies, werkwijze en een directe contactflow voor freelance opdrachten.</p>
+                    <div class="project-tags"><span class="project-tag" data-en="Portfolio" data-nl="Portfolio">Portfolio</span><span class="project-tag" data-en="Personal brand" data-nl="Persoonlijk merk">Personal brand</span></div>
                 </div>
             </a>
             <a href="https://kainmckancylareine.github.io/tjez-photo/index.html" target="_blank" rel="noopener" class="project-card">
                 <div class="project-thumb">
-                    <div class="project-badge">Photography studio</div>
+                    <div class="project-badge" data-en="Photography studio" data-nl="Fotografiestudio">Photography studio</div>
                     <img src="https://image.thum.io/get/width/1200/crop/900/wait/3/https://kainmckancylareine.github.io/tjez-photo/index.html" alt="TJEZ Photography landing page" loading="lazy">
                 </div>
                 <div class="project-body">
-                    <div class="project-body-top"><span class="project-name">TJEZ Photography</span><span class="project-view">Visit site <span>↗</span></span></div>
-                    <p class="project-desc">Fotografiestudio landingspagina met portfolio-showcase en boekingsopties voor shoots.</p>
-                    <div class="project-tags"><span class="project-tag">Photography</span><span class="project-tag">Studio</span><span class="project-tag">Booking</span></div>
+                    <div class="project-body-top"><span class="project-name">TJEZ Photography</span><span class="project-view"><span data-en="Visit site" data-nl="Bekijk site">Visit site</span> <span>↗</span></span></div>
+                    <p class="project-desc" data-en="Photography studio landing page with a portfolio showcase and booking options for shoots." data-nl="Fotografiestudio landingspagina met portfolio-showcase en boekingsopties voor shoots.">Fotografiestudio landingspagina met portfolio-showcase en boekingsopties voor shoots.</p>
+                    <div class="project-tags"><span class="project-tag" data-en="Photography" data-nl="Fotografie">Photography</span><span class="project-tag" data-en="Studio" data-nl="Studio">Studio</span><span class="project-tag" data-en="Booking" data-nl="Boekingen">Booking</span></div>
                 </div>
             </a>
             <a href="https://kainmckancylareine.github.io/huize-feniks-concept/" target="_blank" rel="noopener" class="project-card">
                 <div class="project-thumb">
-                    <div class="project-badge">Music academy &amp; studio brand</div>
+                    <div class="project-badge" data-en="Music academy &amp; studio brand" data-nl="Muziekacademie- en studiomerk">Music academy &amp; studio brand</div>
                     <img src="foto's/huizefeniks.png" alt="Huize Feniks music academy landing page" loading="lazy">
                 </div>
                 <div class="project-body">
-                    <div class="project-body-top"><span class="project-name">Huize Feniks</span><span class="project-view">Visit site <span>↗</span></span></div>
-                    <p class="project-desc">Muziekacademie en studio brand met lesaanbod, studioverhuur en een inschrijfformulier.</p>
-                    <div class="project-tags"><span class="project-tag">Music</span><span class="project-tag">Education</span><span class="project-tag">Studio</span></div>
+                    <div class="project-body-top"><span class="project-name">Huize Feniks</span><span class="project-view"><span data-en="Visit site" data-nl="Bekijk site">Visit site</span> <span>↗</span></span></div>
+                    <p class="project-desc" data-en="Music academy and studio brand with lesson offerings, studio rental and a sign-up form." data-nl="Muziekacademie en studio brand met lesaanbod, studioverhuur en een inschrijfformulier.">Muziekacademie en studio brand met lesaanbod, studioverhuur en een inschrijfformulier.</p>
+                    <div class="project-tags"><span class="project-tag" data-en="Music" data-nl="Muziek">Music</span><span class="project-tag" data-en="Education" data-nl="Educatie">Education</span><span class="project-tag" data-en="Studio" data-nl="Studio">Studio</span></div>
                 </div>
             </a>
             <a href="https://kainmckancylareine.github.io/AURORA-DESIGN/" target="_blank" rel="noopener" class="project-card">
                 <div class="project-thumb">
-                    <div class="project-badge">Fashion &amp; retail brand</div>
+                    <div class="project-badge" data-en="Fashion &amp; retail brand" data-nl="Mode- en retailmerk">Fashion &amp; retail brand</div>
                     <img src="foto's/aurora.png" alt="Aurora Design premium fashion brand landing page" loading="lazy">
                 </div>
                 <div class="project-body">
-                    <div class="project-body-top"><span class="project-name">Aurora Design</span><span class="project-view">Visit site <span>↗</span></span></div>
-                    <p class="project-desc">Premium fashion house uit Amsterdam met seizoenscollecties, shop en een duurzaamheidsverhaal.</p>
-                    <div class="project-tags"><span class="project-tag">Fashion</span><span class="project-tag">E-commerce</span><span class="project-tag">Retail</span></div>
+                    <div class="project-body-top"><span class="project-name">Aurora Design</span><span class="project-view"><span data-en="Visit site" data-nl="Bekijk site">Visit site</span> <span>↗</span></span></div>
+                    <p class="project-desc" data-en="Premium fashion house from Amsterdam with seasonal collections, a shop and a sustainability story." data-nl="Premium fashion house uit Amsterdam met seizoenscollecties, shop en een duurzaamheidsverhaal.">Premium fashion house uit Amsterdam met seizoenscollecties, shop en een duurzaamheidsverhaal.</p>
+                    <div class="project-tags"><span class="project-tag" data-en="Fashion" data-nl="Mode">Fashion</span><span class="project-tag" data-en="E-commerce" data-nl="E-commerce">E-commerce</span><span class="project-tag" data-en="Retail" data-nl="Retail">Retail</span></div>
                 </div>
             </a>
             <a href="https://kainmckancylareine.github.io/Fit_BY_ZAALMAN/" target="_blank" rel="noopener" class="project-card">
                 <div class="project-thumb">
-                    <div class="project-badge">Physiotherapy &amp; personal training</div>
+                    <div class="project-badge" data-en="Physiotherapy &amp; personal training" data-nl="Fysiotherapie &amp; personal training">Physiotherapy &amp; personal training</div>
                     <img src="foto's/fit-by.png" alt="Fit by Zaalman physiotherapy and personal training landing page" loading="lazy" style="object-position:left;">
                 </div>
                 <div class="project-body">
-                    <div class="project-body-top"><span class="project-name">Fit by Zaalman</span><span class="project-view">Visit site <span>↗</span></span></div>
-                    <p class="project-desc">BIG-geregistreerde fysiotherapeut en personal trainer met diensten, tarieven en een afsprakenflow.</p>
-                    <div class="project-tags"><span class="project-tag">Health</span><span class="project-tag">Fysiotherapie</span><span class="project-tag">Booking</span></div>
+                    <div class="project-body-top"><span class="project-name">Fit by Zaalman</span><span class="project-view"><span data-en="Visit site" data-nl="Bekijk site">Visit site</span> <span>↗</span></span></div>
+                    <p class="project-desc" data-en="BIG-registered physiotherapist and personal trainer with services, rates and a booking flow." data-nl="BIG-geregistreerde fysiotherapeut en personal trainer met diensten, tarieven en een afsprakenflow.">BIG-geregistreerde fysiotherapeut en personal trainer met diensten, tarieven en een afsprakenflow.</p>
+                    <div class="project-tags"><span class="project-tag" data-en="Health" data-nl="Gezondheid">Health</span><span class="project-tag" data-en="Physiotherapy" data-nl="Fysiotherapie">Fysiotherapie</span><span class="project-tag" data-en="Booking" data-nl="Boekingen">Booking</span></div>
                 </div>
             </a>
             <a href="https://kainmckancylareine.github.io/BIT-QUIZ/" target="_blank" rel="noopener" class="project-card">
                 <div class="project-thumb">
-                    <div class="project-badge">Quiz &amp; educational app</div>
+                    <div class="project-badge" data-en="Quiz &amp; educational app" data-nl="Quiz- en onderwijsapp">Quiz &amp; educational app</div>
                     <img src="foto's/bitquiz.png" alt="BIT-QUIZ interactive quiz app landing page" loading="lazy">
                 </div>
                 <div class="project-body">
-                    <div class="project-body-top"><span class="project-name">BIT-QUIZ</span><span class="project-view">Visit site <span>↗</span></span></div>
-                    <p class="project-desc">Interactieve quiz-app met vraag- en scoresysteem, gebouwd voor een snelle en speelse leerervaring.</p>
-                    <div class="project-tags"><span class="project-tag">Quiz</span><span class="project-tag">Education</span><span class="project-tag">Interactive</span></div>
+                    <div class="project-body-top"><span class="project-name">BIT-QUIZ</span><span class="project-view"><span data-en="Visit site" data-nl="Bekijk site">Visit site</span> <span>↗</span></span></div>
+                    <p class="project-desc" data-en="Interactive quiz app with a question and scoring system, built for a fast and playful learning experience." data-nl="Interactieve quiz-app met vraag- en scoresysteem, gebouwd voor een snelle en speelse leerervaring.">Interactieve quiz-app met vraag- en scoresysteem, gebouwd voor een snelle en speelse leerervaring.</p>
+                    <div class="project-tags"><span class="project-tag" data-en="Quiz" data-nl="Quiz">Quiz</span><span class="project-tag" data-en="Education" data-nl="Educatie">Education</span><span class="project-tag" data-en="Interactive" data-nl="Interactief">Interactive</span></div>
                 </div>
             </a>
         </div>
@@ -471,12 +480,12 @@
     <div class="cta-band">
         <svg class="cta-bolt" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M55 2 L15 58 H45 L38 98 L85 40 H52 L55 2Z" fill="#c6ff4a"/></svg>
         <div class="cta-band-inner">
-            <div class="eyebrow-badge"><span class="dot"></span> 1 spot open — Q3</div>
-            <h2>Want your brand on this list?</h2>
-            <p>Book a 25-minute call and we'll figure out exactly what your project needs — no pressure, no sales script.</p>
+            <div class="eyebrow-badge"><span class="dot"></span> <span data-en="1 spot open — Q3" data-nl="1 plek vrij — Q3">1 spot open — Q3</span></div>
+            <h2 data-en="Want your brand on this list?" data-nl="Wil jij je merk op deze lijst?">Want your brand on this list?</h2>
+            <p data-en="Book a 25-minute call and we'll figure out exactly what your project needs — no pressure, no sales script." data-nl="Plan een gesprek van 25 minuten en we bepalen precies wat jouw project nodig heeft — geen druk, geen verkooppraatje.">Book a 25-minute call and we'll figure out exactly what your project needs — no pressure, no sales script.</p>
             <div class="cta-band-buttons">
-                <a href="#" class="btn-primary schedule-trigger">Plan a call <span class="chev">→</span></a>
-                <a href="pricing.html" class="btn-secondary">See pricing</a>
+                <a href="#" class="btn-primary schedule-trigger"><span data-en="Plan a call" data-nl="Plan een gesprek">Plan a call</span> <span class="chev">→</span></a>
+                <a href="pricing.html" class="btn-secondary" data-en="See pricing" data-nl="Bekijk prijzen">See pricing</a>
             </div>
         </div>
     </div>
@@ -487,7 +496,7 @@
         <div class="footer-top">
             <div>
                 <div class="footer-logo">KM<span class="dot">.</span>dev</div>
-                <p class="footer-tag">The brand system — strategy, identity and website as one — for founders ready to scale.</p>
+                <p class="footer-tag" data-en="The brand system — strategy, identity and website as one — for founders ready to scale." data-nl="Het brand system — strategie, identiteit en website in één — voor founders die klaar zijn om te schalen.">The brand system — strategy, identity and website as one — for founders ready to scale.</p>
                 <div class="footer-social">
                     <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="0.6" fill="currentColor" stroke="none"/></svg></a>
                     <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 10v7M8 7v.01M12 17v-4.5a2.5 2.5 0 0 1 5 0V17"/></svg></a>
@@ -495,36 +504,36 @@
                 </div>
             </div>
             <div class="footer-col">
-                <h4>Sitemap</h4>
+                <h4 data-en="Sitemap" data-nl="Sitemap">Sitemap</h4>
                 <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="projects.html">Projects</a></li>
-                    <li><a href="pricing.html">Pricing</a></li>
-                    <li><a href="about.html">About</a></li>
-                    <li><a href="contact.html">Contact</a></li>
+                    <li><a href="index.html" data-en="Home" data-nl="Home">Home</a></li>
+                    <li><a href="projects.html" data-en="Projects" data-nl="Projecten">Projects</a></li>
+                    <li><a href="pricing.html" data-en="Pricing" data-nl="Prijzen">Pricing</a></li>
+                    <li><a href="about.html" data-en="About" data-nl="Over ons">About</a></li>
+                    <li><a href="contact.html" data-en="Contact" data-nl="Contact">Contact</a></li>
                 </ul>
             </div>
             <div class="footer-col">
-                <h4>Brand system</h4>
+                <h4 data-en="Brand system" data-nl="Brand system">Brand system</h4>
                 <ul>
-                    <li><a href="#">Strategy</a></li>
-                    <li><a href="#">Identity</a></li>
-                    <li><a href="#">Website</a></li>
-                    <li><a href="#">Brand assets</a></li>
+                    <li><a href="#" data-en="Strategy" data-nl="Strategie">Strategy</a></li>
+                    <li><a href="#" data-en="Identity" data-nl="Identiteit">Identity</a></li>
+                    <li><a href="#" data-en="Website" data-nl="Website">Website</a></li>
+                    <li><a href="#" data-en="Brand assets" data-nl="Brand assets">Brand assets</a></li>
                 </ul>
             </div>
             <div class="footer-col">
-                <h4>Get in touch</h4>
+                <h4 data-en="Get in touch" data-nl="Neem contact op">Get in touch</h4>
                 <ul>
                     <li><a href="mailto:hello@km.dev">hello@km.dev</a></li>
                     <li><a href="tel:+31612345678">+31 6 1234 5678</a></li>
-                    <li><a href="#">Amsterdam, Netherlands</a></li>
+                    <li><a href="#" data-en="Amsterdam, Netherlands" data-nl="Amsterdam, Nederland">Amsterdam, Netherlands</a></li>
                 </ul>
             </div>
         </div>
         <div class="footer-bottom">
-            <span>© 2026 KM.dev. All rights reserved.</span>
-            <span>Terms of service · Privacy policy</span>
+            <span data-en="© 2026 KM.dev. All rights reserved." data-nl="© 2026 KM.dev. Alle rechten voorbehouden.">© 2026 KM.dev. All rights reserved.</span>
+            <span data-en="Terms of service · Privacy policy" data-nl="Servicevoorwaarden · Privacybeleid">Terms of service · Privacy policy</span>
         </div>
     </div>
 </footer>
@@ -550,8 +559,21 @@
     let currentDate = new Date();
     let selectedDate = null;
     let selectedTime = null;
-    const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-    const dayNames = ['Mo','Tu','We','Th','Fr','Sa','Su'];
+    const monthNamesByLang = {
+        en: ['January','February','March','April','May','June','July','August','September','October','November','December'],
+        nl: ['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december']
+    };
+    const dayNamesByLang = {
+        en: ['Mo','Tu','We','Th','Fr','Sa','Su'],
+        nl: ['Ma','Di','Wo','Do','Vr','Za','Zo']
+    };
+    const calendarStrings = {
+        en: { available: 'Available', fillIn: 'Please fill in your name and email, and choose a date + time.', willEmail: "we'll email" },
+        nl: { available: 'Beschikbaar', fillIn: 'Vul je naam en e-mail in, en kies een datum + tijd.', willEmail: 'we mailen' }
+    };
+    function curLang(){ return (window.kmLang && window.kmLang.get()) || 'en'; }
+    function monthNames(){ return monthNamesByLang[curLang()]; }
+    function dayNames(){ return dayNamesByLang[curLang()]; }
     const availableTimes = ['09:00','10:00','11:00','14:00','15:00','16:00'];
 
     const calendarModal = document.getElementById('calendarModal');
@@ -587,7 +609,7 @@
 
     function generateCalendar(){
         const monthView = document.getElementById('monthView').querySelector('.calendar-grid');
-        document.getElementById('currentMonth').textContent = `${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+        document.getElementById('currentMonth').textContent = `${monthNames()[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
         const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
         const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth()+1, 0);
         while (monthView.children.length > 7) monthView.removeChild(monthView.lastChild);
@@ -644,7 +666,7 @@
                 dayCell.appendChild(dayNumber);
                 const timeSlot = document.createElement('div');
                 timeSlot.className = 'time-slot available';
-                timeSlot.textContent = 'Available';
+                timeSlot.textContent = calendarStrings[curLang()].available;
                 timeSlot.addEventListener('click', function(){ selectTime(cellDate, time); });
                 dayCell.appendChild(timeSlot);
                 timeRow.appendChild(dayCell);
@@ -668,7 +690,7 @@
     function selectTime(date, time){
         selectedDate = date; selectedTime = time;
         const selectedTimeDisplay = document.getElementById('selectedTimeDisplay');
-        document.getElementById('selectedDate').textContent = `${dayNames[date.getDay() === 0 ? 6 : date.getDay()-1]} ${date.getDate()} ${monthNames[date.getMonth()]}`;
+        document.getElementById('selectedDate').textContent = `${dayNames()[date.getDay() === 0 ? 6 : date.getDay()-1]} ${date.getDate()} ${monthNames()[date.getMonth()]}`;
         document.getElementById('selectedTime').textContent = time;
         selectedTimeDisplay.style.display = 'block';
         document.getElementById('bookingForm').classList.add('active');
@@ -695,13 +717,13 @@
         const email = document.getElementById('calEmail').value.trim();
         const bookingError = document.getElementById('bookingError');
         if (!name || !email || !selectedDate || !selectedTime){
-            bookingError.textContent = 'Vul je naam en e-mail in, en kies een datum + tijd.';
+            bookingError.textContent = calendarStrings[curLang()].fillIn;
             bookingError.classList.add('active');
             return;
         }
         bookingError.classList.remove('active');
-        document.getElementById('successDate').textContent = `${dayNames[selectedDate.getDay() === 0 ? 6 : selectedDate.getDay()-1]} ${selectedDate.getDate()} ${monthNames[selectedDate.getMonth()]}`;
-        document.getElementById('successTime').textContent = `${selectedTime} · we mailen ${email}`;
+        document.getElementById('successDate').textContent = `${dayNames()[selectedDate.getDay() === 0 ? 6 : selectedDate.getDay()-1]} ${selectedDate.getDate()} ${monthNames()[selectedDate.getMonth()]}`;
+        document.getElementById('successTime').textContent = `${selectedTime} · ${calendarStrings[curLang()].willEmail} ${email}`;
         document.querySelector('.calendar-view-selector').style.display = 'none';
         document.getElementById('selectedTimeDisplay').style.display = 'none';
         document.getElementById('bookingForm').classList.remove('active');
@@ -715,6 +737,10 @@
         document.getElementById('calEmail').value = '';
         document.getElementById('calMessage').value = '';
         selectedDate = null; selectedTime = null;
+    });
+
+    document.addEventListener('km:langchange', function(){
+        if (calendarModal.classList.contains('active')) generateCalendar();
     });
 
     // ---------- GSAP effects ----------

@@ -40,6 +40,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="i18n.js"></script>
 <style>
     :root{
         --bg:#f4f3ef;--paper:#ffffff;--ink:#0d0d0d;--muted:#b6b4ac;--gray:#6f6d66;
@@ -66,6 +67,10 @@
     .pill-nav{position:fixed;top:22px;left:22px;z-index:1000;display:flex;align-items:center;gap:6px;background:var(--ink);border-radius:40px;padding:8px 8px 8px 20px;box-shadow:0 10px 30px -10px rgba(0,0,0,.35);}
     .pill-logo{display:flex;align-items:center;gap:2px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:19px;color:#fff;text-decoration:none;letter-spacing:-.5px;}
     .pill-logo .dot{color:var(--accent);}
+    .lang-toggle{display:flex;align-items:center;gap:2px;background:#1c1c1c;border-radius:20px;padding:3px;margin-left:8px;}
+    .lang-btn{background:transparent;border:none;color:rgba(255,255,255,.5);font-family:'Space Mono',monospace;font-size:11.5px;font-weight:700;padding:6px 10px;border-radius:16px;cursor:pointer;transition:background .3s ease,color .3s ease;}
+    .lang-btn.active{background:var(--accent);color:var(--ink);}
+    .lang-btn:hover:not(.active){color:#fff;}
     .hamburger{width:42px;height:42px;border-radius:50%;background:#1c1c1c;border:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;margin-left:10px;transition:background .3s ease;}
     .hamburger:hover{background:#2a2a2a;}
     .hamburger span{width:16px;height:2px;background:#fff;border-radius:2px;transition:all .3s ease;}
@@ -315,6 +320,10 @@
 <!-- Pill Nav -->
 <div class="pill-nav">
     <a href="index.html" class="pill-logo">KM<span class="dot">.</span>dev</a>
+    <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="nl">NL</button>
+    </div>
     <button class="hamburger" id="hamburgerBtn" aria-label="Menu"><span></span><span></span><span></span></button>
 </div>
 
@@ -322,16 +331,16 @@
 <div class="menu-overlay" id="menuOverlay">
     <div class="menu-inner">
         <nav class="menu-links">
-            <a href="index.html">Home</a>
-            <a href="index.html#projects">Projects</a>
-            <a href="pricing.html">Pricing</a>
-            <a href="about.html" class="active">About</a>
-            <a href="contact.html">Contact</a>
+            <a href="index.html" data-en="Home" data-nl="Home">Home</a>
+            <a href="index.html#projects" data-en="Projects" data-nl="Projecten">Projects</a>
+            <a href="pricing.html" data-en="Pricing" data-nl="Prijzen">Pricing</a>
+            <a href="about.html" class="active" data-en="About" data-nl="Over ons">About</a>
+            <a href="contact.html" data-en="Contact" data-nl="Contact">Contact</a>
         </nav>
         <div class="menu-side">
             <div>
-                <div class="menu-badge"><span class="dot"></span> 1 spot open — Q3</div>
-                <div class="mono" style="font-size:13px;color:rgba(255,255,255,.4);">Based in Amsterdam, NL</div>
+                <div class="menu-badge"><span class="dot"></span> <span data-en="1 spot open — Q3" data-nl="1 plek vrij — Q3">1 spot open — Q3</span></div>
+                <div class="mono" style="font-size:13px;color:rgba(255,255,255,.4);" data-en="Based in Amsterdam, NL" data-nl="Gevestigd in Amsterdam, NL">Based in Amsterdam, NL</div>
                 <div class="menu-socials">
                     <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="0.6" fill="currentColor" stroke="none"/></svg></a>
                     <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 10v7M8 7v.01M12 17v-4.5a2.5 2.5 0 0 1 5 0V17"/></svg></a>
@@ -340,7 +349,7 @@
             </div>
             <div class="menu-cta">
                 <a href="mailto:hello@km.dev">hello@km.dev</a><br><br>
-                <a href="#" class="btn-primary" id="menuScheduleCall" style="background:var(--accent);color:var(--ink);border-color:var(--accent);">Plan a call <span class="chev" style="background:var(--ink);color:var(--accent);">→</span></a>
+                <a href="#" class="btn-primary" id="menuScheduleCall" style="background:var(--accent);color:var(--ink);border-color:var(--accent);"><span data-en="Plan a call" data-nl="Plan een gesprek">Plan a call</span> <span class="chev" style="background:var(--ink);color:var(--accent);">→</span></a>
             </div>
         </div>
     </div>
@@ -359,51 +368,51 @@
         <div class="calendar-sidebar">
             <div class="calendar-header">
                 <div class="pill-logo">KM<span class="dot">.</span>dev</div>
-                <h2 class="calendar-title">Schedule a Call</h2>
-                <p class="calendar-subtitle">Select a date and time that works for you. We'll send a confirmation email with the meeting details.</p>
-                <div class="calendar-duration"><div class="calendar-duration-icon">30</div><span>30 minute meeting</span></div>
+                <h2 class="calendar-title" data-en="Schedule a Call" data-nl="Plan een gesprek">Schedule a Call</h2>
+                <p class="calendar-subtitle" data-en="Select a date and time that works for you. We'll send a confirmation email with the meeting details." data-nl="Kies een datum en tijd die jou uitkomt. We sturen een bevestigingsmail met de details.">Select a date and time that works for you. We'll send a confirmation email with the meeting details.</p>
+                <div class="calendar-duration"><div class="calendar-duration-icon">30</div><span data-en="30 minute meeting" data-nl="30 minuten gesprek">30 minute meeting</span></div>
             </div>
             <div class="calendar-view-selector">
-                <button class="view-btn active" id="monthViewBtn">Month</button>
-                <button class="view-btn" id="weekViewBtn">Week</button>
+                <button class="view-btn active" id="monthViewBtn" data-en="Month" data-nl="Maand">Month</button>
+                <button class="view-btn" id="weekViewBtn" data-en="Week" data-nl="Week">Week</button>
             </div>
             <div class="selected-time" id="selectedTimeDisplay" style="display:none;">
-                <h3 id="selectedDate">Selected Date</h3>
-                <p id="selectedTime">Selected Time</p>
+                <h3 id="selectedDate" data-en="Selected Date" data-nl="Gekozen datum">Selected Date</h3>
+                <p id="selectedTime" data-en="Selected Time" data-nl="Gekozen tijd">Selected Time</p>
             </div>
             <div class="booking-form" id="bookingForm">
                 <p class="booking-error" id="bookingError"></p>
-                <div class="form-group"><label for="name" class="form-label">Your Name</label><input type="text" id="name" class="form-input" placeholder="Enter your name"></div>
-                <div class="form-group"><label for="email" class="form-label">Email Address</label><input type="email" id="email" class="form-input" placeholder="Enter your email"></div>
-                <div class="form-group"><label for="message" class="form-label">Project Details (Optional)</label><textarea id="message" class="form-textarea" placeholder="Tell us about your project"></textarea></div>
-                <button class="form-submit" id="confirmBooking">Confirm Booking</button>
+                <div class="form-group"><label for="name" class="form-label" data-en="Your Name" data-nl="Je naam">Your Name</label><input type="text" id="name" class="form-input" placeholder="Enter your name" data-en-placeholder="Enter your name" data-nl-placeholder="Vul je naam in"></div>
+                <div class="form-group"><label for="email" class="form-label" data-en="Email Address" data-nl="E-mailadres">Email Address</label><input type="email" id="email" class="form-input" placeholder="Enter your email" data-en-placeholder="Enter your email" data-nl-placeholder="Vul je e-mail in"></div>
+                <div class="form-group"><label for="message" class="form-label" data-en="Project Details (Optional)" data-nl="Projectdetails (optioneel)">Project Details (Optional)</label><textarea id="message" class="form-textarea" placeholder="Tell us about your project" data-en-placeholder="Tell us about your project" data-nl-placeholder="Vertel ons over je project"></textarea></div>
+                <button class="form-submit" id="confirmBooking" data-en="Confirm Booking" data-nl="Bevestig boeking">Confirm Booking</button>
             </div>
             <div class="booking-success" id="bookingSuccess">
                 <div class="booking-success-icon">✓</div>
-                <h3>Booking confirmed!</h3>
-                <p>We've sent a confirmation to your email.</p>
+                <h3 data-en="Booking confirmed!" data-nl="Boeking bevestigd!">Booking confirmed!</h3>
+                <p data-en="We've sent a confirmation to your email." data-nl="We hebben een bevestiging naar je e-mail gestuurd.">We've sent a confirmation to your email.</p>
                 <div class="booking-success-detail">
                     <strong id="successDate">—</strong>
                     <span id="successTime">—</span>
                 </div>
-                <button class="booking-success-close" id="closeBookingSuccess">Done</button>
+                <button class="booking-success-close" id="closeBookingSuccess" data-en="Done" data-nl="Klaar">Done</button>
             </div>
         </div>
         <div class="calendar-main">
             <div class="calendar-navigation">
-                <button class="nav-btn" id="prevMonth">&lt; Previous</button>
+                <button class="nav-btn" id="prevMonth" data-en="&lt; Previous" data-nl="&lt; Vorige">&lt; Previous</button>
                 <div class="current-month" id="currentMonth">Month Year</div>
-                <button class="nav-btn" id="nextMonth">Next &gt;</button>
+                <button class="nav-btn" id="nextMonth" data-en="Next &gt;" data-nl="Volgende &gt;">Next &gt;</button>
             </div>
             <div id="monthView">
                 <div class="calendar-grid">
-                    <div class="calendar-day-header">Mo</div><div class="calendar-day-header">Tu</div><div class="calendar-day-header">We</div><div class="calendar-day-header">Th</div><div class="calendar-day-header">Fr</div><div class="calendar-day-header">Sa</div><div class="calendar-day-header">Su</div>
+                    <div class="calendar-day-header" data-en="Mo" data-nl="Ma">Mo</div><div class="calendar-day-header" data-en="Tu" data-nl="Di">Tu</div><div class="calendar-day-header" data-en="We" data-nl="Wo">We</div><div class="calendar-day-header" data-en="Th" data-nl="Do">Th</div><div class="calendar-day-header" data-en="Fr" data-nl="Vr">Fr</div><div class="calendar-day-header" data-en="Sa" data-nl="Za">Sa</div><div class="calendar-day-header" data-en="Su" data-nl="Zo">Su</div>
                 </div>
             </div>
             <div class="week-view" id="weekView">
                 <div class="week-header">
-                    <div class="week-time-label">Time</div>
-                    <div class="week-day-header">Mo</div><div class="week-day-header">Tu</div><div class="week-day-header">We</div><div class="week-day-header">Th</div><div class="week-day-header">Fr</div><div class="week-day-header">Sa</div><div class="week-day-header">Su</div>
+                    <div class="week-time-label" data-en="Time" data-nl="Tijd">Time</div>
+                    <div class="week-day-header" data-en="Mo" data-nl="Ma">Mo</div><div class="week-day-header" data-en="Tu" data-nl="Di">Tu</div><div class="week-day-header" data-en="We" data-nl="Wo">We</div><div class="week-day-header" data-en="Th" data-nl="Do">Th</div><div class="week-day-header" data-en="Fr" data-nl="Vr">Fr</div><div class="week-day-header" data-en="Sa" data-nl="Za">Sa</div><div class="week-day-header" data-en="Su" data-nl="Zo">Su</div>
                 </div>
                 <div class="week-body" id="weekBody"></div>
             </div>
@@ -413,16 +422,16 @@
 
 <section class="hero">
     <div class="container">
-        <div class="eyebrow-badge"><span class="dot"></span> About KM.dev</div>
+        <div class="eyebrow-badge"><span class="dot"></span> <span data-en="About KM.dev" data-nl="Over KM.dev">About KM.dev</span></div>
         <div class="hero-grid">
             <div class="hero-text reveal visible">
-                <h1>A brand is either an asset <span class="muted">— or a tax on every sale.</span></h1>
-                <p class="hero-desc">Most founders judge their business by the revenue coming in today. We look at what a stronger, more deliberate brand could be doing for the deals you haven't closed yet.</p>
+                <h1 data-en-html="A brand is either an asset <span class=&quot;muted&quot;>— or a tax on every sale.</span>" data-nl-html="Een merk is óf een asset <span class=&quot;muted&quot;>— óf een belasting op elke verkoop.</span>">A brand is either an asset <span class="muted">— or a tax on every sale.</span></h1>
+                <p class="hero-desc" data-en="Most founders judge their business by the revenue coming in today. We look at what a stronger, more deliberate brand could be doing for the deals you haven't closed yet." data-nl="De meeste founders beoordelen hun bedrijf op basis van de omzet van vandaag. Wij kijken naar wat een sterker, doordachter merk kan betekenen voor de deals die je nog niet hebt binnengehaald.">Most founders judge their business by the revenue coming in today. We look at what a stronger, more deliberate brand could be doing for the deals you haven't closed yet.</p>
             </div>
             <div class="hero-visual reveal visible">
-                <div class="stack-card c3"><img src="https://images.unsplash.com/photo-1568992687947-868a62a9f521?q=80&w=800&auto=format&fit=crop" alt="Creative team collaborating"></div>
-                <div class="stack-card c2"><img src="https://images.unsplash.com/photo-1622675363311-3e1904dc1885?q=80&w=800&auto=format&fit=crop" alt="Team reviewing brand strategy"></div>
-                <div class="stack-card c1"><img src="https://images.unsplash.com/photo-1543145223-1f9043516739?q=80&w=900&auto=format&fit=crop" alt="Designer working on a laptop"></div>
+                <div class="stack-card c3"><img src="https://images.unsplash.com/photo-1568992687947-868a62a9f521?q=80&w=800&auto=format&fit=crop" alt="Creative team collaborating" data-en-alt="Creative team collaborating" data-nl-alt="Creatief team dat samenwerkt"></div>
+                <div class="stack-card c2"><img src="https://images.unsplash.com/photo-1622675363311-3e1904dc1885?q=80&w=800&auto=format&fit=crop" alt="Team reviewing brand strategy" data-en-alt="Team reviewing brand strategy" data-nl-alt="Team dat merkstrategie bespreekt"></div>
+                <div class="stack-card c1"><img src="https://images.unsplash.com/photo-1543145223-1f9043516739?q=80&w=900&auto=format&fit=crop" alt="Designer working on a laptop" data-en-alt="Designer working on a laptop" data-nl-alt="Designer die aan een laptop werkt"></div>
             </div>
         </div>
     </div>
@@ -439,79 +448,79 @@
 
         <section class="section-block section-stats">
             <div class="section-head">
-                <h2 class="two-tone"><span class="muted">The data behind</span><br><span class="strong">the decision.</span></h2>
-                <p class="section-sub">A good product isn't enough on its own. Design, recognition and consistency directly drive trust, choice and price perception.</p>
+                <h2 class="two-tone" data-en-html="<span class=&quot;muted&quot;>The data behind</span><br><span class=&quot;strong&quot;>the decision.</span>" data-nl-html="<span class=&quot;muted&quot;>De data achter</span><br><span class=&quot;strong&quot;>de beslissing.</span>"><span class="muted">The data behind</span><br><span class="strong">the decision.</span></h2>
+                <p class="section-sub" data-en="A good product isn't enough on its own. Design, recognition and consistency directly drive trust, choice and price perception." data-nl="Een goed product alleen is niet genoeg. Design, herkenning en consistentie sturen direct vertrouwen, keuze en prijsperceptie.">A good product isn't enough on its own. Design, recognition and consistency directly drive trust, choice and price perception.</p>
             </div>
             <div class="stats-grid">
-                <div class="stat-card"><span class="stat-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="0.6" fill="currentColor" stroke="none"/></svg></span><div class="stat-number" data-target="50" data-suffix="+">0</div><div class="stat-label">Brands built</div></div>
-                <div class="stat-card"><span class="stat-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 6.5c0-1.9-2.2-3-5-3s-5 1.3-5 3 2.2 3 5 3 5 1.1 5 3-2.2 3-5 3-5-1.1-5-3"/></svg></span><div class="stat-number" data-target="2" data-prefix="€" data-suffix="M+">€0</div><div class="stat-label">Revenue generated for clients</div></div>
-                <div class="stat-card"><span class="stat-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 14.5 9l6 .9-4.3 4.2 1 6-5.2-2.8-5.2 2.8 1-6L3.5 9.9l6-.9Z"/></svg></span><div class="stat-number" data-target="95" data-suffix="%">0%</div><div class="stat-label">Client satisfaction</div></div>
-                <div class="stat-card"><span class="stat-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg></span><div class="stat-number" data-target="3" data-suffix=" yrs">0</div><div class="stat-label">Market experience</div></div>
+                <div class="stat-card"><span class="stat-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="0.6" fill="currentColor" stroke="none"/></svg></span><div class="stat-number" data-target="50" data-suffix="+">0</div><div class="stat-label" data-en="Brands built" data-nl="Merken gebouwd">Brands built</div></div>
+                <div class="stat-card"><span class="stat-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 6.5c0-1.9-2.2-3-5-3s-5 1.3-5 3 2.2 3 5 3 5 1.1 5 3-2.2 3-5 3-5-1.1-5-3"/></svg></span><div class="stat-number" data-target="2" data-prefix="€" data-suffix="M+">€0</div><div class="stat-label" data-en="Revenue generated for clients" data-nl="Omzet gegenereerd voor klanten">Revenue generated for clients</div></div>
+                <div class="stat-card"><span class="stat-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 14.5 9l6 .9-4.3 4.2 1 6-5.2-2.8-5.2 2.8 1-6L3.5 9.9l6-.9Z"/></svg></span><div class="stat-number" data-target="95" data-suffix="%">0%</div><div class="stat-label" data-en="Client satisfaction" data-nl="Klanttevredenheid">Client satisfaction</div></div>
+                <div class="stat-card"><span class="stat-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg></span><div class="stat-number" data-target="3" data-suffix=" yrs" data-suffix-en=" yrs" data-suffix-nl=" jr">0</div><div class="stat-label" data-en="Market experience" data-nl="Ervaring in de markt">Market experience</div></div>
             </div>
         </section>
 
         <section class="section-block">
             <div class="philosophy-grid">
                 <div class="philosophy-content">
-                    <h2 class="two-tone" style="margin-bottom:24px;"><span class="strong">The KM.dev</span><br><span class="muted">philosophy.</span></h2>
-                    <p>Every business has a natural lifespan. What determines how much you get out of it isn't how hard you push in short bursts — it's how consistently you show up.</p>
-                    <p>A brand refined deliberately, quarter after quarter, will always outperform one that's invested in once and left alone for years. <strong>That compounding difference is what separates founders who build lasting wealth from founders who just make money.</strong></p>
-                    <p>If your current branding isn't pulling its weight, that's not a personality flaw — it's a fixable, measurable problem. That's where we come in.</p>
+                    <h2 class="two-tone" style="margin-bottom:24px;" data-en-html="<span class=&quot;strong&quot;>The KM.dev</span><br><span class=&quot;muted&quot;>philosophy.</span>" data-nl-html="<span class=&quot;strong&quot;>De KM.dev</span><br><span class=&quot;muted&quot;>filosofie.</span>"><span class="strong">The KM.dev</span><br><span class="muted">philosophy.</span></h2>
+                    <p data-en="Every business has a natural lifespan. What determines how much you get out of it isn't how hard you push in short bursts — it's how consistently you show up." data-nl="Elk bedrijf heeft een natuurlijke levensduur. Wat bepaalt hoeveel je eruit haalt, is niet hoe hard je in korte pieken pusht — het is hoe consistent je laat zien wie je bent.">Every business has a natural lifespan. What determines how much you get out of it isn't how hard you push in short bursts — it's how consistently you show up.</p>
+                    <p data-en-html="A brand refined deliberately, quarter after quarter, will always outperform one that's invested in once and left alone for years. <strong>That compounding difference is what separates founders who build lasting wealth from founders who just make money.</strong>" data-nl-html="Een merk dat elk kwartaal weloverwogen wordt verfijnd, presteert altijd beter dan een merk waar één keer in is geïnvesteerd en dat daarna jarenlang met rust is gelaten. <strong>Dat samengestelde verschil is wat founders die blijvende welvaart opbouwen onderscheidt van founders die alleen maar geld verdienen.</strong>">A brand refined deliberately, quarter after quarter, will always outperform one that's invested in once and left alone for years. <strong>That compounding difference is what separates founders who build lasting wealth from founders who just make money.</strong></p>
+                    <p data-en="If your current branding isn't pulling its weight, that's not a personality flaw — it's a fixable, measurable problem. That's where we come in." data-nl="Als je huidige branding niet zijn gewicht in goud waard is, is dat geen persoonlijkheidsfout — het is een oplosbaar, meetbaar probleem. Daar komen wij in beeld.">If your current branding isn't pulling its weight, that's not a personality flaw — it's a fixable, measurable problem. That's where we come in.</p>
                 </div>
                 <div class="philosophy-visual">
-                    <img src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?q=80&w=1000&auto=format&fit=crop" alt="Brand strategy workspace">
-                    <p class="philosophy-quote">"Premium brands don't compete on price. They compete on perception."</p>
+                    <img src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?q=80&w=1000&auto=format&fit=crop" alt="Brand strategy workspace" data-en-alt="Brand strategy workspace" data-nl-alt="Werkplek voor merkstrategie">
+                    <p class="philosophy-quote" data-en-html="&quot;Premium brands don't compete on price. They compete on perception.&quot;" data-nl-html="&quot;Premium merken concurreren niet op prijs. Ze concurreren op perceptie.&quot;">"Premium brands don't compete on price. They compete on perception."</p>
                 </div>
             </div>
         </section>
 
         <section class="section-block section-values">
             <div class="section-head">
-                <h2 class="two-tone"><span class="muted">Why founders</span><br><span class="strong">work with us.</span></h2>
+                <h2 class="two-tone" data-en-html="<span class=&quot;muted&quot;>Why founders</span><br><span class=&quot;strong&quot;>work with us.</span>" data-nl-html="<span class=&quot;muted&quot;>Waarom founders</span><br><span class=&quot;strong&quot;>met ons werken.</span>"><span class="muted">Why founders</span><br><span class="strong">work with us.</span></h2>
             </div>
             <div class="values-grid">
                 <div class="value-card">
                     <span class="value-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></span>
-                    <h4>Craft over templates</h4>
-                    <p>Every project is designed around your business, not a theme. If it looks like everyone else's site, we haven't done our job.</p>
+                    <h4 data-en="Craft over templates" data-nl="Vakmanschap boven templates">Craft over templates</h4>
+                    <p data-en="Every project is designed around your business, not a theme. If it looks like everyone else's site, we haven't done our job." data-nl="Elk project wordt ontworpen rond jouw bedrijf, niet rond een thema. Als het eruitziet als de site van iedereen, hebben we ons werk niet goed gedaan.">Every project is designed around your business, not a theme. If it looks like everyone else's site, we haven't done our job.</p>
                 </div>
                 <div class="value-card">
                     <span class="value-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c1-3.6 3.6-5.6 6.5-5.6s5.5 2 6.5 5.6"/><circle cx="17" cy="7.5" r="2.4"/><path d="M15.2 14.6c2.4.4 4 2 4.8 5"/></svg></span>
-                    <h4>One accountable team</h4>
-                    <p>No handoffs between five freelancers. The people who plan the strategy are the same people who build and ship it.</p>
+                    <h4 data-en="One accountable team" data-nl="Eén verantwoordelijk team">One accountable team</h4>
+                    <p data-en="No handoffs between five freelancers. The people who plan the strategy are the same people who build and ship it." data-nl="Geen overdrachten tussen vijf freelancers. Dezelfde mensen die de strategie bepalen, bouwen en leveren het ook op.">No handoffs between five freelancers. The people who plan the strategy are the same people who build and ship it.</p>
                 </div>
                 <div class="value-card">
                     <span class="value-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></span>
-                    <h4>Built to compound</h4>
-                    <p>We design for the next three years of growth, not just the launch date — so the brand keeps earning its keep.</p>
+                    <h4 data-en="Built to compound" data-nl="Gebouwd om te blijven groeien">Built to compound</h4>
+                    <p data-en="We design for the next three years of growth, not just the launch date — so the brand keeps earning its keep." data-nl="We ontwerpen voor de komende drie jaar groei, niet alleen voor de lanceerdatum — zodat het merk zijn waarde blijft bewijzen.">We design for the next three years of growth, not just the launch date — so the brand keeps earning its keep.</p>
                 </div>
             </div>
         </section>
 
         <section class="section-block section-process">
             <div class="section-head">
-                <h2 class="two-tone"><span class="strong">From first call</span><br><span class="muted">to launch.</span></h2>
+                <h2 class="two-tone" data-en-html="<span class=&quot;strong&quot;>From first call</span><br><span class=&quot;muted&quot;>to launch.</span>" data-nl-html="<span class=&quot;strong&quot;>Van eerste gesprek</span><br><span class=&quot;muted&quot;>tot lancering.</span>"><span class="strong">From first call</span><br><span class="muted">to launch.</span></h2>
             </div>
             <div class="process-grid">
                 <div class="process-item">
                     <div class="process-icon">01</div>
-                    <h4>Discovery</h4>
-                    <p>We dive deep into your business, your goals, and what's actually holding growth back.</p>
+                    <h4 data-en="Discovery" data-nl="Verkenning">Discovery</h4>
+                    <p data-en="We dive deep into your business, your goals, and what's actually holding growth back." data-nl="We duiken diep in jouw bedrijf, je doelen, en wat groei daadwerkelijk tegenhoudt.">We dive deep into your business, your goals, and what's actually holding growth back.</p>
                 </div>
                 <div class="process-item">
                     <div class="process-icon">02</div>
-                    <h4>Strategy</h4>
-                    <p>We build a roadmap that positions you as the premium choice in your market.</p>
+                    <h4 data-en="Strategy" data-nl="Strategie">Strategy</h4>
+                    <p data-en="We build a roadmap that positions you as the premium choice in your market." data-nl="We bouwen een routekaart die jou positioneert als de premium keuze in jouw markt.">We build a roadmap that positions you as the premium choice in your market.</p>
                 </div>
                 <div class="process-item">
                     <div class="process-icon">03</div>
-                    <h4>Design &amp; build</h4>
-                    <p>We craft a brand experience that makes competitors look like an afterthought.</p>
+                    <h4 data-en="Design &amp; build" data-nl="Ontwerp &amp; bouw">Design &amp; build</h4>
+                    <p data-en="We craft a brand experience that makes competitors look like an afterthought." data-nl="We creëren een merkbeleving die concurrenten er als een bijgedachte laat uitzien.">We craft a brand experience that makes competitors look like an afterthought.</p>
                 </div>
                 <div class="process-item">
                     <div class="process-icon">04</div>
-                    <h4>Launch &amp; scale</h4>
-                    <p>We help you launch with impact, then keep refining as your business grows.</p>
+                    <h4 data-en="Launch &amp; scale" data-nl="Lancering &amp; opschalen">Launch &amp; scale</h4>
+                    <p data-en="We help you launch with impact, then keep refining as your business grows." data-nl="We helpen je met impact te lanceren, en blijven verfijnen terwijl je bedrijf groeit.">We help you launch with impact, then keep refining as your business grows.</p>
                 </div>
             </div>
         </section>
@@ -520,11 +529,11 @@
             <div class="cta-band">
                 <svg class="cta-bolt" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M55 2 L15 58 H45 L38 98 L85 40 H52 L55 2Z" fill="#c6ff4a"/></svg>
                 <div class="cta-band-inner">
-                    <h2>Let's build the brand your business deserves</h2>
-                    <p>Stop leaving revenue on the table because of a brand that undersells you. One project at a time, with real partnership after launch.</p>
+                    <h2 data-en="Let's build the brand your business deserves" data-nl="Laten we het merk bouwen dat jouw bedrijf verdient">Let's build the brand your business deserves</h2>
+                    <p data-en="Stop leaving revenue on the table because of a brand that undersells you. One project at a time, with real partnership after launch." data-nl="Stop met omzet laten liggen door een merk dat je tekortdoet. Eén project tegelijk, met echte samenwerking na livegang.">Stop leaving revenue on the table because of a brand that undersells you. One project at a time, with real partnership after launch.</p>
                     <div class="cta-band-buttons">
-                        <a href="#" class="btn-primary" id="discussProject">Book a discovery call <span class="chev">→</span></a>
-                        <a href="index.html#projects" class="btn-secondary">View our work</a>
+                        <a href="#" class="btn-primary" id="discussProject"><span data-en="Book a discovery call" data-nl="Plan een kennismakingsgesprek">Book a discovery call</span> <span class="chev">→</span></a>
+                        <a href="index.html#projects" class="btn-secondary" data-en="View our work" data-nl="Bekijk ons werk">View our work</a>
                     </div>
                 </div>
             </div>
@@ -538,7 +547,7 @@
         <div class="footer-top">
             <div>
                 <div class="footer-logo">KM<span class="dot">.</span>dev</div>
-                <p class="footer-tag">The brand system — strategy, identity and website as one — for founders ready to scale.</p>
+                <p class="footer-tag" data-en="The brand system — strategy, identity and website as one — for founders ready to scale." data-nl="Het brand system — strategie, identiteit en website in één — voor founders die klaar zijn om te schalen.">The brand system — strategy, identity and website as one — for founders ready to scale.</p>
                 <div class="footer-social">
                     <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="0.6" fill="currentColor" stroke="none"/></svg></a>
                     <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 10v7M8 7v.01M12 17v-4.5a2.5 2.5 0 0 1 5 0V17"/></svg></a>
@@ -546,36 +555,36 @@
                 </div>
             </div>
             <div class="footer-col">
-                <h4>Sitemap</h4>
+                <h4 data-en="Sitemap" data-nl="Sitemap">Sitemap</h4>
                 <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="index.html#projects">Projects</a></li>
-                    <li><a href="pricing.html">Pricing</a></li>
-                    <li><a href="about.html">About</a></li>
-                    <li><a href="contact.html">Contact</a></li>
+                    <li><a href="index.html" data-en="Home" data-nl="Home">Home</a></li>
+                    <li><a href="index.html#projects" data-en="Projects" data-nl="Projecten">Projects</a></li>
+                    <li><a href="pricing.html" data-en="Pricing" data-nl="Prijzen">Pricing</a></li>
+                    <li><a href="about.html" data-en="About" data-nl="Over ons">About</a></li>
+                    <li><a href="contact.html" data-en="Contact" data-nl="Contact">Contact</a></li>
                 </ul>
             </div>
             <div class="footer-col">
-                <h4>Brand system</h4>
+                <h4 data-en="Brand system" data-nl="Brand system">Brand system</h4>
                 <ul>
-                    <li><a href="#">Strategy</a></li>
-                    <li><a href="#">Identity</a></li>
-                    <li><a href="#">Website</a></li>
-                    <li><a href="#">Brand assets</a></li>
+                    <li><a href="#" data-en="Strategy" data-nl="Strategie">Strategy</a></li>
+                    <li><a href="#" data-en="Identity" data-nl="Identiteit">Identity</a></li>
+                    <li><a href="#" data-en="Website" data-nl="Website">Website</a></li>
+                    <li><a href="#" data-en="Brand assets" data-nl="Brand assets">Brand assets</a></li>
                 </ul>
             </div>
             <div class="footer-col">
-                <h4>Get in touch</h4>
+                <h4 data-en="Get in touch" data-nl="Neem contact op">Get in touch</h4>
                 <ul>
                     <li><a href="mailto:hello@km.dev">hello@km.dev</a></li>
                     <li><a href="tel:+31612345678">+31 6 1234 5678</a></li>
-                    <li><a href="#">Amsterdam, Netherlands</a></li>
+                    <li><a href="#" data-en="Amsterdam, Netherlands" data-nl="Amsterdam, Nederland">Amsterdam, Netherlands</a></li>
                 </ul>
             </div>
         </div>
         <div class="footer-bottom">
-            <span>© 2026 KM.dev. All rights reserved.</span>
-            <span>Terms of service · Privacy policy</span>
+            <span data-en="© 2026 KM.dev. All rights reserved." data-nl="© 2026 KM.dev. Alle rechten voorbehouden.">© 2026 KM.dev. All rights reserved.</span>
+            <span data-en="Terms of service · Privacy policy" data-nl="Servicevoorwaarden · Privacybeleid">Terms of service · Privacy policy</span>
         </div>
     </div>
 </footer>
@@ -601,8 +610,21 @@
     let currentDate = new Date();
     let selectedDate = null;
     let selectedTime = null;
-    const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-    const dayNames = ['Mo','Tu','We','Th','Fr','Sa','Su'];
+    const monthNamesByLang = {
+        en: ['January','February','March','April','May','June','July','August','September','October','November','December'],
+        nl: ['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december']
+    };
+    const dayNamesByLang = {
+        en: ['Mo','Tu','We','Th','Fr','Sa','Su'],
+        nl: ['Ma','Di','Wo','Do','Vr','Za','Zo']
+    };
+    const calendarStrings = {
+        en: { available: 'Available', fillIn: 'Please fill in your name and email, and choose a date + time.', willEmail: "we'll email" },
+        nl: { available: 'Beschikbaar', fillIn: 'Vul je naam en e-mail in, en kies een datum + tijd.', willEmail: 'we mailen' }
+    };
+    function curLang(){ return (window.kmLang && window.kmLang.get()) || 'en'; }
+    function monthNames(){ return monthNamesByLang[curLang()]; }
+    function dayNames(){ return dayNamesByLang[curLang()]; }
     const availableTimes = ['09:00','10:00','11:00','14:00','15:00','16:00'];
 
     const calendarModal = document.getElementById('calendarModal');
@@ -638,7 +660,7 @@
 
     function generateCalendar(){
         const monthView = document.getElementById('monthView').querySelector('.calendar-grid');
-        document.getElementById('currentMonth').textContent = `${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+        document.getElementById('currentMonth').textContent = `${monthNames()[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
         const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
         const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth()+1, 0);
         while (monthView.children.length > 7) monthView.removeChild(monthView.lastChild);
@@ -695,7 +717,7 @@
                 dayCell.appendChild(dayNumber);
                 const timeSlot = document.createElement('div');
                 timeSlot.className = 'time-slot available';
-                timeSlot.textContent = 'Available';
+                timeSlot.textContent = calendarStrings[curLang()].available;
                 timeSlot.addEventListener('click', function(){ selectTime(cellDate, time); });
                 dayCell.appendChild(timeSlot);
                 timeRow.appendChild(dayCell);
@@ -719,7 +741,7 @@
     function selectTime(date, time){
         selectedDate = date; selectedTime = time;
         const selectedTimeDisplay = document.getElementById('selectedTimeDisplay');
-        document.getElementById('selectedDate').textContent = `${dayNames[date.getDay() === 0 ? 6 : date.getDay()-1]} ${date.getDate()} ${monthNames[date.getMonth()]}`;
+        document.getElementById('selectedDate').textContent = `${dayNames()[date.getDay() === 0 ? 6 : date.getDay()-1]} ${date.getDate()} ${monthNames()[date.getMonth()]}`;
         document.getElementById('selectedTime').textContent = time;
         selectedTimeDisplay.style.display = 'block';
         document.getElementById('bookingForm').classList.add('active');
@@ -746,13 +768,13 @@
         const email = document.getElementById('email').value.trim();
         const bookingError = document.getElementById('bookingError');
         if (!name || !email || !selectedDate || !selectedTime){
-            bookingError.textContent = 'Vul je naam en e-mail in, en kies een datum + tijd.';
+            bookingError.textContent = calendarStrings[curLang()].fillIn;
             bookingError.classList.add('active');
             return;
         }
         bookingError.classList.remove('active');
-        document.getElementById('successDate').textContent = `${dayNames[selectedDate.getDay() === 0 ? 6 : selectedDate.getDay()-1]} ${selectedDate.getDate()} ${monthNames[selectedDate.getMonth()]}`;
-        document.getElementById('successTime').textContent = `${selectedTime} · we mailen ${email}`;
+        document.getElementById('successDate').textContent = `${dayNames()[selectedDate.getDay() === 0 ? 6 : selectedDate.getDay()-1]} ${selectedDate.getDate()} ${monthNames()[selectedDate.getMonth()]}`;
+        document.getElementById('successTime').textContent = `${selectedTime} · ${calendarStrings[curLang()].willEmail} ${email}`;
         document.querySelector('.calendar-view-selector').style.display = 'none';
         document.getElementById('selectedTimeDisplay').style.display = 'none';
         document.getElementById('bookingForm').classList.remove('active');
@@ -769,6 +791,16 @@
     });
     generateCalendar();
 
+    document.addEventListener('km:langchange', function(){
+        if (calendarModal.classList.contains('active')) generateCalendar();
+        buildRevealWords();
+        refreshStatSuffixes();
+        if (document.readyState === 'complete'){
+            applyRevealWordEffect();
+            ScrollTrigger.refresh();
+        }
+    });
+
     // ---------- Header scroll progress ----------
     window.addEventListener('scroll', function(){
         const scrollProgress = document.getElementById('scrollProgress');
@@ -784,17 +816,54 @@
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
     // ---------- Scroll word-reveal effect (markup only — GSAP drives the color animation below) ----------
-    document.querySelectorAll('.scroll-reveal-text').forEach(el => {
-        const text = el.textContent.trim();
-        el.innerHTML = text.split(' ').map(w => `<span class="word">${w}</span>`).join(' ');
-    });
+    // This paragraph's content is JS-generated (split into per-word spans), so its
+    // bilingual text lives here rather than as data-en/data-nl attributes — putting
+    // those on the <p> itself would make i18n.js overwrite the word spans with plain
+    // text and break the scroll-scrub color effect below.
+    const revealTextByLang = {
+        en: "Revenue is a lagging indicator. It tells you what worked last quarter, not what's possible next year. If your visual identity doesn't match the quality of what you actually deliver, you're paying an invisible tax on every deal — longer sales cycles, harder negotiations, and customers who compare you on price instead of value.",
+        nl: "Omzet is een achterlopende indicator. Het vertelt je wat vorig kwartaal werkte, niet wat volgend jaar mogelijk is. Als je visuele identiteit niet overeenkomt met de kwaliteit van wat je daadwerkelijk levert, betaal je een onzichtbare belasting op elke deal — langere verkoopcycli, lastigere onderhandelingen, en klanten die je vergelijken op prijs in plaats van waarde."
+    };
+    function buildRevealWords(){
+        const lang = (window.kmLang && window.kmLang.get()) || 'en';
+        document.querySelectorAll('.scroll-reveal-text').forEach(el => {
+            const text = revealTextByLang[lang];
+            el.innerHTML = text.split(' ').map(w => `<span class="word">${w}</span>`).join(' ');
+        });
+    }
+    buildRevealWords();
+
+    let revealScrollTriggers = [];
+    function applyRevealWordEffect(){
+        revealScrollTriggers.forEach(st => st.kill());
+        revealScrollTriggers = [];
+        document.querySelectorAll('.scroll-reveal-text').forEach(el => {
+            const words = el.querySelectorAll('.word');
+            const tween = gsap.to(words, {
+                color: 'var(--ink)', stagger: 1, ease: 'none',
+                scrollTrigger: { trigger: el, start: 'top 80%', end: 'bottom 55%', scrub: .4 }
+            });
+            if (tween.scrollTrigger) revealScrollTriggers.push(tween.scrollTrigger);
+        });
+    }
 
     // ---------- Counter animation ----------
+    // The 4th stat's suffix (" yrs" / " jr") is genuinely bilingual text, unlike the
+    // %/€/+ suffixes elsewhere — so it's read from data-suffix-en/data-suffix-nl
+    // (falling back to data-suffix) instead of being hardcoded, and re-applied on
+    // language change via refreshStatSuffixes() below.
+    let countersAnimated = false;
+    function getSuffix(counter){
+        const lang = (window.kmLang && window.kmLang.get()) || 'en';
+        if (lang === 'nl' && counter.dataset.suffixNl !== undefined) return counter.dataset.suffixNl;
+        if (counter.dataset.suffixEn !== undefined) return counter.dataset.suffixEn;
+        return counter.dataset.suffix || '';
+    }
     function animateCounters(){
         document.querySelectorAll('.stat-number').forEach(counter => {
             const target = parseFloat(counter.dataset.target);
             const prefix = counter.dataset.prefix || '';
-            const suffix = counter.dataset.suffix || '';
+            const suffix = getSuffix(counter);
             let current = 0;
             const increment = target / 50;
             function update(){
@@ -807,6 +876,16 @@
                 }
             }
             update();
+        });
+        countersAnimated = true;
+    }
+    function refreshStatSuffixes(){
+        if (!countersAnimated) return;
+        document.querySelectorAll('.stat-number').forEach(counter => {
+            const target = parseFloat(counter.dataset.target);
+            const prefix = counter.dataset.prefix || '';
+            const suffix = getSuffix(counter);
+            counter.textContent = prefix + target + suffix;
         });
     }
     const statsObserver = new IntersectionObserver((entries) => {
@@ -866,13 +945,7 @@
             scrollTrigger: { trigger: '.cta-band', start: 'top 88%' }
         });
 
-        document.querySelectorAll('.scroll-reveal-text').forEach(el => {
-            const words = el.querySelectorAll('.word');
-            gsap.to(words, {
-                color: 'var(--ink)', stagger: 1, ease: 'none',
-                scrollTrigger: { trigger: el, start: 'top 80%', end: 'bottom 55%', scrub: .4 }
-            });
-        });
+        applyRevealWordEffect();
 
         ScrollTrigger.refresh();
     }
