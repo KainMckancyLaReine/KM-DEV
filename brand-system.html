@@ -4,34 +4,36 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0d0d0d">
-<title>Projects — KM.dev</title>
-<meta name="description" content="Every brand system KM.dev has shipped — real, live projects across SaaS, retail, hospitality, photography and music.">
+<title>The Brand System — KM.dev</title>
+<meta name="description" content="Strategy, Identity, Website and Brand assets — the four parts of the KM.dev brand system, and exactly what you get in each.">
 <meta name="robots" content="index, follow">
-<link rel="canonical" href="https://www.km.dev/projects.html">
+<link rel="canonical" href="https://www.km.dev/brand-system.html">
 <link rel="icon" type="image/svg+xml" href="km-dev-mark.svg">
 <link rel="apple-touch-icon" href="km-dev-mark.svg">
 
 <!-- Open Graph -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="KM.dev">
-<meta property="og:title" content="Projects — KM.dev">
-<meta property="og:description" content="Every brand system KM.dev has shipped — real, live projects.">
-<meta property="og:url" content="https://www.km.dev/projects.html">
-<meta property="og:image" content="https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1200&auto=format&fit=crop">
+<meta property="og:title" content="The Brand System — KM.dev">
+<meta property="og:description" content="Strategy, Identity, Website and Brand assets — one system, broken down part by part.">
+<meta property="og:url" content="https://www.km.dev/brand-system.html">
+<meta property="og:image" content="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=1200&auto=format&fit=crop">
 <meta property="og:locale" content="en_US">
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Projects — KM.dev">
-<meta name="twitter:description" content="Every brand system KM.dev has shipped — real, live projects.">
-<meta name="twitter:image" content="https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1200&auto=format&fit=crop">
+<meta name="twitter:title" content="The Brand System — KM.dev">
+<meta name="twitter:description" content="Strategy, Identity, Website and Brand assets — one system, broken down part by part.">
+<meta name="twitter:image" content="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=1200&auto=format&fit=crop">
 
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "CollectionPage",
-  "name": "KM.dev Projects",
-  "url": "https://www.km.dev/projects.html"
+  "@type": "WebPage",
+  "name": "The Brand System — KM.dev",
+  "url": "https://www.km.dev/brand-system.html",
+  "description": "Strategy, Identity, Website and Brand assets — the four parts of the KM.dev brand system.",
+  "isPartOf": { "@type": "WebSite", "name": "KM.dev", "url": "https://www.km.dev/" }
 }
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -102,37 +104,56 @@
     .two-tone .strong{color:var(--ink);}
     .eyebrow-badge{display:inline-flex;align-items:center;gap:8px;background:var(--paper);border:1px solid var(--line);padding:8px 16px;border-radius:20px;font-size:12.5px;font-weight:600;margin-bottom:26px;}
     .eyebrow-badge .dot{width:7px;height:7px;border-radius:50%;background:#ff8a3d;display:inline-block;}
-    .section-head{margin-bottom:50px;}
-    .section-sub{font-size:15.5px;color:var(--gray);max-width:520px;margin-top:14px;}
 
     /* Intro */
-    .projects-intro{padding:170px 0 40px;text-align:center;}
-    .projects-intro h1{font-size:48px;font-weight:600;letter-spacing:-.02em;margin-bottom:16px;}
-    .projects-intro h1 .muted{color:var(--muted);}
-    .projects-intro p{font-size:18px;color:var(--gray);max-width:600px;margin:0 auto;}
+    .bs-intro{padding:170px 0 30px;text-align:center;}
+    .bs-intro h1{font-size:48px;font-weight:600;letter-spacing:-.02em;margin-bottom:16px;}
+    .bs-intro h1 .muted{color:var(--muted);}
+    .bs-intro p{font-size:18px;color:var(--gray);max-width:600px;margin:0 auto;}
 
-    /* Projects grid */
-    .projects{padding:20px 0 100px;}
-    .projects-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:28px;align-items:stretch;}
-    .project-card{position:relative;background:var(--paper);border:1px solid var(--line);border-radius:26px;overflow:hidden;box-shadow:0 20px 45px -30px rgba(20,18,14,.35);display:flex;flex-direction:column;text-decoration:none;color:inherit;transition:transform .35s ease,box-shadow .35s ease;}
-    .project-card:hover{transform:translateY(-8px);box-shadow:0 30px 55px -25px rgba(20,18,14,.45);}
-    .project-thumb{position:relative;height:230px;overflow:hidden;background:var(--ink);flex-shrink:0;}
-    .project-thumb img{width:100%;height:100%;object-fit:cover;object-position:top;opacity:.92;transition:transform .6s ease,opacity .4s ease;}
-    .project-card:hover .project-thumb img{transform:scale(1.06);opacity:1;}
-    .project-badge{position:absolute;top:18px;left:18px;background:rgba(13,13,13,.75);backdrop-filter:blur(6px);color:#fff;padding:7px 15px;border-radius:20px;font-size:11.5px;font-weight:600;z-index:2;}
-    .project-body{padding:24px 26px 26px;display:flex;flex-direction:column;gap:14px;flex:1;}
-    .project-body-top{display:flex;justify-content:space-between;align-items:center;gap:12px;}
-    .project-name{font-family:'Space Grotesk',sans-serif;font-size:21px;font-weight:600;letter-spacing:-.01em;}
-    .project-view{display:flex;align-items:center;gap:6px;color:var(--gray);font-size:13px;font-weight:600;text-decoration:none;white-space:nowrap;transition:color .3s ease;}
-    .project-card:hover .project-view{color:var(--ink);}
-    .project-view span{transition:transform .3s ease;}
-    .project-card:hover .project-view span{transform:translate(2px,-2px);}
-    .project-desc{font-size:14.5px;color:var(--gray);line-height:1.6;}
-    .project-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:auto;padding-top:4px;}
-    .project-tag{background:var(--bg);border:1px solid var(--line);padding:5px 13px;border-radius:14px;font-size:11.5px;font-weight:600;color:var(--gray);}
+    /* Sub-nav */
+    .bs-subnav{position:sticky;top:18px;z-index:500;padding:30px 0 60px;display:flex;justify-content:center;}
+    .bs-subnav-inner{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;background:rgba(244,243,239,.85);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:30px;padding:6px;box-shadow:0 14px 30px -18px rgba(20,18,14,.3);}
+    .bs-tab{padding:11px 20px;border-radius:22px;font-size:13.5px;font-weight:600;text-decoration:none;color:var(--gray);transition:background .3s ease,color .3s ease;white-space:nowrap;}
+    .bs-tab:hover{color:var(--ink);}
+    .bs-tab.active{background:var(--ink);color:#fff;}
+
+    /* Zig-zag sections */
+    .bs-section{padding:60px 0;border-bottom:1px solid var(--line);}
+    .bs-section:last-of-type{border-bottom:none;}
+    .zigzag{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;}
+    .zigzag.reverse .zigzag-visual{order:2;}
+    .zigzag.reverse .zigzag-text{order:1;}
+    .zigzag-eyebrow{font-family:'Space Mono',monospace;font-size:12.5px;font-weight:700;color:var(--gray);letter-spacing:.03em;margin-bottom:16px;display:block;text-transform:uppercase;}
+    .zigzag-text h2{font-size:32px;font-weight:600;letter-spacing:-.02em;margin-bottom:16px;line-height:1.22;}
+    .zigzag-text p.zigzag-desc{font-size:15.5px;color:var(--gray);margin-bottom:28px;max-width:460px;}
+    .zigzag-visual{position:relative;border-radius:var(--radius);overflow:hidden;min-height:380px;box-shadow:0 30px 60px -20px rgba(20,18,14,.3);background:var(--ink);}
+    .zigzag-visual.single img{width:100%;height:100%;object-fit:cover;}
+
+    .bs-checklist{list-style:none;display:flex;flex-direction:column;gap:13px;}
+    .bs-checklist li{display:flex;align-items:center;gap:12px;font-size:14.5px;font-weight:500;color:var(--ink);}
+    .bs-checklist .check-icon{width:22px;height:22px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+
+    /* Identity stacked showcase */
+    .id-stack{position:relative;width:100%;height:100%;}
+    .id-stack .id-card{position:absolute;border-radius:20px;overflow:hidden;box-shadow:0 25px 50px -18px rgba(20,18,14,.35);}
+    .id-stack .id-card img{width:100%;height:100%;object-fit:cover;}
+    .id-stack .id-card.a{width:64%;height:78%;top:6%;left:0;z-index:2;}
+    .id-stack .id-card.b{width:54%;height:62%;bottom:6%;right:0;z-index:1;}
+
+    /* Website 2x2 grid */
+    .web-grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:14px;width:100%;height:100%;}
+    .web-grid .web-thumb{border-radius:16px;overflow:hidden;box-shadow:0 16px 32px -16px rgba(20,18,14,.35);}
+    .web-grid .web-thumb img{width:100%;height:100%;object-fit:cover;object-position:top;}
+
+    /* Brand assets card */
+    .assets-card{position:relative;width:100%;height:100%;}
+    .assets-card img.assets-bg{width:100%;height:100%;object-fit:cover;opacity:.92;}
+    .assets-mark{position:absolute;top:22px;left:22px;width:60px;height:60px;background:#fff;border-radius:16px;display:flex;align-items:center;justify-content:center;box-shadow:0 12px 26px -10px rgba(0,0,0,.45);}
+    .assets-mark img{width:30px;height:30px;}
 
     /* CTA band */
-    .cta-band{background:var(--ink);color:#fff;border-radius:36px;padding:90px 50px;margin:0 0 100px;text-align:center;position:relative;overflow:hidden;}
+    .cta-band{background:var(--ink);color:#fff;border-radius:36px;padding:90px 50px;margin:20px 0 100px;text-align:center;position:relative;overflow:hidden;}
     .cta-bolt{position:absolute;right:-30px;top:-30px;width:220px;height:220px;opacity:.12;}
     .cta-band-inner{position:relative;z-index:1;}
     .cta-band .eyebrow-badge{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.15);color:#fff;}
@@ -235,12 +256,16 @@
 
     @media (max-width:1000px){
         .footer-top{grid-template-columns:1fr 1fr;}
-        .projects-grid{grid-template-columns:1fr;}
     }
     @media (max-width:860px){
-        .projects-intro{padding:150px 0 30px;}
-        .projects-intro h1{font-size:34px;}
+        .bs-intro{padding:150px 0 20px;}
+        .bs-intro h1{font-size:34px;}
         .two-tone{font-size:30px;}
+        .bs-subnav{top:10px;padding:20px 0 40px;}
+        .zigzag{grid-template-columns:1fr;gap:32px;}
+        .zigzag.reverse .zigzag-visual,.zigzag.reverse .zigzag-text{order:0;}
+        .zigzag-visual{min-height:300px;order:-1;}
+        .zigzag-text h2{font-size:26px;}
         .calendar-content{flex-direction:column;max-height:85vh;overflow-y:auto;}
         .calendar-sidebar{width:100%;border-radius:28px 28px 0 0;max-height:none;overflow-y:visible;}
     }
@@ -252,16 +277,18 @@
         .quick-actions{right:14px;bottom:14px;}
         .calendar-main{overflow-x:auto;}
         .calendar-grid,.week-header,.week-body{min-width:520px;}
-        .project-thumb{height:190px;}
+        .web-grid{gap:8px;}
+        .id-stack{height:280px;}
     }
     @media (max-width:480px){
-        .projects-intro h1{font-size:26px;}
-        .projects-intro p{font-size:15.5px;}
+        .bs-intro h1{font-size:26px;}
+        .bs-intro p{font-size:15.5px;}
         .eyebrow-badge{font-size:11.5px;padding:7px 13px;}
         .two-tone{font-size:24px;}
         .cta-band h2{font-size:22px;}
         .btn-primary,.btn-secondary{padding:14px 22px;font-size:13.5px;}
         .footer-social a,.menu-socials a{width:34px;height:34px;}
+        .bs-tab{padding:9px 14px;font-size:12.5px;}
     }
     @media (max-width:360px){
         .quick-btn{width:46px;height:46px;}
@@ -285,7 +312,7 @@
     <div class="menu-inner">
         <nav class="menu-links">
             <a href="index.html" data-en="Home" data-nl="Home">Home</a>
-            <a href="projects.html" class="active" data-en="Projects" data-nl="Projecten">Projects</a>
+            <a href="projects.html" data-en="Projects" data-nl="Projecten">Projects</a>
             <a href="pricing.html" data-en="Pricing" data-nl="Prijzen">Pricing</a>
             <a href="about.html" data-en="About" data-nl="Over ons">About</a>
             <a href="contact.html" data-en="Contact" data-nl="Contact">Contact</a>
@@ -302,7 +329,7 @@
             </div>
             <div class="menu-cta">
                 <a href="mailto:hello@km.dev">hello@km.dev</a><br><br>
-                <a href="#" class="btn-primary" id="menuScheduleCall" style="background:var(--accent);color:var(--ink);border-color:var(--accent);"><span data-en="Plan a call" data-nl="Plan een gesprek">Plan a call</span> <span class="chev" style="background:var(--ink);color:var(--accent);">→</span></a>
+                <a href="#" class="btn-primary schedule-trigger" id="menuScheduleCall" style="background:var(--accent);color:var(--ink);border-color:var(--accent);"><span data-en="Plan a call" data-nl="Plan een gesprek">Plan a call</span> <span class="chev" style="background:var(--ink);color:var(--accent);">→</span></a>
             </div>
         </div>
     </div>
@@ -373,123 +400,136 @@
     </div>
 </div>
 
-<section class="projects-intro reveal visible">
+<section class="bs-intro reveal visible">
     <div class="container">
-        <div class="eyebrow-badge"><span class="dot"></span> <span data-en="Projects" data-nl="Projecten">Projects</span></div>
-        <h1 data-en-html="Everything we've <span class=&quot;muted&quot;>shipped so far.</span>" data-nl-html="Alles wat we tot nu toe <span class=&quot;muted&quot;>hebben gebouwd.</span>">Everything we've <span class="muted">shipped so far.</span></h1>
-        <p data-en="Every project below is real and live — click through to see the actual site, not a mockup." data-nl="Elk project hieronder is echt en live — klik door naar de daadwerkelijke site, geen mockup.">Every project below is real and live — click through to see the actual site, not a mockup.</p>
+        <div class="eyebrow-badge"><span class="dot"></span> <span data-en="Brand system" data-nl="Brand system">Brand system</span></div>
+        <h1 data-en-html="One system. <span class=&quot;muted&quot;>Three parts, one outcome.</span>" data-nl-html="Eén systeem. <span class=&quot;muted&quot;>Drie onderdelen, één resultaat.</span>">One system. <span class="muted">Three parts, one outcome.</span></h1>
+        <p data-en="Strategy, identity and website aren't separate projects — they're one system. This page breaks down exactly what's included in each part, and what you actually walk away with." data-nl="Strategie, identiteit en website zijn geen losse projecten — het is één systeem. Deze pagina laat precies zien wat elk onderdeel inhoudt, en wat je uiteindelijk in handen krijgt.">Strategy, identity and website aren't separate projects — they're one system. This page breaks down exactly what's included in each part, and what you actually walk away with.</p>
     </div>
 </section>
 
-<section class="projects">
-    <div class="container">
-        <div class="projects-grid">
-            <a href="https://kainmckancylareine.github.io/Wildcore-concept1/" target="_blank" rel="noopener" class="project-card">
-                <div class="project-thumb">
-                    <div class="project-badge" data-en="Outdoor &amp; retreat brand" data-nl="Outdoor- en retreatmerk">Outdoor &amp; retreat brand</div>
-                    <img src="https://image.thum.io/get/width/1200/crop/900/https://kainmckancylareine.github.io/Wildcore-concept1/" alt="Wildcore trail-running retreat landing page" loading="lazy">
-                </div>
-                <div class="project-body">
-                    <div class="project-body-top"><span class="project-name">Wildcore Retreats</span><span class="project-view"><span data-en="Visit site" data-nl="Bekijk site">Visit site</span> <span>↗</span></span></div>
-                    <p class="project-desc" data-en="Trail-running and outdoor retreats brand with a rugged, natural identity and a booking-focused landing page." data-nl="Trail-running en outdoor retreats brand met een ruige, natuurlijke identiteit en een boekingsgerichte landingspagina.">Trail-running en outdoor retreats brand met een ruige, natuurlijke identiteit en een boekingsgerichte landingspagina.</p>
-                    <div class="project-tags"><span class="project-tag" data-en="Outdoor" data-nl="Outdoor">Outdoor</span><span class="project-tag" data-en="Retreats" data-nl="Retreats">Retreats</span><span class="project-tag" data-en="Booking" data-nl="Boekingen">Booking</span></div>
-                </div>
-            </a>
-            <a href="https://kainmckancylareine.github.io/NEXA/index.html" target="_blank" rel="noopener" class="project-card">
-                <div class="project-thumb">
-                    <div class="project-badge" data-en="AI SaaS platform" data-nl="AI SaaS-platform">AI SaaS platform</div>
-                    <img src="foto's/nexafoto.png" alt="NEXA AI workforce operating system dashboard" loading="lazy" style="object-position:left;">
-                </div>
-                <div class="project-body">
-                    <div class="project-body-top"><span class="project-name">NEXA</span><span class="project-view"><span data-en="Visit site" data-nl="Bekijk site">Visit site</span> <span>↗</span></span></div>
-                    <p class="project-desc" data-en="AI workforce operating system — a dashboard to manage and monitor AI employees, with live ROI tracking." data-nl="AI workforce operating system — dashboard om AI-medewerkers aan te sturen en te monitoren, met live ROI-tracking.">AI workforce operating system — dashboard om AI-medewerkers aan te sturen en te monitoren, met live ROI-tracking.</p>
-                    <div class="project-tags"><span class="project-tag" data-en="SaaS" data-nl="SaaS">SaaS</span><span class="project-tag" data-en="AI" data-nl="AI">AI</span><span class="project-tag" data-en="Dashboard" data-nl="Dashboard">Dashboard</span></div>
-                </div>
-            </a>
-            <a href="https://kainmckancylareine.github.io/Mckancy.mc/" target="_blank" rel="noopener" class="project-card">
-                <div class="project-thumb">
-                    <div class="project-badge" data-en="Personal portfolio" data-nl="Persoonlijk portfolio">Personal portfolio</div>
-                    <img src="foto's/kainmckancylareinefoto.png" alt="Kain Mckancy La Reine portfolio site" loading="lazy">
-                </div>
-                <div class="project-body">
-                    <div class="project-body-top"><span class="project-name">Kain Mckancy La Reine</span><span class="project-view"><span data-en="Visit site" data-nl="Bekijk site">Visit site</span> <span>↗</span></span></div>
-                    <p class="project-desc" data-en="Personal portfolio with case studies, way of working and a direct contact flow for freelance projects." data-nl="Persoonlijk portfolio met case studies, werkwijze en een directe contactflow voor freelance opdrachten.">Persoonlijk portfolio met case studies, werkwijze en een directe contactflow voor freelance opdrachten.</p>
-                    <div class="project-tags"><span class="project-tag" data-en="Portfolio" data-nl="Portfolio">Portfolio</span><span class="project-tag" data-en="Personal brand" data-nl="Persoonlijk merk">Personal brand</span></div>
-                </div>
-            </a>
-            <a href="https://kainmckancylareine.github.io/tjez-photo/index.html" target="_blank" rel="noopener" class="project-card">
-                <div class="project-thumb">
-                    <div class="project-badge" data-en="Photography studio" data-nl="Fotografiestudio">Photography studio</div>
-                    <img src="https://image.thum.io/get/width/1200/crop/900/wait/3/https://kainmckancylareine.github.io/tjez-photo/index.html" alt="TJEZ Photography landing page" loading="lazy">
-                </div>
-                <div class="project-body">
-                    <div class="project-body-top"><span class="project-name">TJEZ Photography</span><span class="project-view"><span data-en="Visit site" data-nl="Bekijk site">Visit site</span> <span>↗</span></span></div>
-                    <p class="project-desc" data-en="Photography studio landing page with a portfolio showcase and booking options for shoots." data-nl="Fotografiestudio landingspagina met portfolio-showcase en boekingsopties voor shoots.">Fotografiestudio landingspagina met portfolio-showcase en boekingsopties voor shoots.</p>
-                    <div class="project-tags"><span class="project-tag" data-en="Photography" data-nl="Fotografie">Photography</span><span class="project-tag" data-en="Studio" data-nl="Studio">Studio</span><span class="project-tag" data-en="Booking" data-nl="Boekingen">Booking</span></div>
-                </div>
-            </a>
-            <a href="https://kainmckancylareine.github.io/huize-feniks-concept/" target="_blank" rel="noopener" class="project-card">
-                <div class="project-thumb">
-                    <div class="project-badge" data-en="Music academy &amp; studio brand" data-nl="Muziekacademie- en studiomerk">Music academy &amp; studio brand</div>
-                    <img src="foto's/huizefeniks.png" alt="Huize Feniks music academy landing page" loading="lazy">
-                </div>
-                <div class="project-body">
-                    <div class="project-body-top"><span class="project-name">Huize Feniks</span><span class="project-view"><span data-en="Visit site" data-nl="Bekijk site">Visit site</span> <span>↗</span></span></div>
-                    <p class="project-desc" data-en="Music academy and studio brand with lesson offerings, studio rental and a sign-up form." data-nl="Muziekacademie en studio brand met lesaanbod, studioverhuur en een inschrijfformulier.">Muziekacademie en studio brand met lesaanbod, studioverhuur en een inschrijfformulier.</p>
-                    <div class="project-tags"><span class="project-tag" data-en="Music" data-nl="Muziek">Music</span><span class="project-tag" data-en="Education" data-nl="Educatie">Education</span><span class="project-tag" data-en="Studio" data-nl="Studio">Studio</span></div>
-                </div>
-            </a>
-            <a href="https://kainmckancylareine.github.io/AURORA-DESIGN/" target="_blank" rel="noopener" class="project-card">
-                <div class="project-thumb">
-                    <div class="project-badge" data-en="Fashion &amp; retail brand" data-nl="Mode- en retailmerk">Fashion &amp; retail brand</div>
-                    <img src="foto's/aurora.png" alt="Aurora Design premium fashion brand landing page" loading="lazy">
-                </div>
-                <div class="project-body">
-                    <div class="project-body-top"><span class="project-name">Aurora Design</span><span class="project-view"><span data-en="Visit site" data-nl="Bekijk site">Visit site</span> <span>↗</span></span></div>
-                    <p class="project-desc" data-en="Premium fashion house from Amsterdam with seasonal collections, a shop and a sustainability story." data-nl="Premium fashion house uit Amsterdam met seizoenscollecties, shop en een duurzaamheidsverhaal.">Premium fashion house uit Amsterdam met seizoenscollecties, shop en een duurzaamheidsverhaal.</p>
-                    <div class="project-tags"><span class="project-tag" data-en="Fashion" data-nl="Mode">Fashion</span><span class="project-tag" data-en="E-commerce" data-nl="E-commerce">E-commerce</span><span class="project-tag" data-en="Retail" data-nl="Retail">Retail</span></div>
-                </div>
-            </a>
-            <a href="https://kainmckancylareine.github.io/Fit_BY_ZAALMAN/" target="_blank" rel="noopener" class="project-card">
-                <div class="project-thumb">
-                    <div class="project-badge" data-en="Physiotherapy &amp; personal training" data-nl="Fysiotherapie &amp; personal training">Physiotherapy &amp; personal training</div>
-                    <img src="foto's/fit-by.png" alt="Fit by Zaalman physiotherapy and personal training landing page" loading="lazy" style="object-position:left;">
-                </div>
-                <div class="project-body">
-                    <div class="project-body-top"><span class="project-name">Fit by Zaalman</span><span class="project-view"><span data-en="Visit site" data-nl="Bekijk site">Visit site</span> <span>↗</span></span></div>
-                    <p class="project-desc" data-en="BIG-registered physiotherapist and personal trainer with services, rates and a booking flow." data-nl="BIG-geregistreerde fysiotherapeut en personal trainer met diensten, tarieven en een afsprakenflow.">BIG-geregistreerde fysiotherapeut en personal trainer met diensten, tarieven en een afsprakenflow.</p>
-                    <div class="project-tags"><span class="project-tag" data-en="Health" data-nl="Gezondheid">Health</span><span class="project-tag" data-en="Physiotherapy" data-nl="Fysiotherapie">Fysiotherapie</span><span class="project-tag" data-en="Booking" data-nl="Boekingen">Booking</span></div>
-                </div>
-            </a>
-            <a href="https://kainmckancylareine.github.io/BIT-QUIZ/" target="_blank" rel="noopener" class="project-card">
-                <div class="project-thumb">
-                    <div class="project-badge" data-en="Quiz &amp; educational app" data-nl="Quiz- en onderwijsapp">Quiz &amp; educational app</div>
-                    <img src="foto's/bitquiz.png" alt="BIT-QUIZ interactive quiz app landing page" loading="lazy">
-                </div>
-                <div class="project-body">
-                    <div class="project-body-top"><span class="project-name">BIT-QUIZ</span><span class="project-view"><span data-en="Visit site" data-nl="Bekijk site">Visit site</span> <span>↗</span></span></div>
-                    <p class="project-desc" data-en="Interactive quiz app with a question and scoring system, built for a fast and playful learning experience." data-nl="Interactieve quiz-app met vraag- en scoresysteem, gebouwd voor een snelle en speelse leerervaring.">Interactieve quiz-app met vraag- en scoresysteem, gebouwd voor een snelle en speelse leerervaring.</p>
-                    <div class="project-tags"><span class="project-tag" data-en="Quiz" data-nl="Quiz">Quiz</span><span class="project-tag" data-en="Education" data-nl="Educatie">Education</span><span class="project-tag" data-en="Interactive" data-nl="Interactief">Interactive</span></div>
-                </div>
-            </a>
-        </div>
+<nav class="bs-subnav">
+    <div class="bs-subnav-inner">
+        <a href="#strategy" class="bs-tab" data-en="Strategy" data-nl="Strategie">Strategy</a>
+        <a href="#identity" class="bs-tab" data-en="Identity" data-nl="Identiteit">Identity</a>
+        <a href="#website" class="bs-tab" data-en="Website" data-nl="Website">Website</a>
+        <a href="#brand-assets" class="bs-tab" data-en="Brand assets" data-nl="Brand assets">Brand assets</a>
     </div>
-</section>
+</nav>
 
-<div class="container">
-    <div class="cta-band">
-        <svg class="cta-bolt" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M55 2 L15 58 H45 L38 98 L85 40 H52 L55 2Z" fill="#c6ff4a"/></svg>
-        <div class="cta-band-inner">
-            <div class="eyebrow-badge"><span class="dot"></span> <span data-en="1 spot open — Q3" data-nl="1 plek vrij — Q3">1 spot open — Q3</span></div>
-            <h2 data-en="Want your brand on this list?" data-nl="Wil jij je merk op deze lijst?">Want your brand on this list?</h2>
-            <p data-en="Book a 25-minute call and we'll figure out exactly what your project needs — no pressure, no sales script." data-nl="Plan een gesprek van 25 minuten en we bepalen precies wat jouw project nodig heeft — geen druk, geen verkooppraatje.">Book a 25-minute call and we'll figure out exactly what your project needs — no pressure, no sales script.</p>
-            <div class="cta-band-buttons">
-                <a href="#" class="btn-primary schedule-trigger"><span data-en="Plan a call" data-nl="Plan een gesprek">Plan a call</span> <span class="chev">→</span></a>
-                <a href="pricing.html" class="btn-secondary" data-en="See pricing" data-nl="Bekijk prijzen">See pricing</a>
+<main>
+    <div class="container">
+
+        <!-- 01 Strategy -->
+        <section class="bs-section" id="strategy">
+            <div class="zigzag">
+                <div class="zigzag-text">
+                    <span class="zigzag-eyebrow" data-en="01 — Strategy" data-nl="01 — Strategie">01 — Strategy</span>
+                    <h2 data-en="Get the offer right before you design anything." data-nl="Zet eerst het aanbod recht, voordat er iets wordt ontworpen.">Get the offer right before you design anything.</h2>
+                    <p class="zigzag-desc" data-en="Most brands fail before design even starts — because the positioning, offer and pricing were never solid to begin with. Strategy is where we figure out who you're really for, what you're actually selling, and how to price it with confidence." data-nl="De meeste merken falen nog vóór het ontwerp begint — omdat de positionering, het aanbod en de prijzen nooit goed op orde waren. Bij Strategie bepalen we voor wie je er echt bent, wat je daadwerkelijk verkoopt, en hoe je dat met vertrouwen kunt prijzen.">Most brands fail before design even starts — because the positioning, offer and pricing were never solid to begin with. Strategy is where we figure out who you're really for, what you're actually selling, and how to price it with confidence.</p>
+                    <ul class="bs-checklist">
+                        <li><span class="check-icon"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span><span data-en="Market positioning" data-nl="Marktpositionering">Market positioning</span></li>
+                        <li><span class="check-icon"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span><span data-en="Offer architecture &amp; pricing" data-nl="Aanbod-architectuur &amp; prijsstelling">Offer architecture &amp; pricing</span></li>
+                        <li><span class="check-icon"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span><span data-en="Brand voice &amp; messaging" data-nl="Merkstem &amp; boodschap">Brand voice &amp; messaging</span></li>
+                        <li><span class="check-icon"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span><span data-en="Customer journey mapping" data-nl="Customer journey in kaart brengen">Customer journey mapping</span></li>
+                        <li><span class="check-icon"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span><span data-en="Growth roadmap" data-nl="Groeiroutekaart">Growth roadmap</span></li>
+                    </ul>
+                </div>
+                <div class="zigzag-visual single">
+                    <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=1200&auto=format&fit=crop" alt="Strategy session mapping out positioning and roadmap on a whiteboard" data-en-alt="Strategy session mapping out positioning and roadmap on a whiteboard" data-nl-alt="Strategiesessie waarin positionering en routekaart worden uitgewerkt op een whiteboard" loading="lazy">
+                </div>
+            </div>
+        </section>
+
+        <!-- 02 Identity -->
+        <section class="bs-section" id="identity">
+            <div class="zigzag reverse">
+                <div class="zigzag-text">
+                    <span class="zigzag-eyebrow" data-en="02 — Identity" data-nl="02 — Identiteit">02 — Identity</span>
+                    <h2 data-en="A visual language people actually recognize." data-nl="Een visuele taal die mensen ook echt herkennen.">A visual language people actually recognize.</h2>
+                    <p class="zigzag-desc" data-en="Logo, color, type and every touchpoint in between — built into one coherent system, then documented so anyone on your team can use it correctly, forever." data-nl="Logo, kleur, typografie en alle contactmomenten daartussen — samengebracht in één samenhangend systeem, en vastgelegd zodat iedereen in je team het correct kan blijven gebruiken.">Logo, color, type and every touchpoint in between — built into one coherent system, then documented so anyone on your team can use it correctly, forever.</p>
+                    <ul class="bs-checklist">
+                        <li><span class="check-icon"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span><span data-en="Logo &amp; wordmark" data-nl="Logo &amp; woordmerk">Logo &amp; wordmark</span></li>
+                        <li><span class="check-icon"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span><span data-en="Color &amp; type system" data-nl="Kleur- &amp; typesysteem">Color &amp; type system</span></li>
+                        <li><span class="check-icon"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span><span data-en="Brand guidelines document" data-nl="Brand guidelines document">Brand guidelines document</span></li>
+                        <li><span class="check-icon"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span><span data-en="Social &amp; content templates" data-nl="Social- &amp; contentsjablonen">Social &amp; content templates</span></li>
+                        <li><span class="check-icon"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span><span data-en="Print &amp; merch-ready assets" data-nl="Print- &amp; merchandise-klare assets">Print &amp; merch-ready assets</span></li>
+                    </ul>
+                </div>
+                <div class="zigzag-visual">
+                    <div class="id-stack">
+                        <div class="id-card a"><img src="foto's/aurora.png" alt="Aurora Design brand identity system" data-en-alt="Aurora Design brand identity system" data-nl-alt="Aurora Design merkidentiteitssysteem" loading="lazy"></div>
+                        <div class="id-card b"><img src="foto's/huizefeniks.png" alt="Huize Feniks brand identity system" data-en-alt="Huize Feniks brand identity system" data-nl-alt="Huize Feniks merkidentiteitssysteem" loading="lazy"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 03 Website -->
+        <section class="bs-section" id="website">
+            <div class="zigzag">
+                <div class="zigzag-text">
+                    <span class="zigzag-eyebrow" data-en="03 — Website" data-nl="03 — Website">03 — Website</span>
+                    <h2 data-en="A site built to convert, not just to look good." data-nl="Een site die gebouwd is om te converteren, niet alleen om er goed uit te zien.">A site built to convert, not just to look good.</h2>
+                    <p class="zigzag-desc" data-en="Fully responsive, no bloated CMS, booking and contact flows built in, animation that feels intentional, and the SEO fundamentals covered from day one." data-nl="Volledig responsive, geen opgeblazen CMS, boekings- en contactflows ingebouwd, animatie die doelbewust aanvoelt, en de SEO-basis vanaf dag één op orde.">Fully responsive, no bloated CMS, booking and contact flows built in, animation that feels intentional, and the SEO fundamentals covered from day one.</p>
+                    <ul class="bs-checklist">
+                        <li><span class="check-icon"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span><span data-en="Responsive, no-CMS static build" data-nl="Responsive, CMS-vrije statische build">Responsive, no-CMS static build</span></li>
+                        <li><span class="check-icon"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span><span data-en="Booking &amp; contact flows" data-nl="Boekings- &amp; contactflows">Booking &amp; contact flows</span></li>
+                        <li><span class="check-icon"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span><span data-en="On-page SEO fundamentals" data-nl="On-page SEO-basis">On-page SEO fundamentals</span></li>
+                        <li><span class="check-icon"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span><span data-en="Motion &amp; micro-interactions" data-nl="Motion &amp; micro-interacties">Motion &amp; micro-interactions</span></li>
+                        <li><span class="check-icon"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span><span data-en="Fast, lightweight hosting" data-nl="Snelle, lichte hosting">Fast, lightweight hosting</span></li>
+                    </ul>
+                </div>
+                <div class="zigzag-visual">
+                    <div class="web-grid">
+                        <div class="web-thumb"><img src="foto's/nexafoto.png" alt="NEXA AI SaaS dashboard website" data-en-alt="NEXA AI SaaS dashboard website" data-nl-alt="NEXA AI SaaS-dashboard website" loading="lazy"></div>
+                        <div class="web-thumb"><img src="foto's/kainmckancylareinefoto.png" alt="Personal portfolio website" data-en-alt="Personal portfolio website" data-nl-alt="Persoonlijk portfolio website" loading="lazy"></div>
+                        <div class="web-thumb"><img src="foto's/fit-by.png" alt="Fit by Zaalman physiotherapy website" data-en-alt="Fit by Zaalman physiotherapy website" data-nl-alt="Fit by Zaalman fysiotherapie website" loading="lazy"></div>
+                        <div class="web-thumb"><img src="foto's/bitquiz.png" alt="BIT-QUIZ interactive quiz app website" data-en-alt="BIT-QUIZ interactive quiz app website" data-nl-alt="BIT-QUIZ interactieve quiz-app website" loading="lazy"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 04 Brand assets -->
+        <section class="bs-section" id="brand-assets">
+            <div class="zigzag reverse">
+                <div class="zigzag-text">
+                    <span class="zigzag-eyebrow" data-en="04 — Brand assets" data-nl="04 — Brand assets">04 — Brand assets</span>
+                    <h2 data-en="Everything you need to run with it, yourself." data-nl="Alles wat je nodig hebt om er zelf mee verder te gaan.">Everything you need to run with it, yourself.</h2>
+                    <p class="zigzag-desc" data-en="You don't just get a live site — you get the full source package. Editable files, a proper style guide, and a month of support after we launch, so nothing feels like a black box." data-nl="Je krijgt niet alleen een live site — je krijgt het volledige bronbestanden-pakket. Bewerkbare bestanden, een echte stijlgids, en een maand support na livegang, zodat niets aanvoelt als een black box.">You don't just get a live site — you get the full source package. Editable files, a proper style guide, and a month of support after we launch, so nothing feels like a black box.</p>
+                    <ul class="bs-checklist">
+                        <li><span class="check-icon"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span><span data-en="Editable source files (Figma)" data-nl="Bewerkbare bronbestanden (Figma)">Editable source files (Figma)</span></li>
+                        <li><span class="check-icon"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span><span data-en="Icon &amp; asset library" data-nl="Icoon- &amp; assetbibliotheek">Icon &amp; asset library</span></li>
+                        <li><span class="check-icon"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span><span data-en="PDF style guide" data-nl="PDF-stijlgids">PDF style guide</span></li>
+                        <li><span class="check-icon"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span><span data-en="Ready-to-use templates" data-nl="Kant-en-klare templates">Ready-to-use templates</span></li>
+                        <li><span class="check-icon"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span><span data-en="30 days of post-launch support" data-nl="30 dagen support na livegang">30 days of post-launch support</span></li>
+                    </ul>
+                </div>
+                <div class="zigzag-visual">
+                    <div class="assets-card">
+                        <img class="assets-bg" src="kmap1.png" alt="Brand assets and deliverables preview" data-en-alt="Brand assets and deliverables preview" data-nl-alt="Preview van brand assets en deliverables" loading="lazy">
+                        <div class="assets-mark"><img src="km-dev-mark.svg" alt="KM.dev mark" data-en-alt="KM.dev mark" data-nl-alt="KM.dev merkteken"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="cta-band">
+            <svg class="cta-bolt" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M55 2 L15 58 H45 L38 98 L85 40 H52 L55 2Z" fill="#c6ff4a"/></svg>
+            <div class="cta-band-inner">
+                <div class="eyebrow-badge"><span class="dot"></span> <span data-en="1 spot open — Q3" data-nl="1 plek vrij — Q3">1 spot open — Q3</span></div>
+                <h2 data-en="Want this for your brand?" data-nl="Wil jij dit voor jouw merk?">Want this for your brand?</h2>
+                <p data-en="Book a call and we'll map out exactly which parts of the system your brand needs right now." data-nl="Plan een gesprek en we brengen precies in kaart welke onderdelen van het systeem jouw merk nu nodig heeft.">Book a call and we'll map out exactly which parts of the system your brand needs right now.</p>
+                <div class="cta-band-buttons">
+                    <a href="#" class="btn-primary schedule-trigger"><span data-en="Plan a call" data-nl="Plan een gesprek">Plan a call</span> <span class="chev">→</span></a>
+                    <a href="pricing.html" class="btn-secondary" data-en="See pricing" data-nl="Bekijk prijzen">See pricing</a>
+                </div>
             </div>
         </div>
+
     </div>
-</div>
+</main>
 
 <footer class="footer">
     <div class="container">
@@ -511,15 +551,16 @@
                     <li><a href="pricing.html" data-en="Pricing" data-nl="Prijzen">Pricing</a></li>
                     <li><a href="about.html" data-en="About" data-nl="Over ons">About</a></li>
                     <li><a href="contact.html" data-en="Contact" data-nl="Contact">Contact</a></li>
+                    <li><a href="brand-system.html" data-en="Brand system" data-nl="Brand system">Brand system</a></li>
                 </ul>
             </div>
             <div class="footer-col">
                 <h4 data-en="Brand system" data-nl="Brand system">Brand system</h4>
                 <ul>
-                    <li><a href="brand-system.html#strategy" data-en="Strategy" data-nl="Strategie">Strategy</a></li>
-                    <li><a href="brand-system.html#identity" data-en="Identity" data-nl="Identiteit">Identity</a></li>
-                    <li><a href="brand-system.html#website" data-en="Website" data-nl="Website">Website</a></li>
-                    <li><a href="brand-system.html#brand-assets" data-en="Brand assets" data-nl="Brand assets">Brand assets</a></li>
+                    <li><a href="#strategy" data-en="Strategy" data-nl="Strategie">Strategy</a></li>
+                    <li><a href="#identity" data-en="Identity" data-nl="Identiteit">Identity</a></li>
+                    <li><a href="#website" data-en="Website" data-nl="Website">Website</a></li>
+                    <li><a href="#brand-assets" data-en="Brand assets" data-nl="Brand assets">Brand assets</a></li>
                 </ul>
             </div>
             <div class="footer-col">
@@ -547,7 +588,7 @@
         hamburgerBtn.classList.toggle('open', isOpen);
         document.body.style.overflow = isOpen ? 'hidden' : 'auto';
     });
-    menuOverlay.querySelectorAll('a').forEach(a => {
+    menuOverlay.querySelectorAll('a:not(.schedule-trigger)').forEach(a => {
         a.addEventListener('click', function(){
             menuOverlay.classList.remove('open');
             hamburgerBtn.classList.remove('open');
@@ -743,6 +784,24 @@
         if (calendarModal.classList.contains('active')) generateCalendar();
     });
 
+    // ---------- Sub-nav active state ----------
+    (function initSubnav(){
+        const subnavLinks = document.querySelectorAll('.bs-subnav .bs-tab');
+        const sections = document.querySelectorAll('.bs-section[id]');
+        if (!subnavLinks.length || !sections.length || !('IntersectionObserver' in window)) return;
+        const navObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting){
+                    const id = entry.target.getAttribute('id');
+                    subnavLinks.forEach(link => {
+                        link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+                    });
+                }
+            });
+        }, { rootMargin: '-40% 0px -50% 0px', threshold: 0 });
+        sections.forEach(sec => navObserver.observe(sec));
+    })();
+
     // ---------- GSAP effects ----------
     gsap.registerPlugin(ScrollTrigger);
 
@@ -752,8 +811,9 @@
     const introTl = gsap.timeline({ delay: .2, defaults: { ease: 'power3.out' } });
     introTl
         .from('.eyebrow-badge', { y: 20, opacity: 0, duration: .6 })
-        .from('.projects-intro h1', { y: 30, opacity: 0, duration: .8 }, '-=.35')
-        .from('.projects-intro p', { y: 20, opacity: 0, duration: .6 }, '-=.5');
+        .from('.bs-intro h1', { y: 30, opacity: 0, duration: .8 }, '-=.35')
+        .from('.bs-intro p', { y: 20, opacity: 0, duration: .6 }, '-=.5')
+        .from('.bs-subnav-inner', { y: 16, opacity: 0, duration: .6 }, '-=.3');
 
     function initScrollReveals(){
         function revealSection(sectionSelector, itemsSelector){
@@ -766,8 +826,15 @@
                 });
             });
         }
-        revealSection('.projects', '.project-card');
+        revealSection('.bs-section', '.zigzag-eyebrow, .zigzag-text h2, .zigzag-desc, .bs-checklist li');
         revealSection('.footer', ':scope .footer-top > div, :scope .footer-top > .footer-col');
+
+        gsap.utils.toArray('.zigzag-visual').forEach(visual => {
+            gsap.from(visual, {
+                scale: .93, opacity: 0, duration: .9, ease: 'power3.out',
+                scrollTrigger: { trigger: visual, start: 'top 85%' }
+            });
+        });
 
         gsap.from('.cta-band-inner > *', {
             y: 24, opacity: 0, duration: .7, stagger: .1, ease: 'power2.out',
@@ -791,12 +858,12 @@
         btn.addEventListener('mouseleave', () => gsap.to(btn, { x: 0, y: 0, duration: .6, ease: 'elastic.out(1,0.4)' }));
     });
 
-    document.querySelectorAll('.project-card').forEach(card => {
+    document.querySelectorAll('.zigzag-visual').forEach(card => {
         card.addEventListener('mousemove', (e) => {
             const r = card.getBoundingClientRect();
             const x = (e.clientX - r.left) / r.width - .5;
             const y = (e.clientY - r.top) / r.height - .5;
-            gsap.to(card, { rotateY: x * 8, rotateX: -y * 8, transformPerspective: 800, duration: .5, ease: 'power2.out' });
+            gsap.to(card, { rotateY: x * 6, rotateX: -y * 6, transformPerspective: 800, duration: .5, ease: 'power2.out' });
         });
         card.addEventListener('mouseleave', () => gsap.to(card, { rotateY: 0, rotateX: 0, duration: .6, ease: 'power3.out' }));
     });
@@ -815,7 +882,8 @@
 <script>
     window.addEventListener('load', function(){
         setTimeout(function(){
-            var selector = '.project-card, .footer-top > div, .footer-top > .footer-col, .cta-band-inner > *';
+            var selector = '.zigzag-eyebrow, .zigzag-text h2, .zigzag-desc, .bs-checklist li, '
+                + '.zigzag-visual, .footer-top > div, .footer-top > .footer-col, .cta-band-inner > *';
             document.querySelectorAll(selector).forEach(function(el){
                 if (window.getComputedStyle(el).opacity === '0'){
                     el.style.setProperty('opacity', '1', 'important');
