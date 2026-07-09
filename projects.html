@@ -131,6 +131,57 @@
     .project-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:auto;padding-top:4px;}
     .project-tag{background:var(--bg);border:1px solid var(--line);padding:5px 13px;border-radius:14px;font-size:11.5px;font-weight:600;color:var(--gray);}
 
+    /* Folders (project categories) */
+    .folders-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:28px;}
+    .folder-card{appearance:none;-webkit-appearance:none;margin:0;position:relative;background:var(--paper);border:1px solid var(--line);border-radius:26px;padding:0;overflow:hidden;cursor:pointer;text-align:left;display:flex;flex-direction:column;box-shadow:0 20px 45px -30px rgba(20,18,14,.35);transition:transform .4s ease,box-shadow .4s ease;font:inherit;color:inherit;width:100%;}
+    .folder-card:hover{transform:translateY(-8px);box-shadow:0 30px 55px -25px rgba(20,18,14,.45);}
+    .folder-card:focus-visible{outline:2px solid var(--ink);outline-offset:3px;}
+    .folder-visual{position:relative;height:215px;background:var(--paper);overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .folder-soon-badge{position:absolute;top:16px;right:16px;background:var(--ink);color:#fff;padding:5px 12px;border-radius:14px;font-size:10.5px;font-weight:700;z-index:5;}
+    .folder-illustration{width:88%;max-width:280px;height:auto;overflow:visible;display:block;}
+    .folder-photo{opacity:0;transition:transform .55s cubic-bezier(.2,.8,.2,1),opacity .4s ease;}
+    .folder-card:hover .folder-photo{opacity:1;}
+    .folder-card:hover .folder-photo-a{transform:translate(92px,46px) rotate(-23deg);}
+    .folder-card:hover .folder-photo-c{transform:translate(208px,46px) rotate(22deg);}
+    .folder-card:hover .folder-photo-b{transform:translate(150px,26px) rotate(-2deg) scale(1.06);}
+    .folder-card:hover .folder-photo-single{transform:translate(150px,38px) rotate(0deg) scale(1.05);}
+
+    .folder-body{padding:22px 26px 26px;display:flex;flex-direction:column;gap:10px;flex:1;}
+    .folder-name-row{display:flex;justify-content:space-between;align-items:center;gap:10px;}
+    .folder-name{font-family:'Space Grotesk',sans-serif;font-size:21px;font-weight:600;letter-spacing:-.01em;}
+    .folder-count{font-family:'Space Mono',monospace;font-size:11.5px;color:var(--gray);background:var(--bg);border:1px solid var(--line);padding:4px 10px;border-radius:12px;white-space:nowrap;}
+    .folder-desc{font-size:14px;color:var(--gray);line-height:1.55;}
+    .folder-open{display:flex;align-items:center;gap:6px;color:var(--ink);font-size:13px;font-weight:600;margin-top:auto;padding-top:6px;}
+    .folder-open span{transition:transform .3s ease;}
+    .folder-card:hover .folder-open span{transform:translate(3px,-3px);}
+
+    /* Folder modal (opened folder view) */
+    .folder-modal{position:fixed;inset:0;background:rgba(13,13,13,.75);backdrop-filter:blur(10px);z-index:10000;opacity:0;visibility:hidden;transition:opacity .3s ease,visibility .3s ease;padding:70px 20px;overflow-y:auto;}
+    .folder-modal.active{opacity:1;visibility:visible;}
+    .folder-modal-content{background:var(--bg);border-radius:32px;padding:44px 36px 50px;max-width:1180px;width:100%;position:relative;transform:translateY(24px) scale(.98);transition:transform .35s ease;margin:0 auto;}
+    .folder-modal.active .folder-modal-content{transform:translateY(0) scale(1);}
+    .folder-modal-close{position:absolute;top:22px;right:22px;width:38px;height:38px;border-radius:50%;background:var(--paper);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:19px;color:var(--gray);transition:background .3s ease,color .3s ease;z-index:5;}
+    .folder-modal-close:hover{background:var(--ink);color:#fff;}
+    .folder-modal-back{background:transparent;border:none;color:var(--gray);font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;margin-bottom:20px;padding:0;transition:color .3s ease;font-family:inherit;}
+    .folder-modal-back:hover{color:var(--ink);}
+    .folder-modal-head{max-width:640px;margin-bottom:36px;padding-right:40px;}
+    .folder-modal-head h2{font-size:32px;font-weight:600;letter-spacing:-.02em;margin-bottom:10px;}
+    .folder-modal-head p{color:var(--gray);font-size:15px;}
+    .folder-modal-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:24px;}
+    .folder-modal-empty{text-align:center;padding:50px 20px 10px;}
+    .folder-modal-empty img{max-width:220px;margin:0 auto 26px;border-radius:20px;box-shadow:0 25px 50px -20px rgba(0,0,0,.35);}
+    .folder-modal-empty h3{font-size:19px;color:var(--ink);margin-bottom:8px;font-family:'Space Grotesk',sans-serif;}
+    .folder-modal-empty p{color:var(--gray);font-size:14.5px;max-width:420px;margin:0 auto;}
+    .folder-brand-hero{display:flex;gap:32px;align-items:center;flex-wrap:wrap;background:var(--paper);border:1px solid var(--line);border-radius:24px;padding:24px;margin-bottom:28px;}
+    .folder-brand-hero img{width:220px;border-radius:16px;flex-shrink:0;box-shadow:0 25px 50px -20px rgba(0,0,0,.35);}
+    .folder-brand-hero-text{flex:1;min-width:220px;}
+    .folder-brand-hero-text p{color:var(--gray);font-size:14.5px;line-height:1.6;margin-bottom:18px;}
+    .folder-asset-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;}
+    .folder-asset-tile{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:20px;display:flex;flex-direction:column;align-items:center;gap:12px;text-decoration:none;color:inherit;transition:transform .3s ease,box-shadow .3s ease;}
+    .folder-asset-tile:hover{transform:translateY(-4px);box-shadow:0 20px 35px -20px rgba(20,18,14,.4);}
+    .folder-asset-tile img{max-height:56px;max-width:100%;}
+    .folder-asset-tile span{font-size:12.5px;font-weight:600;color:var(--gray);}
+
     /* CTA band */
     .cta-band{background:var(--ink);color:#fff;border-radius:36px;padding:90px 50px;margin:0 0 100px;text-align:center;position:relative;overflow:hidden;}
     .cta-bolt{position:absolute;right:-30px;top:-30px;width:220px;height:220px;opacity:.12;}
@@ -236,6 +287,7 @@
     @media (max-width:1000px){
         .footer-top{grid-template-columns:1fr 1fr;}
         .projects-grid{grid-template-columns:1fr;}
+        .folders-grid{grid-template-columns:1fr;}
     }
     @media (max-width:860px){
         .projects-intro{padding:150px 0 30px;}
@@ -253,6 +305,11 @@
         .calendar-main{overflow-x:auto;}
         .calendar-grid,.week-header,.week-body{min-width:520px;}
         .project-thumb{height:190px;}
+        .folder-modal{padding:24px 12px;}
+        .folder-modal-content{padding:30px 20px 36px;border-radius:24px;}
+        .folder-modal-head h2{font-size:26px;}
+        .folder-brand-hero{padding:18px;}
+        .folder-brand-hero img{width:100%;}
     }
     @media (max-width:480px){
         .projects-intro h1{font-size:26px;}
@@ -269,6 +326,29 @@
 </style>
 </head>
 <body>
+
+<!-- Shared SVG defs for the folder illustrations -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+        <linearGradient id="folderBackGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#3c3c3c"/>
+            <stop offset="100%" stop-color="#262626"/>
+        </linearGradient>
+        <linearGradient id="folderFrontGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#232323"/>
+            <stop offset="55%" stop-color="#131313"/>
+            <stop offset="100%" stop-color="#0a0a0a"/>
+        </linearGradient>
+        <filter id="folderShadow" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="12" stdDeviation="12" flood-color="#0d0d0d" flood-opacity="0.30"/>
+        </filter>
+        <filter id="folderPhotoShadow" x="-50%" y="-50%" width="200%" height="200%">
+            <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#0d0d0d" flood-opacity="0.28"/>
+        </filter>
+        <clipPath id="folderClipStack" clipPathUnits="userSpaceOnUse"><rect x="-42" y="-55" width="84" height="110" rx="7"/></clipPath>
+        <clipPath id="folderClipSingle" clipPathUnits="userSpaceOnUse"><rect x="-58" y="-50" width="116" height="100" rx="10"/></clipPath>
+    </defs>
+</svg>
 
 <!-- Pill Nav -->
 <div class="pill-nav">
@@ -378,13 +458,116 @@
     <div class="container">
         <div class="eyebrow-badge"><span class="dot"></span> <span data-en="Projects" data-nl="Projecten">Projects</span></div>
         <h1 data-en-html="Everything we've <span class=&quot;muted&quot;>shipped so far.</span>" data-nl-html="Alles wat we tot nu toe <span class=&quot;muted&quot;>hebben gebouwd.</span>">Everything we've <span class="muted">shipped so far.</span></h1>
-        <p data-en="Every project below is real and live — click through to see the actual site, not a mockup." data-nl="Elk project hieronder is echt en live — klik door naar de daadwerkelijke site, geen mockup.">Every project below is real and live — click through to see the actual site, not a mockup.</p>
+        <p data-en="Browse by folder — click one open to see every project inside. Everything is real and live, not a mockup." data-nl="Blader per map — klik er een open om alle projecten erin te zien. Alles is echt en live, geen mockup.">Browse by folder — click one open to see every project inside. Everything is real and live, not a mockup.</p>
     </div>
 </section>
 
 <section class="projects">
     <div class="container">
-        <div class="projects-grid">
+        <div class="folders-grid">
+            <button type="button" class="folder-card" data-folder="websites" aria-haspopup="dialog">
+                <div class="folder-visual">
+                    <svg class="folder-illustration" viewBox="0 0 300 220" aria-hidden="true">
+                        <g filter="url(#folderShadow)">
+                            <path d="M40,60 C40,50 48,42 58,42 H140 L158,64 H262 C272,64 280,72 280,82 V165 C280,175 272,183 262,183 H58 C48,183 40,175 40,165 Z" fill="url(#folderBackGrad)" stroke="#000" stroke-opacity="0.35" stroke-width="1.5"/>
+                        </g>
+                        <g filter="url(#folderPhotoShadow)">
+                            <g class="folder-photo folder-photo-a" transform="translate(110,100) rotate(-8)">
+                                <rect x="-46" y="-59" width="92" height="118" rx="10" fill="#fff"/>
+                                <image href="foto's/aurora.png" x="-42" y="-55" width="84" height="110" clip-path="url(#folderClipStack)" preserveAspectRatio="xMidYMid slice"/>
+                            </g>
+                            <g class="folder-photo folder-photo-c" transform="translate(190,100) rotate(8)">
+                                <rect x="-46" y="-59" width="92" height="118" rx="10" fill="#fff"/>
+                                <image href="foto's/tuintoppers.png" x="-42" y="-55" width="84" height="110" clip-path="url(#folderClipStack)" preserveAspectRatio="xMidYMid slice"/>
+                            </g>
+                            <g class="folder-photo folder-photo-b" transform="translate(150,92) rotate(-2)">
+                                <rect x="-46" y="-59" width="92" height="118" rx="10" fill="#fff"/>
+                                <image href="foto's/nexafoto.png" x="-42" y="-55" width="84" height="110" clip-path="url(#folderClipStack)" preserveAspectRatio="xMidYMid slice"/>
+                            </g>
+                        </g>
+                        <path d="M40,95 C40,86 47,79 56,79 H262 C272,79 280,87 280,97 V165 C280,175 272,183 262,183 H58 C48,183 40,175 40,165 Z" fill="url(#folderFrontGrad)" stroke="#000" stroke-opacity="0.35" stroke-width="1.5"/>
+                        <path d="M40,95 C40,86 47,79 56,79 H262 C272,79 280,87 280,97" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" opacity="0.9"/>
+                        <path d="M40,95 C40,86 47,79 56,79 H262 C272,79 280,87 280,97 V112 H40 Z" fill="#ffffff" opacity="0.05"/>
+                    </svg>
+                </div>
+                <div class="folder-body">
+                    <div class="folder-name-row">
+                        <span class="folder-name" data-en="Websites" data-nl="Websites">Websites</span>
+                        <span class="folder-count" data-en="9 projects" data-nl="9 projecten">9 projects</span>
+                    </div>
+                    <p class="folder-desc" data-en="Every live website brand system we've shipped — click through to the real, working site." data-nl="Elk live website-merksysteem dat we hebben opgeleverd — klik door naar de echte, werkende site.">Elk live website-merksysteem dat we hebben opgeleverd — klik door naar de echte, werkende site.</p>
+                    <div class="folder-open"><span data-en="Open folder" data-nl="Open map">Open folder</span> <span>↗</span></div>
+                </div>
+            </button>
+
+            <button type="button" class="folder-card" data-folder="apps" aria-haspopup="dialog">
+                <div class="folder-visual">
+                    <span class="folder-soon-badge" data-en="Coming soon" data-nl="Binnenkort">Coming soon</span>
+                    <svg class="folder-illustration" viewBox="0 0 300 220" aria-hidden="true">
+                        <g filter="url(#folderShadow)">
+                            <path d="M40,60 C40,50 48,42 58,42 H140 L158,64 H262 C272,64 280,72 280,82 V165 C280,175 272,183 262,183 H58 C48,183 40,175 40,165 Z" fill="url(#folderBackGrad)" stroke="#000" stroke-opacity="0.35" stroke-width="1.5"/>
+                        </g>
+                        <g filter="url(#folderPhotoShadow)">
+                            <g class="folder-photo folder-photo-single" transform="translate(150,96) rotate(-3)">
+                                <rect x="-62" y="-54" width="124" height="108" rx="12" fill="#fff"/>
+                                <image href="foto's/applogotelefoon.PNG" x="-58" y="-50" width="116" height="100" clip-path="url(#folderClipSingle)" preserveAspectRatio="xMidYMid slice"/>
+                            </g>
+                        </g>
+                        <path d="M40,95 C40,86 47,79 56,79 H262 C272,79 280,87 280,97 V165 C280,175 272,183 262,183 H58 C48,183 40,175 40,165 Z" fill="url(#folderFrontGrad)" stroke="#000" stroke-opacity="0.35" stroke-width="1.5"/>
+                        <path d="M40,95 C40,86 47,79 56,79 H262 C272,79 280,87 280,97" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" opacity="0.9"/>
+                        <path d="M40,95 C40,86 47,79 56,79 H262 C272,79 280,87 280,97 V112 H40 Z" fill="#ffffff" opacity="0.05"/>
+                    </svg>
+                </div>
+                <div class="folder-body">
+                    <div class="folder-name-row">
+                        <span class="folder-name" data-en="Phone apps" data-nl="Telefoon-apps">Phone apps</span>
+                        <span class="folder-count" data-en="0 projects yet" data-nl="Nog 0 projecten">0 projects yet</span>
+                    </div>
+                    <p class="folder-desc" data-en="Mobile app brand systems — this folder opens as soon as the first app ships." data-nl="Mobiele app-merksystemen — deze map opent zodra de eerste app live gaat.">Mobiele app-merksystemen — deze map opent zodra de eerste app live gaat.</p>
+                    <div class="folder-open"><span data-en="Open folder" data-nl="Open map">Open folder</span> <span>↗</span></div>
+                </div>
+            </button>
+
+            <button type="button" class="folder-card" data-folder="brand" aria-haspopup="dialog">
+                <div class="folder-visual">
+                    <svg class="folder-illustration" viewBox="0 0 300 220" aria-hidden="true">
+                        <g filter="url(#folderShadow)">
+                            <path d="M40,60 C40,50 48,42 58,42 H140 L158,64 H262 C272,64 280,72 280,82 V165 C280,175 272,183 262,183 H58 C48,183 40,175 40,165 Z" fill="url(#folderBackGrad)" stroke="#000" stroke-opacity="0.35" stroke-width="1.5"/>
+                        </g>
+                        <g filter="url(#folderPhotoShadow)">
+                            <g class="folder-photo folder-photo-single" transform="translate(150,96) rotate(-3)">
+                                <rect x="-62" y="-54" width="124" height="108" rx="12" fill="#fff"/>
+                                <image href="foto's/brandaset.png" x="-58" y="-50" width="116" height="100" clip-path="url(#folderClipSingle)" preserveAspectRatio="xMidYMid slice"/>
+                            </g>
+                        </g>
+                        <path d="M40,95 C40,86 47,79 56,79 H262 C272,79 280,87 280,97 V165 C280,175 272,183 262,183 H58 C48,183 40,175 40,165 Z" fill="url(#folderFrontGrad)" stroke="#000" stroke-opacity="0.35" stroke-width="1.5"/>
+                        <path d="M40,95 C40,86 47,79 56,79 H262 C272,79 280,87 280,97" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" opacity="0.9"/>
+                        <path d="M40,95 C40,86 47,79 56,79 H262 C272,79 280,87 280,97 V112 H40 Z" fill="#ffffff" opacity="0.05"/>
+                    </svg>
+                </div>
+                <div class="folder-body">
+                    <div class="folder-name-row">
+                        <span class="folder-name" data-en="Brand assets" data-nl="Brand assets">Brand assets</span>
+                        <span class="folder-count" data-en="3 assets" data-nl="3 assets">3 assets</span>
+                    </div>
+                    <p class="folder-desc" data-en="Logos, marks and app icons — the visual building blocks behind every KM.dev system." data-nl="Logo's, merktekens en app-iconen — de visuele bouwstenen achter elk KM.dev-systeem.">Logo's, merktekens en app-iconen — de visuele bouwstenen achter elk KM.dev-systeem.</p>
+                    <div class="folder-open"><span data-en="Open folder" data-nl="Open map">Open folder</span> <span>↗</span></div>
+                </div>
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- Folder modal: Websites -->
+<div class="folder-modal" id="folderModal-websites" role="dialog" aria-modal="true">
+    <div class="folder-modal-content">
+        <button class="folder-modal-close" aria-label="Close">&times;</button>
+        <button class="folder-modal-back"><span>←</span> <span data-en="All folders" data-nl="Alle mappen">All folders</span></button>
+        <div class="folder-modal-head">
+            <h2 data-en="Websites" data-nl="Websites">Websites</h2>
+            <p data-en="9 live projects — click any card to open the actual site, not a mockup." data-nl="9 live projecten — klik op een kaart om de daadwerkelijke site te openen, geen mockup.">9 live projecten — klik op een kaart om de daadwerkelijke site te openen, geen mockup.</p>
+        </div>
+        <div class="projects-grid folder-modal-grid">
             <a href="https://kainmckancylareine.github.io/Wildcore-concept1/" target="_blank" rel="noopener" class="project-card">
                 <div class="project-thumb">
                     <div class="project-badge" data-en="Outdoor &amp; retreat brand" data-nl="Outdoor- en retreatmerk">Outdoor &amp; retreat brand</div>
@@ -486,7 +669,57 @@
             </a>
         </div>
     </div>
-</section>
+</div>
+
+<!-- Folder modal: Phone apps -->
+<div class="folder-modal" id="folderModal-apps" role="dialog" aria-modal="true">
+    <div class="folder-modal-content">
+        <button class="folder-modal-close" aria-label="Close">&times;</button>
+        <button class="folder-modal-back"><span>←</span> <span data-en="All folders" data-nl="Alle mappen">All folders</span></button>
+        <div class="folder-modal-head">
+            <h2 data-en="Phone apps" data-nl="Telefoon-apps">Phone apps</h2>
+            <p data-en="Nothing shipped here yet — this is where mobile app brand systems will live." data-nl="Hier is nog niets opgeleverd — dit is waar mobiele app-merksystemen komen te staan.">Hier is nog niets opgeleverd — dit is waar mobiele app-merksystemen komen te staan.</p>
+        </div>
+        <div class="folder-modal-empty">
+            <img src="foto's/applogotelefoon.PNG" alt="KM.dev app icon mockup">
+            <h3 data-en="This folder is empty — for now." data-nl="Deze map is nog leeg — voorlopig.">Deze map is nog leeg — voorlopig.</h3>
+            <p data-en="We're taking on our first mobile app project soon. Got an app idea? Get in touch and be the first project in this folder." data-nl="Binnenkort pakken we ons eerste mobiele app-project op. Heb jij een app-idee? Neem contact op en word het eerste project in deze map.">Binnenkort pakken we ons eerste mobiele app-project op. Heb jij een app-idee? Neem contact op en word het eerste project in deze map.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Folder modal: Brand assets -->
+<div class="folder-modal" id="folderModal-brand" role="dialog" aria-modal="true">
+    <div class="folder-modal-content">
+        <button class="folder-modal-close" aria-label="Close">&times;</button>
+        <button class="folder-modal-back"><span>←</span> <span data-en="All folders" data-nl="Alle mappen">All folders</span></button>
+        <div class="folder-modal-head">
+            <h2 data-en="Brand assets" data-nl="Brand assets">Brand assets</h2>
+            <p data-en="The building blocks behind the KM.dev identity — logo, mark and app icon." data-nl="De bouwstenen achter de KM.dev-identiteit — logo, merkteken en app-icoon.">De bouwstenen achter de KM.dev-identiteit — logo, merkteken en app-icoon.</p>
+        </div>
+        <div class="folder-brand-hero">
+            <img src="foto's/brandaset.png" alt="KM.dev brand assets kit">
+            <div class="folder-brand-hero-text">
+                <p data-en="Every brand system we build ships with a full asset kit — logo variants, typography, colors and UI components, ready to use from day one." data-nl="Elk merksysteem dat we bouwen levert een volledige asset-kit op — logo-varianten, typografie, kleuren en UI-componenten, klaar voor gebruik vanaf dag één.">Elk merksysteem dat we bouwen levert een volledige asset-kit op — logo-varianten, typografie, kleuren en UI-componenten, klaar voor gebruik vanaf dag één.</p>
+                <a href="brand-system.html#brand-assets" class="btn-primary"><span data-en="See the full brand system" data-nl="Bekijk het volledige brand system">See the full brand system</span> <span class="chev">→</span></a>
+            </div>
+        </div>
+        <div class="folder-asset-grid">
+            <a href="km-dev-logo.svg" target="_blank" rel="noopener" class="folder-asset-tile">
+                <img src="km-dev-logo.svg" alt="KM.dev logo">
+                <span data-en="Logo (SVG)" data-nl="Logo (SVG)">Logo (SVG)</span>
+            </a>
+            <a href="km-dev-mark.svg" target="_blank" rel="noopener" class="folder-asset-tile">
+                <img src="km-dev-mark.svg" alt="KM.dev mark">
+                <span data-en="Mark (SVG)" data-nl="Merkteken (SVG)">Mark (SVG)</span>
+            </a>
+            <a href="km-dev-app-icon.png" target="_blank" rel="noopener" class="folder-asset-tile">
+                <img src="km-dev-app-icon.png" alt="KM.dev app icon">
+                <span data-en="App icon (PNG)" data-nl="App-icoon (PNG)">App icon (PNG)</span>
+            </a>
+        </div>
+    </div>
+</div>
 
 <div class="container">
     <div class="cta-band">
@@ -755,6 +988,31 @@
         if (calendarModal.classList.contains('active')) generateCalendar();
     });
 
+    // ---------- Folder modals ----------
+    function closeFolderModals(){
+        document.querySelectorAll('.folder-modal.active').forEach(m => m.classList.remove('active'));
+        document.body.style.overflow = 'auto';
+    }
+    document.querySelectorAll('.folder-card').forEach(card => {
+        card.addEventListener('click', function(){
+            const modal = document.getElementById('folderModal-' + this.dataset.folder);
+            if (!modal) return;
+            document.querySelectorAll('.folder-modal.active').forEach(m => m.classList.remove('active'));
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            modal.scrollTop = 0;
+        });
+    });
+    document.querySelectorAll('.folder-modal-close, .folder-modal-back').forEach(btn => {
+        btn.addEventListener('click', closeFolderModals);
+    });
+    document.querySelectorAll('.folder-modal').forEach(modal => {
+        modal.addEventListener('click', function(e){ if (e.target === modal) closeFolderModals(); });
+    });
+    document.addEventListener('keydown', function(e){
+        if (e.key === 'Escape') closeFolderModals();
+    });
+
     // ---------- GSAP effects ----------
     gsap.registerPlugin(ScrollTrigger);
 
@@ -778,7 +1036,7 @@
                 });
             });
         }
-        revealSection('.projects', '.project-card');
+        revealSection('.projects', '.folder-card');
         revealSection('.footer', ':scope .footer-top > div, :scope .footer-top > .footer-col');
 
         gsap.from('.cta-band-inner > *', {
@@ -803,7 +1061,7 @@
         btn.addEventListener('mouseleave', () => gsap.to(btn, { x: 0, y: 0, duration: .6, ease: 'elastic.out(1,0.4)' }));
     });
 
-    document.querySelectorAll('.project-card').forEach(card => {
+    document.querySelectorAll('.project-card, .folder-card').forEach(card => {
         card.addEventListener('mousemove', (e) => {
             const r = card.getBoundingClientRect();
             const x = (e.clientX - r.left) / r.width - .5;
@@ -827,7 +1085,7 @@
 <script>
     window.addEventListener('load', function(){
         setTimeout(function(){
-            var selector = '.project-card, .footer-top > div, .footer-top > .footer-col, .cta-band-inner > *';
+            var selector = '.folder-card, .footer-top > div, .footer-top > .footer-col, .cta-band-inner > *';
             document.querySelectorAll(selector).forEach(function(el){
                 if (window.getComputedStyle(el).opacity === '0'){
                     el.style.setProperty('opacity', '1', 'important');
