@@ -162,16 +162,17 @@
     .folder-card{appearance:none;-webkit-appearance:none;margin:0;position:relative;background:var(--paper);border:1px solid var(--line);border-radius:26px;padding:0;overflow:hidden;cursor:pointer;text-align:left;display:flex;flex-direction:column;box-shadow:0 20px 45px -30px rgba(20,18,14,.35);transition:transform .4s ease,box-shadow .4s ease;font:inherit;color:inherit;width:100%;}
     .folder-card:hover{transform:translateY(-8px);box-shadow:0 30px 55px -25px rgba(20,18,14,.45);}
     .folder-card:focus-visible{outline:2px solid var(--ink);outline-offset:3px;}
-    .folder-visual{position:relative;height:215px;background:var(--paper);overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .folder-visual{position:relative;height:250px;background:var(--paper);overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
     .folder-soon-badge{position:absolute;top:16px;right:16px;background:var(--ink);color:#fff;padding:5px 12px;border-radius:14px;font-size:10.5px;font-weight:700;z-index:5;}
     .folder-index{position:absolute;top:16px;left:16px;width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;z-index:5;box-shadow:0 8px 16px -8px rgba(0,0,0,.4);}
-    .folder-illustration{width:88%;max-width:280px;height:auto;overflow:visible;display:block;}
+    .folder-illustration{width:94%;max-width:330px;height:auto;overflow:visible;display:block;transition:transform .5s ease;}
+    .folder-card:hover .folder-illustration{transform:translateY(-4px) scale(1.02);}
     .folder-photo{opacity:0;transition:transform .55s cubic-bezier(.2,.8,.2,1),opacity .4s ease;}
     .folder-card:hover .folder-photo{opacity:1;}
-    .folder-card:hover .folder-photo-a{transform:translate(92px,46px) rotate(-23deg);}
-    .folder-card:hover .folder-photo-c{transform:translate(208px,46px) rotate(22deg);}
-    .folder-card:hover .folder-photo-b{transform:translate(150px,26px) rotate(-2deg) scale(1.06);}
-    .folder-card:hover .folder-photo-single{transform:translate(150px,38px) rotate(0deg) scale(1.05);}
+    .folder-card:hover .folder-photo-a{transform:translate(104px,64px) rotate(-24deg);}
+    .folder-card:hover .folder-photo-c{transform:translate(252px,64px) rotate(23deg);}
+    .folder-card:hover .folder-photo-b{transform:translate(180px,42px) rotate(-2deg) scale(1.08);}
+    .folder-card:hover .folder-photo-single{transform:translate(184px,58px) rotate(0deg) scale(1.06);}
 
     .folder-body{padding:22px 26px 26px;display:flex;flex-direction:column;gap:10px;flex:1;}
     .folder-name-row{display:flex;justify-content:space-between;align-items:center;gap:10px;}
@@ -359,22 +360,29 @@
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
     <defs>
         <linearGradient id="folderBackGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#3c3c3c"/>
-            <stop offset="100%" stop-color="#262626"/>
+            <stop offset="0%" stop-color="#404040"/>
+            <stop offset="100%" stop-color="#232323"/>
         </linearGradient>
         <linearGradient id="folderFrontGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#232323"/>
-            <stop offset="55%" stop-color="#131313"/>
-            <stop offset="100%" stop-color="#0a0a0a"/>
+            <stop offset="0%" stop-color="#262626"/>
+            <stop offset="45%" stop-color="#141414"/>
+            <stop offset="100%" stop-color="#050505"/>
         </linearGradient>
-        <filter id="folderShadow" x="-30%" y="-30%" width="160%" height="160%">
-            <feDropShadow dx="0" dy="12" stdDeviation="12" flood-color="#0d0d0d" flood-opacity="0.30"/>
+        <radialGradient id="folderGroundShadow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#000" stop-opacity="0.28"/>
+            <stop offset="100%" stop-color="#000" stop-opacity="0"/>
+        </radialGradient>
+        <filter id="folderShadow" x="-40%" y="-40%" width="180%" height="180%">
+            <feDropShadow dx="0" dy="14" stdDeviation="14" flood-color="#000" flood-opacity="0.35"/>
         </filter>
         <filter id="folderPhotoShadow" x="-50%" y="-50%" width="200%" height="200%">
-            <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#0d0d0d" flood-opacity="0.28"/>
+            <feDropShadow dx="0" dy="7" stdDeviation="7" flood-color="#000" flood-opacity="0.3"/>
         </filter>
-        <clipPath id="folderClipStack" clipPathUnits="userSpaceOnUse"><rect x="-42" y="-55" width="84" height="110" rx="7"/></clipPath>
-        <clipPath id="folderClipSingle" clipPathUnits="userSpaceOnUse"><rect x="-58" y="-50" width="116" height="100" rx="10"/></clipPath>
+        <filter id="folderSoftBlur" x="-60%" y="-60%" width="220%" height="220%">
+            <feGaussianBlur stdDeviation="10"/>
+        </filter>
+        <clipPath id="folderClipStack" clipPathUnits="userSpaceOnUse"><rect x="-48" y="-62" width="96" height="124" rx="8"/></clipPath>
+        <clipPath id="folderClipSingle" clipPathUnits="userSpaceOnUse"><rect x="-70" y="-61" width="140" height="122" rx="13"/></clipPath>
     </defs>
 </svg>
 
@@ -519,27 +527,34 @@
             <button type="button" class="folder-card" data-folder="websites" aria-haspopup="dialog">
                 <div class="folder-visual">
                     <span class="folder-index">01</span>
-                    <svg class="folder-illustration" viewBox="0 0 300 220" aria-hidden="true">
+                    <svg class="folder-illustration" viewBox="0 0 340 260" aria-hidden="true">
+                        <ellipse cx="185" cy="222" rx="130" ry="20" fill="url(#folderGroundShadow)"/>
+                        <g transform="rotate(-1 300 130)">
+                            <rect x="270" y="58" width="34" height="150" rx="8" fill="#d8d8d8"/>
+                            <rect x="266" y="62" width="34" height="150" rx="8" fill="#ececec"/>
+                            <rect x="262" y="66" width="34" height="150" rx="8" fill="#f8f8f8"/>
+                        </g>
                         <g filter="url(#folderShadow)">
-                            <path d="M40,60 C40,50 48,42 58,42 H140 L158,64 H262 C272,64 280,72 280,82 V165 C280,175 272,183 262,183 H58 C48,183 40,175 40,165 Z" fill="url(#folderBackGrad)" stroke="#000" stroke-opacity="0.35" stroke-width="1.5"/>
+                            <path d="M46,68 C46,56 56,46 68,46 H158 L178,72 H298 C310,72 320,82 320,94 V188 C320,200 310,210 298,210 H68 C56,210 46,200 46,188 Z" fill="url(#folderBackGrad)" stroke="#000" stroke-opacity="0.4" stroke-width="1.5"/>
                         </g>
                         <g filter="url(#folderPhotoShadow)">
-                            <g class="folder-photo folder-photo-a" transform="translate(110,100) rotate(-8)">
-                                <rect x="-46" y="-59" width="92" height="118" rx="10" fill="#fff"/>
-                                <image href="foto's/aurora.png" x="-42" y="-55" width="84" height="110" clip-path="url(#folderClipStack)" preserveAspectRatio="xMidYMid slice"/>
+                            <g class="folder-photo folder-photo-a" transform="translate(128,138) rotate(-8)">
+                                <rect x="-52" y="-66" width="104" height="132" rx="11" fill="#fff"/>
+                                <image href="foto's/aurora.png" x="-48" y="-62" width="96" height="124" clip-path="url(#folderClipStack)" preserveAspectRatio="xMidYMid slice"/>
                             </g>
-                            <g class="folder-photo folder-photo-c" transform="translate(190,100) rotate(8)">
-                                <rect x="-46" y="-59" width="92" height="118" rx="10" fill="#fff"/>
-                                <image href="foto's/tuintoppers.png" x="-42" y="-55" width="84" height="110" clip-path="url(#folderClipStack)" preserveAspectRatio="xMidYMid slice"/>
+                            <g class="folder-photo folder-photo-c" transform="translate(228,138) rotate(8)">
+                                <rect x="-52" y="-66" width="104" height="132" rx="11" fill="#fff"/>
+                                <image href="foto's/tuintoppers.png" x="-48" y="-62" width="96" height="124" clip-path="url(#folderClipStack)" preserveAspectRatio="xMidYMid slice"/>
                             </g>
-                            <g class="folder-photo folder-photo-b" transform="translate(150,92) rotate(-2)">
-                                <rect x="-46" y="-59" width="92" height="118" rx="10" fill="#fff"/>
-                                <image href="foto's/nexafoto.png" x="-42" y="-55" width="84" height="110" clip-path="url(#folderClipStack)" preserveAspectRatio="xMidYMid slice"/>
+                            <g class="folder-photo folder-photo-b" transform="translate(180,128) rotate(-2)">
+                                <rect x="-52" y="-66" width="104" height="132" rx="11" fill="#fff"/>
+                                <image href="foto's/nexafoto.png" x="-48" y="-62" width="96" height="124" clip-path="url(#folderClipStack)" preserveAspectRatio="xMidYMid slice"/>
                             </g>
                         </g>
-                        <path d="M40,95 C40,86 47,79 56,79 H262 C272,79 280,87 280,97 V165 C280,175 272,183 262,183 H58 C48,183 40,175 40,165 Z" fill="url(#folderFrontGrad)" stroke="#000" stroke-opacity="0.35" stroke-width="1.5"/>
-                        <path d="M40,95 C40,86 47,79 56,79 H262 C272,79 280,87 280,97" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" opacity="0.9"/>
-                        <path d="M40,95 C40,86 47,79 56,79 H262 C272,79 280,87 280,97 V112 H40 Z" fill="#ffffff" opacity="0.05"/>
+                        <path d="M46,108 C46,97 55,88 66,88 H298 C310,88 320,98 320,110 V188 C320,200 310,210 298,210 H68 C56,210 46,200 46,188 Z" fill="url(#folderFrontGrad)" stroke="#000" stroke-opacity="0.4" stroke-width="1.5"/>
+                        <path d="M46,108 C46,97 55,88 66,88 H298 C310,88 320,98 320,110" fill="none" stroke="#000" stroke-opacity="0.5" stroke-width="3" filter="url(#folderSoftBlur)"/>
+                        <path d="M46,108 C46,97 55,88 66,88 H298 C310,88 320,98 320,110" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" opacity="0.95"/>
+                        <ellipse cx="130" cy="120" rx="120" ry="34" fill="#fff" opacity="0.06" filter="url(#folderSoftBlur)"/>
                     </svg>
                 </div>
                 <div class="folder-body">
@@ -556,19 +571,26 @@
                 <div class="folder-visual">
                     <span class="folder-index">02</span>
                     <span class="folder-soon-badge" data-en="Coming soon" data-nl="Binnenkort">Coming soon</span>
-                    <svg class="folder-illustration" viewBox="0 0 300 220" aria-hidden="true">
+                    <svg class="folder-illustration" viewBox="0 0 340 260" aria-hidden="true">
+                        <ellipse cx="185" cy="222" rx="130" ry="20" fill="url(#folderGroundShadow)"/>
+                        <g transform="rotate(-1 300 130)">
+                            <rect x="270" y="58" width="34" height="150" rx="8" fill="#d8d8d8"/>
+                            <rect x="266" y="62" width="34" height="150" rx="8" fill="#ececec"/>
+                            <rect x="262" y="66" width="34" height="150" rx="8" fill="#f8f8f8"/>
+                        </g>
                         <g filter="url(#folderShadow)">
-                            <path d="M40,60 C40,50 48,42 58,42 H140 L158,64 H262 C272,64 280,72 280,82 V165 C280,175 272,183 262,183 H58 C48,183 40,175 40,165 Z" fill="url(#folderBackGrad)" stroke="#000" stroke-opacity="0.35" stroke-width="1.5"/>
+                            <path d="M46,68 C46,56 56,46 68,46 H158 L178,72 H298 C310,72 320,82 320,94 V188 C320,200 310,210 298,210 H68 C56,210 46,200 46,188 Z" fill="url(#folderBackGrad)" stroke="#000" stroke-opacity="0.4" stroke-width="1.5"/>
                         </g>
                         <g filter="url(#folderPhotoShadow)">
-                            <g class="folder-photo folder-photo-single" transform="translate(150,96) rotate(-3)">
-                                <rect x="-62" y="-54" width="124" height="108" rx="12" fill="#fff"/>
-                                <image href="foto's/applogotelefoon.PNG" x="-58" y="-50" width="116" height="100" clip-path="url(#folderClipSingle)" preserveAspectRatio="xMidYMid slice"/>
+                            <g class="folder-photo folder-photo-single" transform="translate(184,124) rotate(-3)">
+                                <rect x="-74" y="-65" width="148" height="130" rx="14" fill="#fff"/>
+                                <image href="foto's/applogotelefoon.PNG" x="-70" y="-61" width="140" height="122" clip-path="url(#folderClipSingle)" preserveAspectRatio="xMidYMid slice"/>
                             </g>
                         </g>
-                        <path d="M40,95 C40,86 47,79 56,79 H262 C272,79 280,87 280,97 V165 C280,175 272,183 262,183 H58 C48,183 40,175 40,165 Z" fill="url(#folderFrontGrad)" stroke="#000" stroke-opacity="0.35" stroke-width="1.5"/>
-                        <path d="M40,95 C40,86 47,79 56,79 H262 C272,79 280,87 280,97" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" opacity="0.9"/>
-                        <path d="M40,95 C40,86 47,79 56,79 H262 C272,79 280,87 280,97 V112 H40 Z" fill="#ffffff" opacity="0.05"/>
+                        <path d="M46,108 C46,97 55,88 66,88 H298 C310,88 320,98 320,110 V188 C320,200 310,210 298,210 H68 C56,210 46,200 46,188 Z" fill="url(#folderFrontGrad)" stroke="#000" stroke-opacity="0.4" stroke-width="1.5"/>
+                        <path d="M46,108 C46,97 55,88 66,88 H298 C310,88 320,98 320,110" fill="none" stroke="#000" stroke-opacity="0.5" stroke-width="3" filter="url(#folderSoftBlur)"/>
+                        <path d="M46,108 C46,97 55,88 66,88 H298 C310,88 320,98 320,110" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" opacity="0.95"/>
+                        <ellipse cx="130" cy="120" rx="120" ry="34" fill="#fff" opacity="0.06" filter="url(#folderSoftBlur)"/>
                     </svg>
                 </div>
                 <div class="folder-body">
@@ -584,19 +606,26 @@
             <button type="button" class="folder-card" data-folder="brand" aria-haspopup="dialog">
                 <div class="folder-visual">
                     <span class="folder-index">03</span>
-                    <svg class="folder-illustration" viewBox="0 0 300 220" aria-hidden="true">
+                    <svg class="folder-illustration" viewBox="0 0 340 260" aria-hidden="true">
+                        <ellipse cx="185" cy="222" rx="130" ry="20" fill="url(#folderGroundShadow)"/>
+                        <g transform="rotate(-1 300 130)">
+                            <rect x="270" y="58" width="34" height="150" rx="8" fill="#d8d8d8"/>
+                            <rect x="266" y="62" width="34" height="150" rx="8" fill="#ececec"/>
+                            <rect x="262" y="66" width="34" height="150" rx="8" fill="#f8f8f8"/>
+                        </g>
                         <g filter="url(#folderShadow)">
-                            <path d="M40,60 C40,50 48,42 58,42 H140 L158,64 H262 C272,64 280,72 280,82 V165 C280,175 272,183 262,183 H58 C48,183 40,175 40,165 Z" fill="url(#folderBackGrad)" stroke="#000" stroke-opacity="0.35" stroke-width="1.5"/>
+                            <path d="M46,68 C46,56 56,46 68,46 H158 L178,72 H298 C310,72 320,82 320,94 V188 C320,200 310,210 298,210 H68 C56,210 46,200 46,188 Z" fill="url(#folderBackGrad)" stroke="#000" stroke-opacity="0.4" stroke-width="1.5"/>
                         </g>
                         <g filter="url(#folderPhotoShadow)">
-                            <g class="folder-photo folder-photo-single" transform="translate(150,96) rotate(-3)">
-                                <rect x="-62" y="-54" width="124" height="108" rx="12" fill="#fff"/>
-                                <image href="foto's/brandaset.png" x="-58" y="-50" width="116" height="100" clip-path="url(#folderClipSingle)" preserveAspectRatio="xMidYMid slice"/>
+                            <g class="folder-photo folder-photo-single" transform="translate(184,124) rotate(-3)">
+                                <rect x="-74" y="-65" width="148" height="130" rx="14" fill="#fff"/>
+                                <image href="foto's/brandaset.png" x="-70" y="-61" width="140" height="122" clip-path="url(#folderClipSingle)" preserveAspectRatio="xMidYMid slice"/>
                             </g>
                         </g>
-                        <path d="M40,95 C40,86 47,79 56,79 H262 C272,79 280,87 280,97 V165 C280,175 272,183 262,183 H58 C48,183 40,175 40,165 Z" fill="url(#folderFrontGrad)" stroke="#000" stroke-opacity="0.35" stroke-width="1.5"/>
-                        <path d="M40,95 C40,86 47,79 56,79 H262 C272,79 280,87 280,97" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" opacity="0.9"/>
-                        <path d="M40,95 C40,86 47,79 56,79 H262 C272,79 280,87 280,97 V112 H40 Z" fill="#ffffff" opacity="0.05"/>
+                        <path d="M46,108 C46,97 55,88 66,88 H298 C310,88 320,98 320,110 V188 C320,200 310,210 298,210 H68 C56,210 46,200 46,188 Z" fill="url(#folderFrontGrad)" stroke="#000" stroke-opacity="0.4" stroke-width="1.5"/>
+                        <path d="M46,108 C46,97 55,88 66,88 H298 C310,88 320,98 320,110" fill="none" stroke="#000" stroke-opacity="0.5" stroke-width="3" filter="url(#folderSoftBlur)"/>
+                        <path d="M46,108 C46,97 55,88 66,88 H298 C310,88 320,98 320,110" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" opacity="0.95"/>
+                        <ellipse cx="130" cy="120" rx="120" ry="34" fill="#fff" opacity="0.06" filter="url(#folderSoftBlur)"/>
                     </svg>
                 </div>
                 <div class="folder-body">
