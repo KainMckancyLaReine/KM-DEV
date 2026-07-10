@@ -715,8 +715,9 @@
                     <div class="project-tags"><span class="project-tag" data-en="Health" data-nl="Gezondheid">Health</span><span class="project-tag" data-en="Physiotherapy" data-nl="Fysiotherapie">Fysiotherapie</span><span class="project-tag" data-en="Booking" data-nl="Boekingen">Booking</span></div>
                 </div>
             </a>
-            <a href="https://kainmckancylareine.github.io/BIT-QUIZ/" target="_blank" rel="noopener" class="project-card">
+            <a href="https://kainmckancylareine.github.io/BIT-QUIZ/" target="_blank" rel="noopener" class="project-card" data-category="saas">
                 <div class="project-thumb">
+                    <div class="browser-bar"><span class="b-dot red"></span><span class="b-dot yellow"></span><span class="b-dot green"></span><span class="browser-url">bit-quiz.app</span></div>
                     <div class="project-badge" data-en="Quiz &amp; educational app" data-nl="Quiz- en onderwijsapp">Quiz &amp; educational app</div>
                     <img src="foto's/bitquiz.png" alt="BIT-QUIZ interactive quiz app landing page" loading="lazy">
                 </div>
@@ -726,8 +727,9 @@
                     <div class="project-tags"><span class="project-tag" data-en="Quiz" data-nl="Quiz">Quiz</span><span class="project-tag" data-en="Education" data-nl="Educatie">Education</span><span class="project-tag" data-en="Interactive" data-nl="Interactief">Interactive</span></div>
                 </div>
             </a>
-            <a href="https://kainmckancylareine.github.io/TuinToppersPro/" target="_blank" rel="noopener" class="project-card">
+            <a href="https://kainmckancylareine.github.io/TuinToppersPro/" target="_blank" rel="noopener" class="project-card" data-category="local">
                 <div class="project-thumb">
+                    <div class="browser-bar"><span class="b-dot red"></span><span class="b-dot yellow"></span><span class="b-dot green"></span><span class="browser-url">tuintopperspro.nl</span></div>
                     <div class="project-badge" data-en="Garden maintenance brand" data-nl="Tuinonderhoudsmerk">Garden maintenance brand</div>
                     <img src="foto's/tuintoppers.png" alt="TuinToppersPro garden maintenance and cleaning landing page" loading="lazy">
                 </div>
@@ -1081,6 +1083,21 @@
     });
     document.addEventListener('keydown', function(e){
         if (e.key === 'Escape') closeFolderModals();
+    });
+
+    // ---------- Project filter chips (inside Websites folder) ----------
+    document.querySelectorAll('.filter-chip').forEach(chip => {
+        chip.addEventListener('click', function(){
+            const bar = this.closest('.folder-filter-bar');
+            bar.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+            this.classList.add('active');
+            const filter = this.dataset.filter;
+            const grid = bar.nextElementSibling;
+            grid.querySelectorAll('.project-card').forEach(card => {
+                const show = filter === 'all' || card.dataset.category === filter;
+                card.style.display = show ? '' : 'none';
+            });
+        });
     });
 
     // ---------- GSAP effects ----------
