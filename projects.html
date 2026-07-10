@@ -111,15 +111,41 @@
     .projects-intro h1 .muted{color:var(--muted);}
     .projects-intro p{font-size:18px;color:var(--gray);max-width:600px;margin:0 auto;}
 
+    /* Proof strip */
+    .proof-strip{padding:6px 0 46px;}
+    .proof-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;background:var(--paper);border:1px solid var(--line);border-radius:24px;padding:32px 16px;}
+    .proof-item{text-align:center;display:flex;flex-direction:column;gap:6px;position:relative;}
+    .proof-item:not(:last-child)::after{content:'';position:absolute;right:0;top:8px;bottom:8px;width:1px;background:var(--line);}
+    .proof-num{font-family:'Space Grotesk',sans-serif;font-size:36px;font-weight:700;letter-spacing:-.02em;}
+    .proof-label{font-size:12px;color:var(--gray);font-weight:600;line-height:1.3;padding:0 6px;}
+    @media (max-width:700px){
+        .proof-grid{grid-template-columns:1fr 1fr;row-gap:24px;}
+        .proof-item:nth-child(2)::after{display:none;}
+        .proof-item:nth-child(odd)::after{right:0;}
+    }
+
     /* Projects grid */
     .projects{padding:20px 0 100px;}
     .projects-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:28px;align-items:stretch;}
     .project-card{position:relative;background:var(--paper);border:1px solid var(--line);border-radius:26px;overflow:hidden;box-shadow:0 20px 45px -30px rgba(20,18,14,.35);display:flex;flex-direction:column;text-decoration:none;color:inherit;transition:transform .35s ease,box-shadow .35s ease;}
     .project-card:hover{transform:translateY(-8px);box-shadow:0 30px 55px -25px rgba(20,18,14,.45);}
     .project-thumb{position:relative;height:230px;overflow:hidden;background:var(--ink);flex-shrink:0;}
-    .project-thumb img{width:100%;height:100%;object-fit:cover;object-position:top;opacity:.92;transition:transform .6s ease,opacity .4s ease;}
+    .project-thumb img{position:absolute;top:34px;left:0;width:100%;height:calc(100% - 34px);object-fit:cover;object-position:top;opacity:.92;transition:transform .6s ease,opacity .4s ease;}
     .project-card:hover .project-thumb img{transform:scale(1.06);opacity:1;}
-    .project-badge{position:absolute;top:18px;left:18px;background:rgba(13,13,13,.75);backdrop-filter:blur(6px);color:#fff;padding:7px 15px;border-radius:20px;font-size:11.5px;font-weight:600;z-index:2;}
+    .project-badge{position:absolute;top:46px;left:14px;background:rgba(13,13,13,.75);backdrop-filter:blur(6px);color:#fff;padding:6px 13px;border-radius:20px;font-size:11px;font-weight:600;z-index:2;}
+    .browser-bar{position:absolute;top:0;left:0;right:0;height:34px;background:rgba(13,13,13,.92);display:flex;align-items:center;gap:6px;padding:0 12px;z-index:3;}
+    .browser-bar .b-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+    .browser-bar .b-dot.red{background:#ff5f57;}
+    .browser-bar .b-dot.yellow{background:#febc2e;}
+    .browser-bar .b-dot.green{background:#28c840;}
+    .browser-url{margin-left:8px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);font-family:'Space Mono',monospace;font-size:10px;padding:4px 10px;border-radius:10px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .project-thumb.thumb-broken{background:linear-gradient(135deg,#2b2b2b,#0d0d0d);}
+    .project-thumb.thumb-broken::after{content:attr(data-fallback-letter);position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding-top:34px;font-family:'Space Grotesk',sans-serif;font-size:88px;font-weight:700;color:rgba(255,255,255,.14);}
+
+    .folder-filter-bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:26px;}
+    .filter-chip{appearance:none;-webkit-appearance:none;margin:0;background:var(--paper);border:1px solid var(--line);color:var(--gray);padding:8px 16px;border-radius:20px;font-size:12.5px;font-weight:600;cursor:pointer;transition:background .3s ease,color .3s ease,border-color .3s ease;font-family:inherit;}
+    .filter-chip:hover{border-color:var(--ink);color:var(--ink);}
+    .filter-chip.active{background:var(--ink);border-color:var(--ink);color:#fff;}
     .project-body{padding:24px 26px 26px;display:flex;flex-direction:column;gap:14px;flex:1;}
     .project-body-top{display:flex;justify-content:space-between;align-items:center;gap:12px;}
     .project-name{font-family:'Space Grotesk',sans-serif;font-size:21px;font-weight:600;letter-spacing:-.01em;}
@@ -138,6 +164,7 @@
     .folder-card:focus-visible{outline:2px solid var(--ink);outline-offset:3px;}
     .folder-visual{position:relative;height:215px;background:var(--paper);overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
     .folder-soon-badge{position:absolute;top:16px;right:16px;background:var(--ink);color:#fff;padding:5px 12px;border-radius:14px;font-size:10.5px;font-weight:700;z-index:5;}
+    .folder-index{position:absolute;top:16px;left:16px;width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;z-index:5;box-shadow:0 8px 16px -8px rgba(0,0,0,.4);}
     .folder-illustration{width:88%;max-width:280px;height:auto;overflow:visible;display:block;}
     .folder-photo{opacity:0;transition:transform .55s cubic-bezier(.2,.8,.2,1),opacity .4s ease;}
     .folder-card:hover .folder-photo{opacity:1;}
@@ -149,10 +176,11 @@
     .folder-body{padding:22px 26px 26px;display:flex;flex-direction:column;gap:10px;flex:1;}
     .folder-name-row{display:flex;justify-content:space-between;align-items:center;gap:10px;}
     .folder-name{font-family:'Space Grotesk',sans-serif;font-size:21px;font-weight:600;letter-spacing:-.01em;}
-    .folder-count{font-family:'Space Mono',monospace;font-size:11.5px;color:var(--gray);background:var(--bg);border:1px solid var(--line);padding:4px 10px;border-radius:12px;white-space:nowrap;}
+    .folder-count{font-family:'Space Mono',monospace;font-size:11.5px;color:var(--accent-ink);background:var(--accent);border:1px solid var(--accent);padding:4px 10px;border-radius:12px;white-space:nowrap;font-weight:700;}
     .folder-desc{font-size:14px;color:var(--gray);line-height:1.55;}
-    .folder-open{display:flex;align-items:center;gap:6px;color:var(--ink);font-size:13px;font-weight:600;margin-top:auto;padding-top:6px;}
+    .folder-open{display:inline-flex;align-items:center;gap:6px;color:var(--ink);font-size:13px;font-weight:600;margin-top:auto;width:fit-content;background:var(--bg);border:1px solid var(--line);padding:9px 16px;border-radius:20px;transition:background .3s ease,color .3s ease,border-color .3s ease;}
     .folder-open span{transition:transform .3s ease;}
+    .folder-card:hover .folder-open{background:var(--ink);color:#fff;border-color:var(--ink);}
     .folder-card:hover .folder-open span{transform:translate(3px,-3px);}
 
     /* Folder modal (opened folder view) */
@@ -462,11 +490,35 @@
     </div>
 </section>
 
+<section class="proof-strip reveal visible">
+    <div class="container">
+        <div class="proof-grid">
+            <div class="proof-item">
+                <span class="proof-num">9</span>
+                <span class="proof-label" data-en="Live projects" data-nl="Live projecten">Live projects</span>
+            </div>
+            <div class="proof-item">
+                <span class="proof-num">6</span>
+                <span class="proof-label" data-en="Industries covered" data-nl="Branches bediend">Industries covered</span>
+            </div>
+            <div class="proof-item">
+                <span class="proof-num">100%</span>
+                <span class="proof-label" data-en="Real sites, zero mockups" data-nl="Echte sites, geen mockups">Real sites, zero mockups</span>
+            </div>
+            <div class="proof-item">
+                <span class="proof-num">1</span>
+                <span class="proof-label" data-en="Spot open this quarter" data-nl="Plek vrij dit kwartaal">Spot open this quarter</span>
+            </div>
+        </div>
+    </div>
+</section>
+
 <section class="projects">
     <div class="container">
         <div class="folders-grid">
             <button type="button" class="folder-card" data-folder="websites" aria-haspopup="dialog">
                 <div class="folder-visual">
+                    <span class="folder-index">01</span>
                     <svg class="folder-illustration" viewBox="0 0 300 220" aria-hidden="true">
                         <g filter="url(#folderShadow)">
                             <path d="M40,60 C40,50 48,42 58,42 H140 L158,64 H262 C272,64 280,72 280,82 V165 C280,175 272,183 262,183 H58 C48,183 40,175 40,165 Z" fill="url(#folderBackGrad)" stroke="#000" stroke-opacity="0.35" stroke-width="1.5"/>
@@ -502,6 +554,7 @@
 
             <button type="button" class="folder-card" data-folder="apps" aria-haspopup="dialog">
                 <div class="folder-visual">
+                    <span class="folder-index">02</span>
                     <span class="folder-soon-badge" data-en="Coming soon" data-nl="Binnenkort">Coming soon</span>
                     <svg class="folder-illustration" viewBox="0 0 300 220" aria-hidden="true">
                         <g filter="url(#folderShadow)">
@@ -530,6 +583,7 @@
 
             <button type="button" class="folder-card" data-folder="brand" aria-haspopup="dialog">
                 <div class="folder-visual">
+                    <span class="folder-index">03</span>
                     <svg class="folder-illustration" viewBox="0 0 300 220" aria-hidden="true">
                         <g filter="url(#folderShadow)">
                             <path d="M40,60 C40,50 48,42 58,42 H140 L158,64 H262 C272,64 280,72 280,82 V165 C280,175 272,183 262,183 H58 C48,183 40,175 40,165 Z" fill="url(#folderBackGrad)" stroke="#000" stroke-opacity="0.35" stroke-width="1.5"/>
@@ -567,11 +621,21 @@
             <h2 data-en="Websites" data-nl="Websites">Websites</h2>
             <p data-en="9 live projects — click any card to open the actual site, not a mockup." data-nl="9 live projecten — klik op een kaart om de daadwerkelijke site te openen, geen mockup.">9 live projecten — klik op een kaart om de daadwerkelijke site te openen, geen mockup.</p>
         </div>
+        <div class="folder-filter-bar">
+            <button type="button" class="filter-chip active" data-filter="all" data-en="All" data-nl="Alle">All</button>
+            <button type="button" class="filter-chip" data-filter="saas" data-en="SaaS &amp; Tech" data-nl="SaaS &amp; Tech">SaaS &amp; Tech</button>
+            <button type="button" class="filter-chip" data-filter="lifestyle" data-en="Lifestyle &amp; Retail" data-nl="Lifestyle &amp; Retail">Lifestyle &amp; Retail</button>
+            <button type="button" class="filter-chip" data-filter="creative" data-en="Creative &amp; Studio" data-nl="Creative &amp; Studio">Creative &amp; Studio</button>
+            <button type="button" class="filter-chip" data-filter="health" data-en="Health &amp; Wellness" data-nl="Health &amp; Wellness">Health &amp; Wellness</button>
+            <button type="button" class="filter-chip" data-filter="local" data-en="Local Service" data-nl="Lokale Dienst">Local Service</button>
+            <button type="button" class="filter-chip" data-filter="personal" data-en="Personal Brand" data-nl="Persoonlijk Merk">Personal Brand</button>
+        </div>
         <div class="projects-grid folder-modal-grid">
-            <a href="https://kainmckancylareine.github.io/Wildcore-concept1/" target="_blank" rel="noopener" class="project-card">
-                <div class="project-thumb">
+            <a href="https://kainmckancylareine.github.io/Wildcore-concept1/" target="_blank" rel="noopener" class="project-card" data-category="lifestyle">
+                <div class="project-thumb" data-fallback-letter="W">
+                    <div class="browser-bar"><span class="b-dot red"></span><span class="b-dot yellow"></span><span class="b-dot green"></span><span class="browser-url">wildcore-retreats</span></div>
                     <div class="project-badge" data-en="Outdoor &amp; retreat brand" data-nl="Outdoor- en retreatmerk">Outdoor &amp; retreat brand</div>
-                    <img src="https://image.thum.io/get/width/1200/crop/900/https://kainmckancylareine.github.io/Wildcore-concept1/" alt="Wildcore trail-running retreat landing page" loading="lazy">
+                    <img src="https://image.thum.io/get/width/1200/crop/900/https://kainmckancylareine.github.io/Wildcore-concept1/" alt="Wildcore trail-running retreat landing page" loading="lazy" onerror="this.remove();this.parentElement.classList.add('thumb-broken');">
                 </div>
                 <div class="project-body">
                     <div class="project-body-top"><span class="project-name">Wildcore Retreats</span><span class="project-view"><span data-en="Visit site" data-nl="Bekijk site">Visit site</span> <span>↗</span></span></div>
@@ -579,8 +643,9 @@
                     <div class="project-tags"><span class="project-tag" data-en="Outdoor" data-nl="Outdoor">Outdoor</span><span class="project-tag" data-en="Retreats" data-nl="Retreats">Retreats</span><span class="project-tag" data-en="Booking" data-nl="Boekingen">Booking</span></div>
                 </div>
             </a>
-            <a href="https://kainmckancylareine.github.io/NEXA/index.html" target="_blank" rel="noopener" class="project-card">
+            <a href="https://kainmckancylareine.github.io/NEXA/index.html" target="_blank" rel="noopener" class="project-card" data-category="saas">
                 <div class="project-thumb">
+                    <div class="browser-bar"><span class="b-dot red"></span><span class="b-dot yellow"></span><span class="b-dot green"></span><span class="browser-url">nexa-ai.app</span></div>
                     <div class="project-badge" data-en="AI SaaS platform" data-nl="AI SaaS-platform">AI SaaS platform</div>
                     <img src="foto's/nexafoto.png" alt="NEXA AI workforce operating system dashboard" loading="lazy" style="object-position:left;">
                 </div>
@@ -590,8 +655,9 @@
                     <div class="project-tags"><span class="project-tag" data-en="SaaS" data-nl="SaaS">SaaS</span><span class="project-tag" data-en="AI" data-nl="AI">AI</span><span class="project-tag" data-en="Dashboard" data-nl="Dashboard">Dashboard</span></div>
                 </div>
             </a>
-            <a href="https://kainmckancylareine.github.io/Mckancy.mc/" target="_blank" rel="noopener" class="project-card">
+            <a href="https://kainmckancylareine.github.io/Mckancy.mc/" target="_blank" rel="noopener" class="project-card" data-category="personal">
                 <div class="project-thumb">
+                    <div class="browser-bar"><span class="b-dot red"></span><span class="b-dot yellow"></span><span class="b-dot green"></span><span class="browser-url">kainmckancy.com</span></div>
                     <div class="project-badge" data-en="Personal portfolio" data-nl="Persoonlijk portfolio">Personal portfolio</div>
                     <img src="foto's/kainmckancylareinefoto.png" alt="Kain Mckancy La Reine portfolio site" loading="lazy">
                 </div>
@@ -601,10 +667,11 @@
                     <div class="project-tags"><span class="project-tag" data-en="Portfolio" data-nl="Portfolio">Portfolio</span><span class="project-tag" data-en="Personal brand" data-nl="Persoonlijk merk">Personal brand</span></div>
                 </div>
             </a>
-            <a href="https://kainmckancylareine.github.io/tjez-photo/index.html" target="_blank" rel="noopener" class="project-card">
-                <div class="project-thumb">
+            <a href="https://kainmckancylareine.github.io/tjez-photo/index.html" target="_blank" rel="noopener" class="project-card" data-category="creative">
+                <div class="project-thumb" data-fallback-letter="T">
+                    <div class="browser-bar"><span class="b-dot red"></span><span class="b-dot yellow"></span><span class="b-dot green"></span><span class="browser-url">tjez-photography</span></div>
                     <div class="project-badge" data-en="Photography studio" data-nl="Fotografiestudio">Photography studio</div>
-                    <img src="https://image.thum.io/get/width/1200/crop/900/wait/3/https://kainmckancylareine.github.io/tjez-photo/index.html" alt="TJEZ Photography landing page" loading="lazy">
+                    <img src="https://image.thum.io/get/width/1200/crop/900/wait/3/https://kainmckancylareine.github.io/tjez-photo/index.html" alt="TJEZ Photography landing page" loading="lazy" onerror="this.remove();this.parentElement.classList.add('thumb-broken');">
                 </div>
                 <div class="project-body">
                     <div class="project-body-top"><span class="project-name">TJEZ Photography</span><span class="project-view"><span data-en="Visit site" data-nl="Bekijk site">Visit site</span> <span>↗</span></span></div>
@@ -612,8 +679,9 @@
                     <div class="project-tags"><span class="project-tag" data-en="Photography" data-nl="Fotografie">Photography</span><span class="project-tag" data-en="Studio" data-nl="Studio">Studio</span><span class="project-tag" data-en="Booking" data-nl="Boekingen">Booking</span></div>
                 </div>
             </a>
-            <a href="https://kainmckancylareine.github.io/huize-feniks-concept/" target="_blank" rel="noopener" class="project-card">
+            <a href="https://kainmckancylareine.github.io/huize-feniks-concept/" target="_blank" rel="noopener" class="project-card" data-category="creative">
                 <div class="project-thumb">
+                    <div class="browser-bar"><span class="b-dot red"></span><span class="b-dot yellow"></span><span class="b-dot green"></span><span class="browser-url">huize-feniks.nl</span></div>
                     <div class="project-badge" data-en="Music academy &amp; studio brand" data-nl="Muziekacademie- en studiomerk">Music academy &amp; studio brand</div>
                     <img src="foto's/huizefeniks.png" alt="Huize Feniks music academy landing page" loading="lazy">
                 </div>
@@ -623,8 +691,9 @@
                     <div class="project-tags"><span class="project-tag" data-en="Music" data-nl="Muziek">Music</span><span class="project-tag" data-en="Education" data-nl="Educatie">Education</span><span class="project-tag" data-en="Studio" data-nl="Studio">Studio</span></div>
                 </div>
             </a>
-            <a href="https://kainmckancylareine.github.io/AURORA-DESIGN/" target="_blank" rel="noopener" class="project-card">
+            <a href="https://kainmckancylareine.github.io/AURORA-DESIGN/" target="_blank" rel="noopener" class="project-card" data-category="lifestyle">
                 <div class="project-thumb">
+                    <div class="browser-bar"><span class="b-dot red"></span><span class="b-dot yellow"></span><span class="b-dot green"></span><span class="browser-url">aurora-design.com</span></div>
                     <div class="project-badge" data-en="Fashion &amp; retail brand" data-nl="Mode- en retailmerk">Fashion &amp; retail brand</div>
                     <img src="foto's/aurora.png" alt="Aurora Design premium fashion brand landing page" loading="lazy">
                 </div>
@@ -634,8 +703,9 @@
                     <div class="project-tags"><span class="project-tag" data-en="Fashion" data-nl="Mode">Fashion</span><span class="project-tag" data-en="E-commerce" data-nl="E-commerce">E-commerce</span><span class="project-tag" data-en="Retail" data-nl="Retail">Retail</span></div>
                 </div>
             </a>
-            <a href="https://kainmckancylareine.github.io/Fit_BY_ZAALMAN/" target="_blank" rel="noopener" class="project-card">
+            <a href="https://kainmckancylareine.github.io/Fit_BY_ZAALMAN/" target="_blank" rel="noopener" class="project-card" data-category="health">
                 <div class="project-thumb">
+                    <div class="browser-bar"><span class="b-dot red"></span><span class="b-dot yellow"></span><span class="b-dot green"></span><span class="browser-url">fitbyzaalman.nl</span></div>
                     <div class="project-badge" data-en="Physiotherapy &amp; personal training" data-nl="Fysiotherapie &amp; personal training">Physiotherapy &amp; personal training</div>
                     <img src="foto's/fit-by.png" alt="Fit by Zaalman physiotherapy and personal training landing page" loading="lazy" style="object-position:left;">
                 </div>
