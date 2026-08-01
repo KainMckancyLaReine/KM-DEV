@@ -1,0 +1,1579 @@
+/* ==========================================================================
+   KM.dev — Motion System
+   Shared across every page. Two files only: km-motion.css + km-motion.js
+   1. Scroll-morphing nav pod
+   2. Signature section widgets
+   3. Reveal / accent layer
+   ========================================================================== */
+
+:root{
+    --km-ease:cubic-bezier(.22,1,.36,1);
+    --km-ease-soft:cubic-bezier(.4,0,.2,1);
+
+    /* Second accent — used sparingly next to the lime so the palette has
+       warmth without competing with it. Roughly 1 orange to every 4 limes. */
+    --accent-2:#d97757;
+    --accent-2-ink:#5c2a17;
+    --accent-2-soft:rgba(217,119,87,.16);
+}
+
+/* ==========================================================================
+   0. PRELOADER
+   Small, quick, and only fully plays once per session.
+   ========================================================================== */
+
+.km-pre{
+    position:fixed;inset:0;z-index:99998;background:var(--bg);
+    display:flex;align-items:center;justify-content:center;
+    transition:transform .7s var(--km-ease),opacity .4s ease .25s;
+}
+.km-pre::after{
+    content:'';position:absolute;left:0;right:0;bottom:0;height:2px;
+    background:linear-gradient(90deg,var(--accent),var(--accent-2));
+    opacity:0;transition:opacity .3s ease;
+}
+.km-pre.is-out{transform:translateY(-100%);opacity:0;pointer-events:none;}
+.km-pre.is-out::after{opacity:1;}
+.km-pre-inner{display:flex;flex-direction:column;align-items:center;gap:14px;}
+.km-pre-mark{
+    font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:23px;
+    letter-spacing:-.03em;color:var(--ink);
+    opacity:0;transform:translateY(6px);
+    animation:km-pre-mark .5s var(--km-ease) forwards;
+}
+/* a drawn dot rather than a period — lime type is too faint on the paper
+   background at this size */
+.km-pre-mark .dot{
+    display:inline-block;width:7px;height:7px;border-radius:50%;
+    background:var(--accent);margin:0 3px 0 2px;
+    box-shadow:0 0 0 1.5px rgba(13,13,13,.14);
+}
+@keyframes km-pre-mark{to{opacity:1;transform:translateY(0);}}
+
+/* three segments = the three parts of the system, filling in order */
+.km-pre-rail{display:flex;gap:5px;}
+.km-pre-rail i{
+    display:block;width:30px;height:3px;border-radius:2px;
+    background:var(--line);position:relative;overflow:hidden;
+}
+.km-pre-rail i::after{
+    content:'';position:absolute;inset:0;border-radius:2px;
+    transform:scaleX(0);transform-origin:left;
+    animation:km-pre-fill .3s var(--km-ease) forwards;
+}
+.km-pre-rail i:nth-child(1)::after{background:var(--accent);animation-delay:.18s;}
+.km-pre-rail i:nth-child(2)::after{background:var(--accent-2);animation-delay:.42s;}
+.km-pre-rail i:nth-child(3)::after{background:var(--ink);animation-delay:.66s;}
+@keyframes km-pre-fill{to{transform:scaleX(1);}}
+
+/* the quick version used on every page after the first */
+.km-pre.is-quick .km-pre-mark{animation-duration:.24s;}
+.km-pre.is-quick .km-pre-rail i::after{animation-duration:.14s;}
+.km-pre.is-quick .km-pre-rail i:nth-child(1)::after{animation-delay:.02s;}
+.km-pre.is-quick .km-pre-rail i:nth-child(2)::after{animation-delay:.12s;}
+.km-pre.is-quick .km-pre-rail i:nth-child(3)::after{animation-delay:.22s;}
+
+@media (prefers-reduced-motion:reduce){
+    .km-pre{display:none;}
+}
+
+/* ==========================================================================
+   1. NAV POD — the pill morphs into a compact pod while you scroll
+   ========================================================================== */
+
+.pill-nav.km-nav{
+    transform-origin:top left;
+    transition:
+        background .55s var(--km-ease),
+        padding .55s var(--km-ease),
+        gap .55s var(--km-ease),
+        box-shadow .55s var(--km-ease),
+        translate .5s var(--km-ease),
+        scale .5s var(--km-ease),
+        opacity .35s ease;
+    will-change:translate,scale;
+}
+
+/* --- glass + shrink once you leave the top ---
+   NOTE: `translate` and `scale` are written inline by km-motion.js, not set
+   here. GSAP puts `translate:none; scale:none` inline on .pill-nav during the
+   intro tween, and an inline declaration always beats a stylesheet one. --- */
+.km-nav.is-scrolled{
+    background:rgba(13,13,13,.74);
+    -webkit-backdrop-filter:blur(18px) saturate(1.5);
+    backdrop-filter:blur(18px) saturate(1.5);
+    box-shadow:0 10px 30px -16px rgba(0,0,0,.55);
+    padding:7px 7px 7px 15px;
+    gap:2px;
+}
+.km-nav.is-scrolled:hover{
+    background:rgba(13,13,13,.94);
+    padding:8px 8px 8px 20px;
+    gap:6px;
+}
+
+/* opacity is !important for the same reason — GSAP writes it inline. */
+.km-nav.is-hidden{opacity:0 !important;}
+.km-nav.is-menu-open{opacity:1 !important;}
+
+/* --- the lime thread that draws under the pod --- */
+.km-nav::after{
+    content:'';position:absolute;left:18px;right:18px;bottom:-1px;height:1.5px;
+    border-radius:2px;
+    background:linear-gradient(90deg,transparent,var(--accent),transparent);
+    opacity:0;transform:scaleX(.15);transform-origin:center;
+    transition:opacity .5s ease,transform .8s var(--km-ease);
+    pointer-events:none;
+}
+.km-nav.is-scrolled::after{opacity:.9;transform:scaleX(1);}
+
+/* --- "dev" folds away, leaving the KM. mark --- */
+.km-nav .km-logo-tail{
+    display:inline-block;max-width:64px;overflow:hidden;white-space:nowrap;
+    transition:max-width .5s var(--km-ease),opacity .3s ease;
+}
+.km-nav.is-scrolled:not(:hover) .km-logo-tail{max-width:0;opacity:0;}
+.km-nav .pill-logo .dot{transition:color .4s ease,text-shadow .4s ease;}
+.km-nav.is-scrolled .pill-logo .dot{text-shadow:0 0 14px rgba(198,255,74,.75);}
+
+/* --- language toggle folds away, returns on hover --- */
+.km-nav .lang-toggle{
+    overflow:hidden;
+    transition:max-width .5s var(--km-ease),opacity .3s ease,
+               margin-left .5s var(--km-ease),padding .4s var(--km-ease);
+    max-width:110px;
+}
+.km-nav.is-scrolled:not(:hover) .lang-toggle{
+    max-width:0;opacity:0;margin-left:0;padding-left:0;padding-right:0;
+}
+
+/* --- context chip: shows which section you're reading --- */
+.km-nav-ctx{
+    display:flex;align-items:center;gap:7px;
+    max-width:0;opacity:0;margin-left:0;overflow:hidden;white-space:nowrap;
+    font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;
+    letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.6);
+    transition:max-width .55s var(--km-ease),opacity .3s ease,margin-left .5s var(--km-ease);
+}
+.km-nav.is-scrolled .km-nav-ctx{max-width:210px;opacity:1;margin-left:10px;}
+.km-nav.is-scrolled:hover .km-nav-ctx{max-width:0;opacity:0;margin-left:0;}
+.km-nav-ctx .km-ctx-dot{
+    width:5px;height:5px;border-radius:50%;background:var(--accent);flex:none;
+    animation:km-ctx-pulse 2.4s ease-in-out infinite;
+}
+@keyframes km-ctx-pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.35;transform:scale(.75);}}
+.km-nav-ctx .km-ctx-text{display:inline-block;transition:transform .32s var(--km-ease),opacity .32s ease;}
+.km-nav-ctx.is-swap .km-ctx-text{transform:translateY(-9px);opacity:0;}
+
+/* --- scroll-progress ring around the hamburger --- */
+.km-ham-wrap{position:relative;display:flex;align-items:center;margin-left:10px;}
+.km-nav.is-scrolled:not(:hover) .km-ham-wrap{margin-left:6px;}
+.km-ham-wrap .hamburger{margin-left:0;}
+.km-ring{
+    position:absolute;top:-4px;left:-4px;width:50px;height:50px;
+    transform:rotate(-90deg);pointer-events:none;
+    opacity:0;transition:opacity .45s ease;
+}
+.km-nav.is-scrolled .km-ring{opacity:1;}
+.km-ring circle{fill:none;stroke-width:2;stroke-linecap:round;}
+.km-ring .km-ring-bg{stroke:rgba(255,255,255,.13);}
+.km-ring .km-ring-fg{
+    stroke:var(--accent);stroke-dasharray:138.2;stroke-dashoffset:138.2;
+    transition:stroke-dashoffset .15s linear;
+}
+
+@media (max-width:640px){
+    .km-nav.is-scrolled .km-nav-ctx{max-width:120px;}
+}
+
+/* ==========================================================================
+   1b. FULLSCREEN MENU
+   Tighter, numbered, rule-separated. Note: the per-page GSAP timeline writes
+   an inline opacity on .menu-links a when the menu opens, so the resting /
+   hover states here use colour, never opacity.
+   ========================================================================== */
+
+/* overflow:hidden so the oversized ghost wordmark and the glows can never
+   push a scrollbar onto the page behind the overlay */
+.menu-overlay.km-menu{background:#0a0a0a;padding:0;justify-content:flex-start;overflow:hidden;}
+
+/* --- backdrop: fine grid + a lime bloom in the top-left --- */
+.km-menu-bg{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.km-menu-bg::before{
+    content:'';position:absolute;inset:0;opacity:.5;
+    background-image:
+        linear-gradient(to right,rgba(255,255,255,.045) 1px,transparent 1px),
+        linear-gradient(to bottom,rgba(255,255,255,.045) 1px,transparent 1px);
+    background-size:76px 76px;
+}
+.km-menu-bg::after{
+    content:'';position:absolute;top:-28%;left:-14%;width:66%;height:88%;
+    background:radial-gradient(circle at 30% 30%,rgba(198,255,74,.16),transparent 62%);
+    filter:blur(18px);
+}
+.km-menu-mark{
+    position:absolute;right:-4%;bottom:-8%;pointer-events:none;
+    font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15vw;
+    line-height:.8;letter-spacing:-.05em;color:rgba(255,255,255,.02);
+    white-space:nowrap;user-select:none;
+}
+.km-menu-mark .dot{color:rgba(198,255,74,.08);}
+
+/* --- layout --- */
+.km-menu .menu-inner{
+    position:relative;z-index:2;flex-wrap:nowrap;align-items:stretch;
+    gap:80px;padding:120px 40px 56px;height:100%;
+}
+.km-menu .menu-links{flex:1;gap:0;justify-content:center;max-width:760px;}
+
+/* --- one link = [number] [label] [arrow] on a hairline row --- */
+.km-menu .menu-links a{
+    position:relative;display:grid;grid-template-columns:64px 1fr auto;
+    align-items:center;gap:18px;
+    padding:18px 4px;border-top:1px solid rgba(255,255,255,.09);
+    font-size:44px;line-height:1.05;letter-spacing:-.03em;
+    color:rgba(255,255,255,.52);
+    transition:color .35s var(--km-ease);
+}
+.km-menu .menu-links a:last-child{border-bottom:1px solid rgba(255,255,255,.09);}
+.km-menu .menu-links a:hover,
+.km-menu .menu-links a.active{color:#fff;opacity:1;}
+
+/* lime wash that wipes in from the left on hover */
+.km-menu .menu-links a::before{
+    content:'';position:absolute;left:-24px;right:-24px;top:0;bottom:0;z-index:-1;
+    background:linear-gradient(90deg,rgba(198,255,74,.13),transparent 72%);
+    transform:scaleX(0);transform-origin:left;
+    transition:transform .5s var(--km-ease);
+}
+.km-menu .menu-links a:hover::before{transform:scaleX(1);}
+
+.km-menu .km-mi{
+    font-family:'Space Mono',monospace;font-size:12px;font-weight:700;
+    letter-spacing:.12em;color:rgba(255,255,255,.3);
+    transition:color .35s ease,transform .45s var(--km-ease);
+}
+.km-menu .menu-links a:hover .km-mi{color:var(--accent);transform:translateX(4px);}
+.km-menu .menu-links a.active .km-mi{color:var(--accent);}
+
+.km-menu .km-ml{display:block;transition:transform .5s var(--km-ease);}
+.km-menu .menu-links a:hover .km-ml{transform:translateX(12px);}
+
+.km-menu .km-ma{
+    font-size:20px;color:var(--accent);
+    opacity:0;transform:translate(-10px,10px);
+    transition:opacity .35s ease,transform .45s var(--km-ease);
+}
+.km-menu .menu-links a:hover .km-ma{opacity:1;transform:translate(0,0);}
+.km-menu .menu-links a.active .km-ma{
+    opacity:1;transform:none;font-size:13px;color:var(--accent);
+    text-shadow:0 0 12px rgba(198,255,74,.6);
+}
+
+/* --- side column --- */
+.km-menu .menu-side{
+    min-width:260px;max-width:300px;padding-left:44px;
+    border-left:1px solid rgba(255,255,255,.09);
+    justify-content:center;gap:34px;
+}
+.km-menu .km-side-label{
+    display:block;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;
+    letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.28);
+    margin-bottom:10px;
+}
+.km-menu .menu-badge{background:rgba(198,255,74,.1);color:var(--accent);}
+.km-menu .menu-cta{margin-top:0;}
+.km-menu .menu-socials a{border:1px solid rgba(255,255,255,.1);background:transparent;}
+.km-menu .menu-socials a:hover{background:var(--accent);border-color:var(--accent);color:var(--ink);}
+
+@media (max-width:1000px){
+    .km-menu .menu-inner{flex-wrap:wrap;gap:34px;padding:104px 24px 40px;overflow-y:auto;}
+    .km-menu .menu-links a{font-size:32px;grid-template-columns:44px 1fr auto;padding:14px 2px;}
+    .km-menu .menu-side{border-left:none;padding-left:0;min-width:0;max-width:none;
+        border-top:1px solid rgba(255,255,255,.09);padding-top:26px;}
+    .km-menu-mark{font-size:38vw;}
+}
+
+/* ==========================================================================
+   2. SIGNATURE WIDGETS
+   Live micro-visuals. Frozen until they scroll into view (.is-live).
+   ========================================================================== */
+
+.km-w{
+    --w-bg:#f7f6f1;
+    --w-line:#e6e4db;
+    --w-ink:#0d0d0d;
+    --w-dim:#adaba2;
+    --w-soft:#ffffff;
+    position:relative;width:100%;height:126px;margin-top:18px;
+    border-radius:14px;overflow:hidden;
+    background:var(--w-bg);
+    border:1px solid var(--w-line);
+    transition:background .35s ease,border-color .35s ease;
+    isolation:isolate;
+}
+.km-w *{transition:background .35s ease,border-color .35s ease,color .35s ease;}
+.cap-item:hover .km-w,.km-w.km-w--dark{
+    --w-bg:#141414;--w-line:#2b2b2b;--w-ink:#ffffff;--w-dim:#6f6d66;--w-soft:#1e1e1e;
+}
+.km-w::after{
+    content:'';position:absolute;inset:0;pointer-events:none;z-index:3;
+    background:linear-gradient(115deg,transparent 30%,rgba(198,255,74,.16) 48%,transparent 66%);
+    transform:translateX(-120%);
+}
+.km-w.is-live::after{animation:km-sheen 5.5s var(--km-ease) infinite;}
+@keyframes km-sheen{0%,72%{transform:translateX(-120%);}92%,100%{transform:translateX(120%);}}
+
+.km-w .kw-tag{
+    position:absolute;left:10px;bottom:9px;z-index:4;
+    font-family:'Space Mono',monospace;font-size:9px;font-weight:700;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--w-dim);
+}
+.km-w .kw-live{
+    position:absolute;right:10px;top:10px;z-index:4;display:flex;align-items:center;gap:5px;
+    font-family:'Space Mono',monospace;font-size:9px;font-weight:700;
+    letter-spacing:.08em;text-transform:uppercase;color:var(--w-dim);
+}
+.km-w .kw-live i{width:5px;height:5px;border-radius:50%;background:var(--accent);display:block;}
+.km-w.is-live .kw-live i{animation:km-ctx-pulse 1.9s ease-in-out infinite;}
+
+/* ---------- 2a. STRATEGY — positioning map ---------- */
+.km-w[data-km-w="strategy"] .kw-grid{
+    position:absolute;inset:0;
+    background-image:
+        linear-gradient(to right,var(--w-line) 1px,transparent 1px),
+        linear-gradient(to bottom,var(--w-line) 1px,transparent 1px);
+    background-size:26px 26px;
+    opacity:.75;
+}
+.km-w[data-km-w="strategy"] .kw-axis{position:absolute;background:var(--w-line);}
+.km-w[data-km-w="strategy"] .kw-axis.x{left:0;right:0;top:50%;height:1px;}
+.km-w[data-km-w="strategy"] .kw-axis.y{top:0;bottom:0;left:50%;width:1px;}
+.km-w[data-km-w="strategy"] .kw-ghost{
+    position:absolute;width:6px;height:6px;border-radius:50%;
+    background:var(--w-dim);opacity:.55;
+    left:var(--x);top:var(--y);
+}
+.km-w[data-km-w="strategy"] .kw-you{
+    position:absolute;width:12px;height:12px;border-radius:50%;
+    background:var(--accent);border:2px solid var(--w-bg);
+    left:24%;top:64%;z-index:2;
+    box-shadow:0 0 0 0 rgba(198,255,74,.55);
+}
+.km-w[data-km-w="strategy"].is-live .kw-you{animation:km-plot 6s var(--km-ease) infinite;}
+@keyframes km-plot{
+    0%   {left:24%;top:64%;box-shadow:0 0 0 0 rgba(198,255,74,.5);}
+    28%  {left:24%;top:64%;box-shadow:0 0 0 9px rgba(198,255,74,0);}
+    30%  {box-shadow:0 0 0 0 rgba(198,255,74,.5);}
+    58%  {left:68%;top:28%;}
+    76%  {left:68%;top:28%;box-shadow:0 0 0 11px rgba(198,255,74,0);}
+    78%,100%{left:68%;top:28%;box-shadow:0 0 0 0 rgba(198,255,74,0);}
+}
+.km-w[data-km-w="strategy"] .kw-scan{
+    position:absolute;top:0;bottom:0;width:1.5px;left:0;
+    background:linear-gradient(180deg,transparent,var(--accent),transparent);
+    opacity:0;
+}
+.km-w[data-km-w="strategy"].is-live .kw-scan{animation:km-scan 6s linear infinite;}
+@keyframes km-scan{0%{left:0;opacity:0;}10%{opacity:.8;}90%{opacity:.8;}100%{left:100%;opacity:0;}}
+
+/* ---------- 2b. IDENTITY — wordmark + palette ---------- */
+.km-w[data-km-w="identity"] .kw-mark{
+    position:absolute;left:14px;top:20px;height:40px;width:calc(100% - 28px);
+    overflow:hidden;
+}
+.km-w[data-km-w="identity"] .kw-mark span{
+    position:absolute;left:0;top:0;font-size:30px;line-height:40px;
+    color:var(--w-ink);letter-spacing:-.02em;opacity:0;
+}
+.km-w[data-km-w="identity"] .kw-mark span:nth-child(1){font-family:'Space Grotesk',sans-serif;font-weight:700;}
+.km-w[data-km-w="identity"] .kw-mark span:nth-child(2){font-family:'Space Mono',monospace;font-weight:700;letter-spacing:-.04em;}
+.km-w[data-km-w="identity"] .kw-mark span:nth-child(3){font-family:'Inter',sans-serif;font-weight:300;letter-spacing:.06em;}
+.km-w[data-km-w="identity"].is-live .kw-mark span{animation:km-mark 6.6s steps(1,end) infinite;}
+.km-w[data-km-w="identity"].is-live .kw-mark span:nth-child(2){animation-delay:2.2s;}
+.km-w[data-km-w="identity"].is-live .kw-mark span:nth-child(3){animation-delay:4.4s;}
+@keyframes km-mark{0%{opacity:1;}33.3%{opacity:1;}33.4%,100%{opacity:0;}}
+.km-w[data-km-w="identity"] .kw-mark em{color:var(--accent);font-style:normal;}
+.km-w[data-km-w="identity"] .kw-pal{
+    position:absolute;left:14px;right:14px;bottom:30px;display:flex;gap:5px;height:16px;
+}
+.km-w[data-km-w="identity"] .kw-pal i{
+    flex:1;border-radius:4px;background:var(--w-dim);
+    transform-origin:left center;
+}
+.km-w[data-km-w="identity"].is-live .kw-pal i{animation:km-pal 3.4s var(--km-ease) infinite;}
+.km-w[data-km-w="identity"].is-live .kw-pal i:nth-child(1){animation-delay:0s;}
+.km-w[data-km-w="identity"].is-live .kw-pal i:nth-child(2){animation-delay:.12s;}
+.km-w[data-km-w="identity"].is-live .kw-pal i:nth-child(3){animation-delay:.24s;}
+.km-w[data-km-w="identity"].is-live .kw-pal i:nth-child(4){animation-delay:.36s;}
+.km-w[data-km-w="identity"].is-live .kw-pal i:nth-child(5){animation-delay:.48s;}
+@keyframes km-pal{
+    0%,100%{background:var(--w-dim);flex-grow:1;}
+    35%    {background:var(--accent);flex-grow:2.1;}
+    70%    {background:var(--w-ink);flex-grow:1;}
+}
+
+/* ---------- 2c. BUILD — layout assembling in a browser frame ---------- */
+.km-w[data-km-w="build"] .kw-browser{
+    position:absolute;left:14px;right:14px;top:14px;bottom:26px;
+    border:1px solid var(--w-line);border-radius:9px;overflow:hidden;background:var(--w-soft);
+}
+.km-w[data-km-w="build"] .kw-bar{
+    height:16px;display:flex;align-items:center;gap:4px;padding:0 7px;
+    border-bottom:1px solid var(--w-line);
+}
+.km-w[data-km-w="build"] .kw-bar i{width:4px;height:4px;border-radius:50%;background:var(--w-dim);}
+.km-w[data-km-w="build"] .kw-bar i:first-child{background:var(--accent);}
+.km-w[data-km-w="build"] .kw-blocks{
+    position:relative;padding:8px;display:grid;gap:5px;
+    grid-template-columns:1fr 1fr 1fr;grid-auto-rows:14px;
+}
+.km-w[data-km-w="build"] .kw-blocks b{
+    background:var(--w-line);border-radius:3px;display:block;
+    transform:scaleX(0);transform-origin:left center;opacity:0;
+}
+.km-w[data-km-w="build"] .kw-blocks b:nth-child(1){grid-column:span 2;}
+.km-w[data-km-w="build"] .kw-blocks b:nth-child(2){background:var(--accent);}
+.km-w[data-km-w="build"] .kw-blocks b:nth-child(3){grid-column:span 3;}
+.km-w[data-km-w="build"] .kw-blocks b:nth-child(4){grid-column:span 1;}
+.km-w[data-km-w="build"] .kw-blocks b:nth-child(5){grid-column:span 2;}
+.km-w[data-km-w="build"].is-live .kw-blocks b{animation:km-build 4.6s var(--km-ease) infinite;}
+.km-w[data-km-w="build"].is-live .kw-blocks b:nth-child(1){animation-delay:.0s;}
+.km-w[data-km-w="build"].is-live .kw-blocks b:nth-child(2){animation-delay:.16s;}
+.km-w[data-km-w="build"].is-live .kw-blocks b:nth-child(3){animation-delay:.32s;}
+.km-w[data-km-w="build"].is-live .kw-blocks b:nth-child(4){animation-delay:.48s;}
+.km-w[data-km-w="build"].is-live .kw-blocks b:nth-child(5){animation-delay:.64s;}
+@keyframes km-build{
+    0%     {transform:scaleX(0);opacity:0;}
+    14%    {transform:scaleX(1);opacity:1;}
+    76%    {transform:scaleX(1);opacity:1;}
+    90%,100%{transform:scaleX(0);opacity:0;}
+}
+
+/* ---------- 2d. COPY — a line rewriting itself ---------- */
+.km-w[data-km-w="copy"] .kw-copy{
+    position:absolute;left:14px;right:14px;top:22px;
+    font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:600;
+    line-height:1.35;color:var(--w-ink);min-height:42px;
+}
+.km-w[data-km-w="copy"] .kw-caret{
+    display:inline-block;width:2px;height:15px;vertical-align:-2px;margin-left:2px;
+    background:var(--accent);
+}
+.km-w[data-km-w="copy"].is-live .kw-caret{animation:km-caret 1s steps(2,end) infinite;}
+@keyframes km-caret{0%,49%{opacity:1;}50%,100%{opacity:0;}}
+.km-w[data-km-w="copy"] .kw-meter{
+    position:absolute;left:14px;right:14px;bottom:30px;height:4px;
+    border-radius:3px;background:var(--w-line);overflow:hidden;
+}
+.km-w[data-km-w="copy"] .kw-meter i{
+    display:block;height:100%;width:20%;border-radius:3px;background:var(--accent);
+    transition:width .5s var(--km-ease);
+}
+
+/* ---------- 2e. ASSETS — a deck fanning out ---------- */
+.km-w[data-km-w="assets"] .kw-deck{position:absolute;inset:0;}
+/* The deck always sits slightly fanned so the cards read as a stack even at
+   rest, then spreads wide mid-cycle. */
+.km-w[data-km-w="assets"] .kw-deck i{
+    position:absolute;left:50%;top:45%;width:68px;height:48px;margin:-24px 0 0 -34px;
+    border-radius:8px;border:1.5px solid var(--w-ink);background:var(--w-soft);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Space Mono',monospace;font-size:8px;font-weight:700;
+    letter-spacing:.06em;color:var(--w-ink);font-style:normal;
+    box-shadow:0 8px 18px -12px rgba(0,0,0,.55);
+}
+.km-w[data-km-w="assets"] .kw-deck i:nth-child(4){
+    background:var(--accent);color:var(--accent-ink);border-color:var(--accent);
+}
+.km-w[data-km-w="assets"] .kw-deck i:nth-child(1){transform:translate(-26px,5px) rotate(-6deg);}
+.km-w[data-km-w="assets"] .kw-deck i:nth-child(2){transform:translate(-9px,-1px) rotate(-2deg);}
+.km-w[data-km-w="assets"] .kw-deck i:nth-child(3){transform:translate(9px,-1px) rotate(2deg);}
+.km-w[data-km-w="assets"] .kw-deck i:nth-child(4){transform:translate(26px,5px) rotate(6deg);}
+.km-w[data-km-w="assets"].is-live .kw-deck i{animation:km-fan1 5.2s var(--km-ease) infinite;}
+.km-w[data-km-w="assets"].is-live .kw-deck i:nth-child(2){animation-name:km-fan2;animation-delay:.1s;}
+.km-w[data-km-w="assets"].is-live .kw-deck i:nth-child(3){animation-name:km-fan3;animation-delay:.2s;}
+.km-w[data-km-w="assets"].is-live .kw-deck i:nth-child(4){animation-name:km-fan4;animation-delay:.3s;}
+@keyframes km-fan1{
+    0%,100%{transform:translate(-26px,5px) rotate(-6deg);}
+    26%,54%{transform:translate(-62px,2px) rotate(-13deg);}
+}
+@keyframes km-fan2{
+    0%,100%{transform:translate(-9px,-1px) rotate(-2deg);}
+    26%,54%{transform:translate(-21px,-6px) rotate(-4deg);}
+}
+@keyframes km-fan3{
+    0%,100%{transform:translate(9px,-1px) rotate(2deg);}
+    26%,54%{transform:translate(21px,-6px) rotate(4deg);}
+}
+@keyframes km-fan4{
+    0%,100%{transform:translate(26px,5px) rotate(6deg);}
+    26%,54%{transform:translate(62px,2px) rotate(13deg);}
+}
+
+/* ---------- 2f. SYSTEM — orbit of the three pillars (hero / about) ---------- */
+.km-orbit-wrap{margin-top:40px;padding-top:34px;border-top:1px solid var(--line);}
+.km-orbit{position:relative;width:100%;max-width:300px;aspect-ratio:1;margin:0 auto;}
+.km-orbit .ko-ring{
+    position:absolute;inset:0;border:1px dashed var(--line);border-radius:50%;
+}
+.km-orbit .ko-ring.r2{inset:16%;}
+.km-orbit .ko-ring.r3{inset:32%;}
+.km-orbit.is-live .ko-ring{animation:km-spin 34s linear infinite;}
+.km-orbit.is-live .ko-ring.r2{animation-duration:24s;animation-direction:reverse;}
+.km-orbit.is-live .ko-ring.r3{animation-duration:16s;}
+@keyframes km-spin{to{transform:rotate(360deg);}}
+.km-orbit .ko-core{
+    position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:34%;height:34%;border-radius:50%;background:var(--ink);color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:17px;
+}
+.km-orbit .ko-core .dot{color:var(--accent);}
+.km-orbit .ko-node{
+    position:absolute;left:var(--x);top:var(--y);
+    font-family:'Space Mono',monospace;font-size:10px;font-weight:700;
+    letter-spacing:.08em;text-transform:uppercase;
+    background:var(--paper);border:1px solid var(--line);border-radius:20px;
+    padding:7px 13px;white-space:nowrap;
+    transform:translate(-50%,-50%);
+    box-shadow:0 8px 20px -14px rgba(0,0,0,.5);
+}
+.km-orbit.is-live .ko-node{animation:km-float 5s var(--km-ease) infinite;animation-delay:var(--d,0s);}
+@keyframes km-float{
+    0%,100%{transform:translate(-50%,-50%);}
+    50%    {transform:translate(-50%,calc(-50% - 7px));}
+}
+.km-orbit .ko-node.is-accent{background:var(--accent);border-color:transparent;color:var(--accent-ink);}
+.km-orbit .ko-spark{
+    position:absolute;left:50%;top:50%;width:7px;height:7px;margin:-3.5px;
+    border-radius:50%;background:var(--accent);
+    box-shadow:0 0 12px rgba(198,255,74,.9);
+    offset-path:circle(34% at 50% 50%);
+    display:none;
+}
+@supports (offset-path:circle(34% at 50% 50%)){
+    .km-orbit .ko-spark{display:block;}
+}
+.km-orbit.is-live .ko-spark{animation:km-travel 7s linear infinite;}
+@keyframes km-travel{to{offset-distance:100%;}}
+.km-orbit-cap{
+    display:block;text-align:center;margin-top:14px;
+    font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--gray);
+}
+
+/* ---------- 2g. RIDGE — the stat cards' own chart ----------
+   A row of thin bars that rise to the right, filled only as far as the stat's
+   own percentage, with a hairline that draws across their tops. It reads as a
+   chart and as the number at the same time. */
+.stat-card{display:flex;flex-direction:column;}
+.km-ridge{
+    position:relative;margin-top:auto;padding-top:20px;
+    height:76px;box-sizing:border-box;
+}
+.km-ridge-bars{
+    position:absolute;left:0;right:0;bottom:0;height:56px;
+    display:flex;align-items:flex-end;gap:2px;
+}
+.km-ridge-bars i{
+    flex:1;display:block;border-radius:2px 2px 1px 1px;
+    height:var(--h);min-height:3px;
+    background:var(--line);
+    transform:scaleY(0);transform-origin:bottom;
+    transition:transform .6s var(--km-ease),background .5s ease;
+    transition-delay:calc(var(--i) * 22ms);
+}
+.stat-card.is-live .km-ridge-bars i{transform:scaleY(1);}
+.km-ridge-bars i.is-on{background:var(--accent);}
+.stat-card:nth-child(2) .km-ridge-bars i.is-on,
+.stat-card:nth-child(4) .km-ridge-bars i.is-on{background:var(--accent-2);}
+/* the last filled bar is the marker */
+.km-ridge-bars i.is-edge{background:var(--ink);}
+/* sits exactly on the bars so the hairline lands on their tops */
+.km-ridge-line{
+    position:absolute;left:0;right:0;bottom:0;height:56px;width:100%;
+    overflow:visible;pointer-events:none;
+}
+.km-ridge-line polyline{
+    fill:none;stroke:var(--ink);stroke-width:1.5;
+    stroke-linecap:round;stroke-linejoin:round;opacity:.42;
+    stroke-dasharray:400;stroke-dashoffset:400;
+    transition:stroke-dashoffset 1.5s var(--km-ease) .5s;
+    vector-effect:non-scaling-stroke;
+}
+.stat-card.is-live .km-ridge-line polyline{stroke-dashoffset:0;}
+
+/* ==========================================================================
+   3. SECTION ACCENTS
+   ========================================================================== */
+
+/* --- section eyebrow that types itself in --- */
+.km-eyebrow{
+    display:inline-flex;align-items:center;gap:9px;margin-bottom:16px;
+    font-family:'Space Mono',monospace;font-size:11px;font-weight:700;
+    letter-spacing:.14em;text-transform:uppercase;color:var(--gray);
+}
+.km-eyebrow::before{
+    content:'';width:26px;height:1.5px;background:var(--accent);border-radius:2px;
+    transform:scaleX(0);transform-origin:left;transition:transform .7s var(--km-ease);
+}
+.km-eyebrow.is-live::before{transform:scaleX(1);}
+
+/* --- process: the thread that draws through the steps --- */
+.km-thread{
+    position:absolute;left:22px;right:22px;top:22px;height:2px;
+    background:var(--line);border-radius:2px;overflow:hidden;z-index:0;
+}
+.km-thread i{
+    display:block;height:100%;width:0;border-radius:2px;
+    background:linear-gradient(90deg,var(--accent),var(--ink));
+    transition:width 1.6s var(--km-ease);
+}
+.km-thread.is-live i{width:100%;}
+.process-grid{position:relative;}
+.process-item{position:relative;z-index:1;}
+.process-item .process-icon{
+    position:relative;overflow:hidden;
+    transition:transform .45s var(--km-ease),box-shadow .45s var(--km-ease);
+}
+.process-item .process-icon::before{
+    content:'';position:absolute;inset:0;background:var(--accent);
+    transform:translateY(101%);transition:transform .5s var(--km-ease);
+}
+.process-item:hover .process-icon{transform:translateY(-4px);box-shadow:0 12px 24px -14px rgba(0,0,0,.5);}
+.process-item:hover .process-icon::before{transform:translateY(0);}
+.process-item .process-icon span{position:relative;z-index:1;transition:color .35s ease;}
+.process-item:hover .process-icon span{color:var(--ink);}
+
+/* --- project cards: light sweep + lift --- */
+.project-card{position:relative;overflow:hidden;}
+.project-card::before{
+    content:'';position:absolute;inset:0;z-index:2;pointer-events:none;
+    background:linear-gradient(115deg,transparent 34%,rgba(255,255,255,.42) 50%,transparent 64%);
+    transform:translateX(-130%);transition:transform .95s var(--km-ease);
+}
+.project-card:hover::before{transform:translateX(130%);}
+
+/* --- capability grid: room for the widgets --- */
+.cap-item{position:relative;overflow:hidden;}
+.cap-item .cap-head{display:flex;align-items:center;gap:12px;}
+.cap-item .cap-icon{margin-bottom:0 !important;}
+.cap-item .cap-icon svg{transition:transform .5s var(--km-ease);}
+.cap-item:hover .cap-icon svg{transform:rotate(-12deg) scale(1.1);}
+.cap-item .cap-note{
+    display:block;margin-top:8px;font-size:12.5px;line-height:1.5;color:var(--gray);
+    transition:color .35s ease;
+}
+.cap-item:hover .cap-note{color:rgba(255,255,255,.62);}
+
+/* --- stats: numbers get a lime underline that grows with the count --- */
+.stat-card{position:relative;}
+.stat-card::after{
+    content:'';position:absolute;left:0;bottom:0;height:3px;width:0;
+    background:var(--accent);transition:width 1.4s var(--km-ease);
+}
+.stat-card.is-live::after{width:100%;}
+
+/* --- pricing tiers / value cards: edge draw on hover --- */
+.km-edge{position:relative;}
+.km-edge::after{
+    content:'';position:absolute;left:0;top:0;width:100%;height:2px;
+    background:var(--accent);transform:scaleX(0);transform-origin:left;
+    transition:transform .6s var(--km-ease);
+}
+.km-edge:hover::after{transform:scaleX(1);}
+
+/* --- generic staggered reveal (used where GSAP isn't wired up) --- */
+.km-r{opacity:0;transform:translateY(26px);
+      transition:opacity .8s var(--km-ease),transform .8s var(--km-ease);}
+.km-r.is-live{opacity:1;transform:none;}
+
+/* --- floating scroll cue on hero --- */
+.km-cue{
+    display:inline-flex;flex-direction:column;align-items:center;gap:8px;margin-top:34px;
+    font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--gray);
+    text-decoration:none;
+}
+.km-cue .km-cue-rail{
+    width:1.5px;height:44px;background:var(--line);border-radius:2px;position:relative;overflow:hidden;
+}
+.km-cue .km-cue-rail::after{
+    content:'';position:absolute;left:0;right:0;height:16px;border-radius:2px;background:var(--ink);
+    animation:km-cue 2.3s var(--km-ease) infinite;
+}
+@keyframes km-cue{0%{top:-16px;}60%,100%{top:44px;}}
+
+/* ==========================================================================
+   3b. PAGE-SPECIFIC ACCENTS
+   ========================================================================== */
+
+/* --- projects.html: folder cards get the same light sweep --- */
+.folder-card{position:relative;overflow:hidden;}
+.folder-card::before{
+    content:'';position:absolute;inset:0;z-index:2;pointer-events:none;
+    background:linear-gradient(115deg,transparent 34%,rgba(198,255,74,.22) 50%,transparent 64%);
+    transform:translateX(-130%);transition:transform 1s var(--km-ease);
+}
+.folder-card:hover::before{transform:translateX(130%);}
+.folder-card .folder-illustration{transition:transform .6s var(--km-ease);}
+.folder-card:hover .folder-illustration{transform:translateY(-6px) scale(1.03);}
+
+/* --- projects.html: proof numbers tick up on a lime rail --- */
+.proof-item{position:relative;}
+.proof-item .proof-num{transition:transform .5s var(--km-ease);}
+.proof-item:hover .proof-num{transform:translateY(-3px);}
+
+/* --- pricing.html: the featured tier breathes --- */
+.tier-card.featured{position:relative;}
+.tier-card.featured .tier-featured-badge{
+    position:relative;overflow:visible;
+}
+.tier-card.featured .tier-featured-badge::after{
+    content:'';position:absolute;inset:-4px;border-radius:inherit;
+    border:1.5px solid var(--accent);opacity:0;
+    animation:km-breathe 3.2s var(--km-ease) infinite;
+}
+@keyframes km-breathe{
+    0%  {opacity:.7;transform:scale(1);}
+    70%,100%{opacity:0;transform:scale(1.22);}
+}
+.tier-card .tier-price{transition:transform .45s var(--km-ease);}
+.tier-card:hover .tier-price{transform:translateY(-3px);}
+
+/* --- pricing.html: FAQ rows get a lime tick on the open row --- */
+.faq-item{position:relative;}
+.faq-item .faq-icon{transition:transform .4s var(--km-ease),color .3s ease;}
+.faq-item:hover .faq-icon{transform:rotate(90deg);color:var(--accent-ink);}
+
+/* --- contact.html: inputs light up as you fill them in --- */
+.form-group{position:relative;}
+.form-input,.form-textarea{transition:border-color .35s ease,box-shadow .35s ease,background .35s ease;}
+.form-input:focus,.form-textarea:focus{
+    border-color:var(--ink);
+    box-shadow:0 0 0 3px rgba(198,255,74,.35);
+    outline:none;
+}
+.form-label{transition:color .3s ease;}
+.form-group:focus-within .form-label{color:var(--accent-ink);}
+.contact-item .contact-icon{transition:transform .5s var(--km-ease),background .35s ease;}
+.contact-item:hover .contact-icon{transform:translateY(-3px) rotate(-8deg);}
+.social-link{transition:transform .4s var(--km-ease);}
+.social-link:hover{transform:translateY(-4px);}
+
+/* ==========================================================================
+   3c. BRAND SYSTEM — four live scenes, one per part
+   Each scene is a frosted panel that sits on top of that section's photo.
+   ========================================================================== */
+
+.zigzag-visual{overflow:hidden;}
+.zigzag-visual img{transition:transform 1s var(--km-ease);}
+.zigzag:hover .zigzag-visual img{transform:scale(1.05);}
+.zigzag-visual::after{
+    content:'';position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(180deg,rgba(10,10,10,.05) 30%,rgba(10,10,10,.72));
+}
+
+/* --- big ghost step number --- */
+.bs-ghost{
+    position:absolute;top:-14px;right:14px;z-index:2;pointer-events:none;
+    font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:128px;
+    line-height:1;letter-spacing:-.05em;color:rgba(255,255,255,.09);
+    transition:transform 1.1s var(--km-ease),opacity .8s ease;
+    transform:translateY(18px);opacity:0;
+}
+.bs-ghost.is-live{transform:translateY(0);opacity:1;}
+
+/* --- the panel --- */
+.bs-scene{
+    position:absolute;left:18px;right:18px;bottom:18px;z-index:3;
+    height:182px;padding:14px 16px;border-radius:16px;
+    /* opaque enough that the small mono type stays legible wherever the photo
+       behind it happens to be bright */
+    background:linear-gradient(180deg,rgba(11,11,11,.88),rgba(11,11,11,.76));
+    -webkit-backdrop-filter:blur(22px) saturate(1.4);
+    backdrop-filter:blur(22px) saturate(1.4);
+    border:1px solid rgba(255,255,255,.14);
+    box-shadow:0 24px 46px -26px rgba(0,0,0,.9);
+    color:#fff;overflow:hidden;
+    opacity:0;transform:translateY(20px);
+    transition:opacity .7s ease,transform .8s var(--km-ease);
+}
+.bs-scene.is-live{opacity:1;transform:translateY(0);}
+.bs-scene .bss-head{
+    display:flex;align-items:center;gap:8px;margin-bottom:12px;
+    font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;
+    letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.8);
+}
+.bs-scene .bss-head i{width:5px;height:5px;border-radius:50%;background:var(--accent);display:block;flex:none;}
+.bs-scene.is-live .bss-head i{animation:km-ctx-pulse 2s ease-in-out infinite;}
+
+/* the act label swaps with a small vertical shuffle */
+.bs-scene .bss-act{
+    flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    transition:transform .28s var(--km-ease),opacity .28s ease;
+}
+.bs-scene .bss-act.is-swap{transform:translateY(-8px);opacity:0;}
+
+/* four pips showing where you are in the loop */
+.bs-scene .bss-pips{display:flex;gap:4px;flex:none;}
+.bs-scene .bss-pip{
+    width:12px;height:2px;border-radius:2px;background:rgba(255,255,255,.2);
+    transition:background .4s ease,width .4s var(--km-ease);
+}
+.bs-scene .bss-pip.is-on{background:var(--accent);width:18px;}
+.bs-scene[data-bs-scene="identity"] .bss-pip.is-on,
+.bs-scene[data-bs-scene="assets"] .bss-pip.is-on{background:var(--accent-2);}
+.bs-scene[data-bs-scene="identity"] .bss-head i,
+.bs-scene[data-bs-scene="assets"] .bss-head i{background:var(--accent-2);}
+
+/* ---------- 01 Strategy: the positioning board ---------- */
+.bs-scene[data-bs-scene="strategy"] .bss-board{position:relative;height:124px;}
+
+/* act 1 — the scan line sweeps the field while competitors appear */
+.bs-scene[data-bs-scene="strategy"] .bss-scan{
+    position:absolute;top:0;bottom:0;width:1.5px;left:0;opacity:0;
+    background:linear-gradient(180deg,transparent,var(--accent),transparent);
+}
+.bs-scene[data-bs-scene="strategy"][data-act="1"] .bss-scan{animation:km-scan 3.4s linear;}
+
+/* act 2 — the empty premium quadrant is called out */
+.bs-scene[data-bs-scene="strategy"] .bss-gap{
+    position:absolute;left:64%;top:6%;width:32%;height:40%;
+    border:1.5px dashed var(--accent);border-radius:8px;
+    background:rgba(198,255,74,.07);
+    opacity:0;transform:scale(.9);
+    transition:opacity .5s ease,transform .6s var(--km-ease);
+}
+.bs-scene[data-bs-scene="strategy"][data-act="2"] .bss-gap,
+.bs-scene[data-bs-scene="strategy"][data-act="3"] .bss-gap{opacity:1;transform:scale(1);}
+.bs-scene[data-bs-scene="strategy"][data-act="4"] .bss-gap{opacity:.35;transform:scale(1);}
+
+/* act 3 — you move in. act 4 — the price follows */
+.bs-scene[data-bs-scene="strategy"] .bss-price{
+    position:absolute;right:6px;bottom:4px;display:flex;align-items:center;gap:6px;
+    font-family:'Space Mono',monospace;font-size:11px;font-weight:700;
+    opacity:0;transform:translateY(6px);
+    transition:opacity .5s ease,transform .5s var(--km-ease);
+}
+.bs-scene[data-bs-scene="strategy"] .bss-price b{color:rgba(255,255,255,.45);font-weight:700;}
+.bs-scene[data-bs-scene="strategy"] .bss-price em{color:rgba(255,255,255,.3);font-style:normal;}
+.bs-scene[data-bs-scene="strategy"] .bss-price b.up{color:var(--accent-2);}
+.bs-scene[data-bs-scene="strategy"][data-act="4"] .bss-price{opacity:1;transform:translateY(0);}
+.bs-scene[data-bs-scene="strategy"] .bss-grid{
+    position:absolute;inset:0;border-radius:9px;
+    border:1px solid rgba(255,255,255,.1);
+    background-image:
+        linear-gradient(to right,rgba(255,255,255,.06) 1px,transparent 1px),
+        linear-gradient(to bottom,rgba(255,255,255,.06) 1px,transparent 1px);
+    background-size:25% 50%;
+}
+.bs-scene[data-bs-scene="strategy"] .bss-chip{
+    position:absolute;left:var(--x);top:var(--y);transform:translate(-50%,-50%);
+    font-family:'Space Mono',monospace;font-size:8.5px;font-weight:700;
+    letter-spacing:.06em;text-transform:uppercase;
+    color:rgba(255,255,255,.5);background:rgba(255,255,255,.07);
+    border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:4px 9px;
+    white-space:nowrap;opacity:0;
+    transition:opacity .6s ease,filter .6s ease;
+}
+.bs-scene[data-bs-scene="strategy"][data-act="1"] .bss-chip{
+    animation:km-chip-in .8s var(--km-ease) forwards;animation-delay:var(--d);
+}
+.bs-scene[data-bs-scene="strategy"][data-act="2"] .bss-chip,
+.bs-scene[data-bs-scene="strategy"][data-act="3"] .bss-chip,
+.bs-scene[data-bs-scene="strategy"][data-act="4"] .bss-chip{opacity:1;}
+/* once you have the position, the competition recedes */
+.bs-scene[data-bs-scene="strategy"][data-act="4"] .bss-chip{opacity:.4;}
+@keyframes km-chip-in{from{opacity:0;transform:translate(-50%,-38%);}to{opacity:1;transform:translate(-50%,-50%);}}
+
+.bs-scene[data-bs-scene="strategy"] .bss-you{
+    position:absolute;left:16%;top:78%;transform:translate(-50%,-50%);
+    font-family:'Space Mono',monospace;font-size:9px;font-weight:700;
+    letter-spacing:.08em;text-transform:uppercase;
+    color:var(--accent-ink);background:var(--accent);border-radius:14px;padding:5px 11px;
+    box-shadow:0 0 0 0 rgba(198,255,74,.5);opacity:0;
+    transition:left 1.5s var(--km-ease),top 1.5s var(--km-ease),opacity .5s ease;
+}
+.bs-scene[data-bs-scene="strategy"][data-act="2"] .bss-you{opacity:1;}
+.bs-scene[data-bs-scene="strategy"][data-act="3"] .bss-you,
+.bs-scene[data-bs-scene="strategy"][data-act="4"] .bss-you{opacity:1;left:80%;top:26%;}
+.bs-scene[data-bs-scene="strategy"][data-act="3"] .bss-you{animation:km-you-lock 1.4s var(--km-ease) 1.1s;}
+@keyframes km-you-lock{
+    0%  {box-shadow:0 0 0 0 rgba(198,255,74,.55);}
+    100%{box-shadow:0 0 0 18px rgba(198,255,74,0);}
+}
+.bs-scene[data-bs-scene="strategy"] .bss-axis{
+    position:absolute;font-family:'Space Mono',monospace;font-size:7.5px;font-weight:700;
+    letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);
+}
+/* both axis labels sit on the left edge so they read as one vertical scale
+   and never collide with the highlighted quadrant on the right */
+.bs-scene[data-bs-scene="strategy"] .bss-axis.top{top:6px;left:8px;}
+.bs-scene[data-bs-scene="strategy"] .bss-axis.bottom{bottom:6px;left:8px;}
+
+/* ---------- 02 Identity: mark → palette → type → sheet ---------- */
+.bs-scene[data-bs-scene="identity"] .bss-kit{
+    display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center;height:124px;
+}
+.bs-scene[data-bs-scene="identity"] .bss-mark{
+    position:relative;width:96px;height:96px;border-radius:16px;
+    background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+    display:flex;align-items:center;justify-content:center;overflow:hidden;
+}
+/* act 1 — the mark is drawn stroke by stroke */
+.bs-scene[data-bs-scene="identity"] .bss-draw{
+    position:absolute;width:64px;height:64px;opacity:0;
+}
+.bs-scene[data-bs-scene="identity"] .bss-draw path{
+    fill:none;stroke:var(--accent-2);stroke-width:5;
+    stroke-linecap:round;stroke-linejoin:round;
+    stroke-dasharray:110;stroke-dashoffset:110;
+}
+.bs-scene[data-bs-scene="identity"][data-act="1"] .bss-draw{opacity:1;}
+.bs-scene[data-bs-scene="identity"][data-act="1"] .bss-draw path{
+    animation:km-draw 2.4s var(--km-ease) forwards;
+}
+@keyframes km-draw{to{stroke-dashoffset:0;}}
+
+.bs-scene[data-bs-scene="identity"] .bss-mark span{
+    position:absolute;font-size:30px;color:#fff;opacity:0;letter-spacing:-.03em;
+    transition:opacity .5s ease;
+}
+.bs-scene[data-bs-scene="identity"] .bss-mark span:nth-child(2){font-family:'Space Grotesk',sans-serif;font-weight:700;}
+.bs-scene[data-bs-scene="identity"] .bss-mark span:nth-child(3){font-family:'Space Mono',monospace;font-weight:700;}
+.bs-scene[data-bs-scene="identity"] .bss-mark span:nth-child(4){font-family:'Inter',sans-serif;font-weight:300;letter-spacing:.06em;}
+.bs-scene[data-bs-scene="identity"] .bss-mark em{color:var(--accent-2);font-style:normal;}
+.bs-scene[data-bs-scene="identity"][data-act="2"] .bss-mark span:nth-child(2),
+.bs-scene[data-bs-scene="identity"][data-act="3"] .bss-mark span:nth-child(3),
+.bs-scene[data-bs-scene="identity"][data-act="4"] .bss-mark span:nth-child(4){opacity:1;}
+
+.bs-scene[data-bs-scene="identity"] .bss-right{position:relative;height:100px;}
+.bs-scene[data-bs-scene="identity"] .bss-right > *{
+    position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);
+    opacity:0;transition:opacity .55s ease,transform .55s var(--km-ease);
+}
+
+/* act 2 — the palette settles */
+.bs-scene[data-bs-scene="identity"] .bss-swatches{display:flex;gap:7px;height:30px;}
+.bs-scene[data-bs-scene="identity"] .bss-swatches i{
+    flex:1;border-radius:6px;background:rgba(255,255,255,.22);
+    transition:background .6s var(--km-ease),flex-grow .6s var(--km-ease);
+}
+.bs-scene[data-bs-scene="identity"][data-act="2"] .bss-swatches{opacity:1;}
+.bs-scene[data-bs-scene="identity"][data-act="2"] .bss-swatches i{animation:km-sw 1.7s var(--km-ease) 2;}
+.bs-scene[data-bs-scene="identity"][data-act="2"] .bss-swatches i:nth-child(2){animation-delay:.1s;}
+.bs-scene[data-bs-scene="identity"][data-act="2"] .bss-swatches i:nth-child(3){animation-delay:.2s;}
+.bs-scene[data-bs-scene="identity"][data-act="2"] .bss-swatches i:nth-child(4){animation-delay:.3s;}
+.bs-scene[data-bs-scene="identity"][data-act="2"] .bss-swatches i:nth-child(5){animation-delay:.4s;}
+@keyframes km-sw{
+    0%,100%{background:rgba(255,255,255,.22);flex-grow:1;}
+    34%    {background:var(--accent);flex-grow:2.2;}
+    68%    {background:var(--accent-2);flex-grow:1;}
+}
+
+/* act 3 — the type scale */
+.bs-scene[data-bs-scene="identity"] .bss-type{display:flex;align-items:baseline;gap:14px;}
+.bs-scene[data-bs-scene="identity"] .bss-type b{
+    font-family:'Space Grotesk',sans-serif;color:rgba(255,255,255,.8);
+    transform-origin:left bottom;
+}
+.bs-scene[data-bs-scene="identity"] .bss-type b:nth-child(1){font-size:12px;}
+.bs-scene[data-bs-scene="identity"] .bss-type b:nth-child(2){font-size:20px;}
+.bs-scene[data-bs-scene="identity"] .bss-type b:nth-child(3){font-size:30px;color:var(--accent-2);}
+.bs-scene[data-bs-scene="identity"][data-act="3"] .bss-type{opacity:1;}
+.bs-scene[data-bs-scene="identity"][data-act="3"] .bss-type b{animation:km-type-in .6s var(--km-ease) backwards;}
+.bs-scene[data-bs-scene="identity"][data-act="3"] .bss-type b:nth-child(2){animation-delay:.14s;}
+.bs-scene[data-bs-scene="identity"][data-act="3"] .bss-type b:nth-child(3){animation-delay:.28s;}
+@keyframes km-type-in{from{opacity:0;transform:translateY(8px) scaleY(.7);}to{opacity:1;transform:none;}}
+
+/* act 4 — everything lands on one sheet */
+.bs-scene[data-bs-scene="identity"] .bss-sheet{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:6px;grid-auto-rows:22px;
+}
+.bs-scene[data-bs-scene="identity"] .bss-sheet u{
+    background:rgba(255,255,255,.14);border-radius:5px;display:block;
+    border:1px solid rgba(255,255,255,.1);
+}
+.bs-scene[data-bs-scene="identity"] .bss-sheet u:nth-child(1){background:var(--accent);}
+.bs-scene[data-bs-scene="identity"] .bss-sheet u:nth-child(5){background:var(--accent-2);}
+.bs-scene[data-bs-scene="identity"][data-act="4"] .bss-sheet{opacity:1;}
+.bs-scene[data-bs-scene="identity"][data-act="4"] .bss-sheet u{animation:km-sheet-in .55s var(--km-ease) backwards;}
+.bs-scene[data-bs-scene="identity"][data-act="4"] .bss-sheet u:nth-child(2){animation-delay:.07s;}
+.bs-scene[data-bs-scene="identity"][data-act="4"] .bss-sheet u:nth-child(3){animation-delay:.14s;}
+.bs-scene[data-bs-scene="identity"][data-act="4"] .bss-sheet u:nth-child(4){animation-delay:.21s;}
+.bs-scene[data-bs-scene="identity"][data-act="4"] .bss-sheet u:nth-child(5){animation-delay:.28s;}
+.bs-scene[data-bs-scene="identity"][data-act="4"] .bss-sheet u:nth-child(6){animation-delay:.35s;}
+@keyframes km-sheet-in{from{opacity:0;transform:scale(.7);}to{opacity:1;transform:none;}}
+
+/* ---------- 03 Website: layout → content → performance → ship ---------- */
+.bs-scene[data-bs-scene="website"] .bss-ship{
+    display:grid;grid-template-columns:1fr 96px;gap:16px;align-items:center;height:112px;
+}
+.bs-scene[data-bs-scene="website"] .bss-wire{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:7px;grid-auto-rows:20px;
+    padding:11px;border-radius:11px;
+    background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+}
+.bs-scene[data-bs-scene="website"] .bss-wire b{
+    background:rgba(255,255,255,.16);border-radius:4px;
+    transform:scaleX(0);transform-origin:left;
+    transition:transform .55s var(--km-ease),background .6s ease;
+}
+.bs-scene[data-bs-scene="website"] .bss-wire b:nth-child(1){grid-column:span 2;}
+.bs-scene[data-bs-scene="website"] .bss-wire b:nth-child(3){grid-column:span 3;}
+.bs-scene[data-bs-scene="website"] .bss-wire b:nth-child(5){grid-column:span 2;}
+/* act 1 — blocks slide out in sequence */
+.bs-scene[data-bs-scene="website"]:not([data-act="1"]) .bss-wire b{transform:scaleX(1);}
+.bs-scene[data-bs-scene="website"][data-act="1"] .bss-wire b{
+    animation:km-wire-in .55s var(--km-ease) forwards;
+}
+.bs-scene[data-bs-scene="website"][data-act="1"] .bss-wire b:nth-child(2){animation-delay:.16s;}
+.bs-scene[data-bs-scene="website"][data-act="1"] .bss-wire b:nth-child(3){animation-delay:.32s;}
+.bs-scene[data-bs-scene="website"][data-act="1"] .bss-wire b:nth-child(4){animation-delay:.48s;}
+.bs-scene[data-bs-scene="website"][data-act="1"] .bss-wire b:nth-child(5){animation-delay:.64s;}
+@keyframes km-wire-in{to{transform:scaleX(1);}}
+/* act 2 — real content lands in the blocks */
+.bs-scene[data-bs-scene="website"][data-act="2"] .bss-wire b:nth-child(2),
+.bs-scene[data-bs-scene="website"][data-act="3"] .bss-wire b:nth-child(2),
+.bs-scene[data-bs-scene="website"][data-act="4"] .bss-wire b:nth-child(2){background:var(--accent);}
+.bs-scene[data-bs-scene="website"][data-act="2"] .bss-wire b:nth-child(4),
+.bs-scene[data-bs-scene="website"][data-act="3"] .bss-wire b:nth-child(4),
+.bs-scene[data-bs-scene="website"][data-act="4"] .bss-wire b:nth-child(4){background:var(--accent-2);}
+.bs-scene[data-bs-scene="website"][data-act="2"] .bss-wire b:nth-child(1),
+.bs-scene[data-bs-scene="website"][data-act="2"] .bss-wire b:nth-child(3),
+.bs-scene[data-bs-scene="website"][data-act="2"] .bss-wire b:nth-child(5){background:rgba(255,255,255,.34);}
+
+.bs-scene[data-bs-scene="website"] .bss-score{position:relative;width:96px;height:96px;}
+.bs-scene[data-bs-scene="website"] .bss-score svg{width:96px;height:96px;transform:rotate(-90deg);}
+.bs-scene[data-bs-scene="website"] .bss-score circle{fill:none;stroke-width:5;stroke-linecap:round;}
+.bs-scene[data-bs-scene="website"] .bss-score .bg{stroke:rgba(255,255,255,.12);}
+.bs-scene[data-bs-scene="website"] .bss-score .fg{
+    stroke:var(--accent-2);stroke-dasharray:214;stroke-dashoffset:214;
+    transition:stroke-dashoffset 2s var(--km-ease),stroke .8s ease 1.2s;
+}
+/* act 3 — the dial sweeps and turns lime once it clears 90 */
+.bs-scene[data-bs-scene="website"][data-act="3"] .bss-score .fg,
+.bs-scene[data-bs-scene="website"][data-act="4"] .bss-score .fg{stroke-dashoffset:8;stroke:var(--accent);}
+.bs-scene[data-bs-scene="website"] .bss-score span{
+    position:absolute;inset:0;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:2px;
+    font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:25px;color:#fff;
+}
+.bs-scene[data-bs-scene="website"] .bss-num{text-decoration:none;}
+.bs-scene[data-bs-scene="website"] .bss-score small{
+    font-family:'Space Mono',monospace;font-size:7px;font-weight:700;
+    letter-spacing:.12em;color:rgba(255,255,255,.45);
+}
+/* act 4 — it goes live */
+.bs-scene[data-bs-scene="website"] .bss-live{
+    position:absolute;right:16px;top:38px;
+    font-family:'Space Mono',monospace;font-size:8.5px;font-weight:700;
+    letter-spacing:.14em;color:var(--accent-ink);background:var(--accent);
+    border-radius:12px;padding:3px 8px;
+    opacity:0;transform:translateY(-6px);
+    transition:opacity .45s ease,transform .5s var(--km-ease);
+}
+.bs-scene[data-bs-scene="website"][data-act="4"] .bss-live{opacity:1;transform:translateY(0);}
+.bs-scene[data-bs-scene="website"][data-act="4"] .bss-live{animation:km-liveflash 1.4s ease-in-out 2;}
+@keyframes km-liveflash{0%,100%{box-shadow:0 0 0 0 rgba(198,255,74,.5);}50%{box-shadow:0 0 0 8px rgba(198,255,74,0);}}
+.bs-scene[data-bs-scene="website"] .bss-log{
+    position:absolute;left:16px;bottom:11px;
+    font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:.06em;
+    color:rgba(255,255,255,.4);opacity:0;transform:translateY(5px);
+    transition:opacity .45s ease .3s,transform .5s var(--km-ease) .3s;
+}
+.bs-scene[data-bs-scene="website"] .bss-log span::before{content:'✓ ';color:var(--accent);}
+.bs-scene[data-bs-scene="website"][data-act="4"] .bss-log{opacity:1;transform:translateY(0);}
+
+/* ---------- 04 Brand assets: collect → check → package → hand over ---------- */
+.bs-scene[data-bs-scene="assets"] .bss-files{
+    display:flex;flex-direction:column;gap:7px;
+    transition:opacity .5s ease,transform .6s var(--km-ease);
+}
+.bs-scene[data-bs-scene="assets"][data-act="4"] .bss-files{opacity:0;transform:scale(.96);}
+.bs-scene[data-bs-scene="assets"] .bss-file{
+    display:grid;grid-template-columns:18px 1fr auto;align-items:center;gap:10px;
+    font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.03em;
+    color:rgba(255,255,255,.62);
+    opacity:0;transform:translateX(-8px);
+    transition:opacity .5s ease,transform .5s var(--km-ease);
+    transition-delay:calc(var(--i) * .16s);
+}
+.bs-scene[data-bs-scene="assets"]:not([data-act="1"]) .bss-file{opacity:1;transform:translateX(0);}
+.bs-scene[data-bs-scene="assets"][data-act="1"] .bss-file{
+    animation:km-file-in .5s var(--km-ease) forwards;
+    animation-delay:calc(var(--i) * .38s);
+}
+@keyframes km-file-in{to{opacity:1;transform:translateX(0);}}
+.bs-scene[data-bs-scene="assets"] .bss-file .tick{
+    width:18px;height:18px;border-radius:50%;
+    background:rgba(255,255,255,.14);color:transparent;
+    display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;
+    transition:background .4s ease,color .4s ease;
+    transition-delay:calc(var(--i) * .18s);
+}
+/* act 2 — each file gets checked off */
+.bs-scene[data-bs-scene="assets"][data-act="2"] .bss-file .tick,
+.bs-scene[data-bs-scene="assets"][data-act="3"] .bss-file .tick,
+.bs-scene[data-bs-scene="assets"][data-act="4"] .bss-file .tick{
+    background:var(--accent-2);color:#fff;
+}
+.bs-scene[data-bs-scene="assets"] .bss-file .sz{color:rgba(255,255,255,.3);font-size:9px;}
+
+/* act 3/4 — it all becomes one package */
+.bs-scene[data-bs-scene="assets"] .bss-zip{
+    position:absolute;left:0;right:0;top:52%;transform:translateY(-50%) scale(.9);
+    text-align:center;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;
+    letter-spacing:.04em;color:#fff;opacity:0;
+    transition:opacity .5s ease,transform .6s var(--km-ease);
+}
+.bs-scene[data-bs-scene="assets"] .bss-zip::before{
+    content:'';display:block;width:38px;height:30px;margin:0 auto 10px;
+    border-radius:6px 6px 4px 4px;background:var(--accent-2);
+    box-shadow:0 8px 22px -10px rgba(217,119,87,.9);
+}
+.bs-scene[data-bs-scene="assets"][data-act="4"] .bss-zip{opacity:1;transform:translateY(-50%) scale(1);}
+
+.bs-scene[data-bs-scene="assets"] .bss-bar{
+    position:absolute;left:16px;right:16px;bottom:14px;
+    height:4px;border-radius:3px;background:rgba(255,255,255,.12);overflow:hidden;
+}
+.bs-scene[data-bs-scene="assets"] .bss-bar i{
+    display:block;height:100%;border-radius:3px;width:0;
+    background:linear-gradient(90deg,var(--accent),var(--accent-2));
+    transition:width 1.4s var(--km-ease);
+}
+.bs-scene[data-bs-scene="assets"][data-act="1"] .bss-bar i{width:26%;}
+.bs-scene[data-bs-scene="assets"][data-act="2"] .bss-bar i{width:62%;}
+.bs-scene[data-bs-scene="assets"][data-act="3"] .bss-bar i,
+.bs-scene[data-bs-scene="assets"][data-act="4"] .bss-bar i{width:100%;}
+
+/* --- checklist ticks draw themselves in ---
+   Only the tick is animated here. The <li> itself is already tweened by the
+   page's own GSAP `from`, and gsap.from reads the element's current computed
+   value as its destination — so setting opacity:0 on the li would make the
+   tween animate from invisible to invisible. */
+.bs-checklist li{transition:transform .35s var(--km-ease);}
+.bs-checklist li:hover{transform:translateX(5px);}
+.bs-checklist .check-icon{
+    transform:scale(0);transition:transform .5s var(--km-ease);
+}
+.bs-checklist li.is-live .check-icon{transform:scale(1);}
+.bs-checklist .check-icon path{
+    stroke-dasharray:22;stroke-dashoffset:22;
+    transition:stroke-dashoffset .45s var(--km-ease) .18s;
+}
+.bs-checklist li.is-live .check-icon path{stroke-dashoffset:0;}
+
+/* --- sub-nav tabs --- */
+.bs-tab{position:relative;transition:background .4s var(--km-ease),color .3s ease,transform .3s var(--km-ease);}
+.bs-tab:hover{transform:translateY(-1px);}
+.bs-tab.active::after{
+    content:'';position:absolute;left:50%;bottom:5px;width:14px;height:2px;margin-left:-7px;
+    background:var(--accent);border-radius:2px;
+    animation:km-tabdot .5s var(--km-ease);
+}
+@keyframes km-tabdot{from{transform:scaleX(0);}to{transform:scaleX(1);}}
+
+@media (max-width:900px){
+    .bs-scene{height:160px;left:12px;right:12px;bottom:12px;padding:12px 13px;}
+    .bs-scene .bss-pips{display:none;}
+    .bs-scene[data-bs-scene="strategy"] .bss-board{height:104px;}
+    .bs-scene[data-bs-scene="identity"] .bss-kit{height:104px;grid-template-columns:78px 1fr;}
+    .bs-scene[data-bs-scene="identity"] .bss-mark{width:78px;height:78px;}
+    .bs-scene[data-bs-scene="identity"] .bss-right{height:86px;}
+    .bs-scene[data-bs-scene="website"] .bss-ship{height:98px;grid-template-columns:1fr 80px;}
+    .bs-scene[data-bs-scene="website"] .bss-score,
+    .bs-scene[data-bs-scene="website"] .bss-score svg{width:80px;height:80px;}
+    .bs-ghost{font-size:92px;}
+}
+
+/* --- about.html: value cards lift with the widget language --- */
+.value-card .value-icon{transition:transform .5s var(--km-ease);}
+.value-card:hover .value-icon{transform:translateY(-4px) rotate(-8deg);}
+
+/* ==========================================================================
+   3d. ORANGE — the second accent, placed on every fourth beat so the page
+   has warmth without the lime losing its job as the primary signal.
+   ========================================================================== */
+
+/* every other section eyebrow rule */
+.km-eyebrow:nth-of-type(even)::before,
+.stats-section .km-eyebrow::before,
+.section-process .km-eyebrow::before,
+.faq .km-eyebrow::before{background:var(--accent-2);}
+
+/* stat cards 2 and 4 read warm, 1 and 3 stay lime */
+.stat-card:nth-child(2) .km-spark .ks-area,
+.stat-card:nth-child(4) .km-spark .ks-area{fill:var(--accent-2);}
+.stat-card:nth-child(2)::after,
+.stat-card:nth-child(4)::after{background:var(--accent-2);}
+
+/* the process thread runs lime → orange → ink */
+.km-thread i{background:linear-gradient(90deg,var(--accent),var(--accent-2) 55%,var(--ink));}
+.process-item:nth-child(even) .process-icon::before{background:var(--accent-2);}
+.process-item:nth-child(even):hover .process-icon span{color:#fff;}
+
+/* capability widgets: copy + assets carry the warm accent */
+.km-w[data-km-w="copy"] .kw-caret,
+.km-w[data-km-w="copy"] .kw-meter i{background:var(--accent-2);}
+.km-w[data-km-w="assets"] .kw-deck i:nth-child(4){
+    background:var(--accent-2);color:#fff;border-color:var(--accent-2);
+}
+.km-w[data-km-w="strategy"] .kw-ghost:nth-of-type(2){background:var(--accent-2);opacity:.8;}
+
+/* orbit: the website node picks up the warm accent */
+.km-orbit .ko-node:last-of-type{
+    border-color:var(--accent-2);color:var(--accent-2-ink);background:var(--accent-2-soft);
+}
+
+/* nav: the scroll-progress ring warms up as you approach the end */
+.km-nav .km-ring-fg{stroke:var(--accent);}
+.km-nav.is-near-end .km-ring-fg{stroke:var(--accent-2);}
+.km-nav.is-near-end .km-nav-ctx .km-ctx-dot{background:var(--accent-2);}
+
+/* menu: the warm mirror of the lime bloom, bottom-right */
+.km-menu-bg::before{z-index:1;}
+.km-menu-bg .km-glow-2{
+    position:absolute;right:-16%;bottom:-24%;width:56%;height:70%;
+    background:radial-gradient(circle at 60% 60%,rgba(217,119,87,.13),transparent 62%);
+    filter:blur(20px);
+}
+.km-menu .menu-links a:nth-child(even):hover::before{
+    background:linear-gradient(90deg,rgba(217,119,87,.13),transparent 72%);
+}
+.km-menu .menu-links a:nth-child(even):hover .km-mi,
+.km-menu .menu-links a:nth-child(even):hover .km-ma{color:var(--accent-2);}
+
+/* pricing + cards */
+.tier-card:not(.featured).km-edge::after{background:var(--accent-2);}
+.value-card:nth-child(2).km-edge::after{background:var(--accent-2);}
+.proof-item:nth-child(even).km-edge::after{background:var(--accent-2);}
+
+/* ==========================================================================
+   3e. ABOUT — the compounding curve
+   Two paths draw as you scroll: a flat one-off refresh against a brand system
+   that keeps earning. The gap between them is the whole argument.
+   ========================================================================== */
+
+.km-compound{
+    margin:70px 0 10px;padding:38px 38px 30px;
+    border:1px solid var(--line);border-radius:var(--radius);background:var(--paper);
+    position:relative;overflow:hidden;
+}
+.km-compound-head{
+    display:flex;align-items:flex-end;justify-content:space-between;
+    gap:24px;flex-wrap:wrap;margin-bottom:26px;
+}
+.km-compound-head h3{font-size:23px;font-weight:600;letter-spacing:-.02em;max-width:430px;}
+.km-compound-legend{display:flex;gap:20px;flex-wrap:wrap;}
+.km-compound-legend span{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;
+    letter-spacing:.08em;text-transform:uppercase;color:var(--gray);
+}
+.km-compound-legend i{width:16px;height:3px;border-radius:2px;display:block;}
+.km-compound-legend .l1 i{background:var(--muted);}
+.km-compound-legend .l2 i{background:var(--accent);}
+.km-compound-chart{position:relative;width:100%;height:224px;margin-bottom:34px;}
+.km-compound-chart svg{display:block;width:100%;height:100%;overflow:visible;}
+.km-compound .kc-grid line{stroke:var(--line);stroke-width:1;}
+/* dash lengths are in screen pixels because of non-scaling-stroke, so they
+   are set generously long — anything past the rendered path length simply
+   means the line is fully drawn */
+.km-compound .kc-flat{
+    fill:none;stroke:var(--muted);stroke-width:2.5;stroke-linecap:round;
+    stroke-dasharray:1700;stroke-dashoffset:1700;
+    transition:stroke-dashoffset 1.8s var(--km-ease) .1s;
+}
+.km-compound .kc-area{fill:url(#kcGrad);opacity:0;transition:opacity .9s ease 1.1s;}
+/* a soft wide stroke under the curve reads as a glow without a filter */
+.km-compound .kc-glow{
+    fill:none;stroke:var(--accent);stroke-width:11;stroke-linecap:round;opacity:0;
+    transition:opacity .9s ease 1.4s;
+}
+.km-compound.is-live .kc-glow{opacity:.16;}
+.km-compound .kc-curve{
+    fill:none;stroke:var(--accent);stroke-width:3;stroke-linecap:round;
+    stroke-dasharray:1700;stroke-dashoffset:1700;
+    transition:stroke-dashoffset 2.1s var(--km-ease) .35s;
+}
+/* year markers sitting on the curve */
+.km-compound .kc-dot{
+    position:absolute;width:11px;height:11px;margin:-5.5px 0 0 -5.5px;border-radius:50%;
+    background:var(--paper);border:3px solid var(--accent);
+    opacity:0;transform:scale(.4);
+    transition:opacity .4s ease,transform .5s var(--km-ease);
+    transition-delay:var(--d);
+}
+.km-compound.is-live .kc-dot{opacity:1;transform:scale(1);}
+.km-compound .kc-dot:last-of-type{
+    border-color:var(--accent);box-shadow:0 0 0 5px rgba(198,255,74,.22);
+}
+/* a hairline from each marker down to the baseline */
+.km-compound .kc-drop{
+    position:absolute;width:1px;margin-left:-.5px;
+    /* dark and dashed, because a lime line would vanish into the lime area */
+    background:repeating-linear-gradient(180deg,
+        rgba(13,13,13,.22) 0 3px,transparent 3px 7px);
+    transform:scaleY(0);transform-origin:top;opacity:0;
+    transition:transform .7s var(--km-ease),opacity .4s ease;
+    transition-delay:var(--d);
+}
+.km-compound.is-live .kc-drop{transform:scaleY(1);opacity:1;}
+.km-compound .kc-delta{
+    stroke:var(--accent-2);stroke-width:1.5;stroke-dasharray:5 5;
+    opacity:0;transition:opacity .6s ease 1.7s;
+}
+/* the two end caps are HTML dots so they stay round in a stretched SVG */
+.km-compound .kc-cap{
+    position:absolute;width:8px;height:8px;margin:-4px 0 0 -4px;border-radius:50%;
+    background:var(--accent-2);opacity:0;transition:opacity .5s ease 1.9s;
+}
+.km-compound.is-live .kc-flat,
+.km-compound.is-live .kc-curve{stroke-dashoffset:0;}
+.km-compound.is-live .kc-area{opacity:1;}
+.km-compound.is-live .kc-delta,
+.km-compound.is-live .kc-cap{opacity:1;}
+.km-compound-axis{position:absolute;left:0;right:0;bottom:-24px;height:14px;}
+.km-compound-axis span{
+    position:absolute;transform:translateX(-50%);
+    font-family:'Space Mono',monospace;font-size:10px;font-weight:700;
+    letter-spacing:.1em;color:var(--muted);white-space:nowrap;
+}
+.km-compound-axis span:first-child{transform:none;}
+.km-compound-tag{
+    position:absolute;padding:6px 11px;border-radius:16px;white-space:nowrap;
+    font-family:'Space Mono',monospace;font-size:10px;font-weight:700;
+    letter-spacing:.07em;text-transform:uppercase;
+    opacity:0;transform:translateY(6px);
+    transition:opacity .6s ease,transform .6s var(--km-ease);
+}
+.km-compound.is-live .km-compound-tag{opacity:1;transform:translateY(0);}
+.km-compound-tag.t-curve{
+    right:0;top:-14px;background:var(--accent);color:var(--accent-ink);
+    transition-delay:1.7s;
+}
+.km-compound-tag.t-flat{
+    right:0;top:76%;background:var(--bg);border:1px solid var(--line);color:var(--gray);
+    transition-delay:1.5s;
+}
+.km-compound-tag.t-delta{
+    right:9.5%;top:36%;transform:translate(50%,6px);
+    background:var(--accent-2);color:#fff;transition-delay:2s;
+}
+.km-compound.is-live .km-compound-tag.t-delta{transform:translate(50%,0);}
+.km-compound-foot{
+    margin-top:26px;padding-top:20px;border-top:1px solid var(--line);
+    display:grid;grid-template-columns:repeat(3,1fr);gap:26px;
+}
+.km-compound-foot div span{
+    display:block;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;
+    letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;
+}
+.km-compound-foot div b{
+    font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:700;letter-spacing:-.02em;
+}
+.km-compound-foot div:nth-child(2) b{color:var(--accent-2);}
+@media (max-width:760px){
+    .km-compound{padding:26px 20px 22px;}
+    .km-compound-chart{height:190px;}
+    .km-compound-foot{grid-template-columns:1fr;gap:16px;}
+    .km-compound-tag{display:none;}
+}
+
+/* --- about: numbered value cards --- */
+.value-card{position:relative;overflow:hidden;}
+.value-card .km-vnum{
+    position:absolute;right:16px;top:10px;
+    font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;
+    line-height:1;letter-spacing:-.04em;color:var(--line);
+    transition:color .45s ease,transform .55s var(--km-ease);
+}
+.value-card:hover .km-vnum{transform:translateY(-3px);color:var(--accent);}
+.value-card:nth-child(2):hover .km-vnum{color:var(--accent-2);}
+
+/* ==========================================================================
+   3f. RESPONSIVE
+   Every component this file adds, checked down to 320px. Breakpoints follow
+   the site's own (1024 / 860 / 640 / 480) so nothing fights the base styles.
+   ========================================================================== */
+
+/* nothing this file adds may ever cause a sideways scroll */
+html,body{max-width:100%;}
+.km-w,.bs-scene,.km-compound,.km-ridge{max-width:100%;}
+
+@media (max-width:1024px){
+    .km-compound{padding:32px 28px 26px;}
+    .km-compound-head h3{font-size:21px;}
+    .km-compound-chart{height:200px;}
+    .km-compound-tag.t-delta{display:none;}
+}
+
+@media (max-width:860px){
+    /* --- nav pod --- */
+    .km-nav.is-scrolled .km-nav-ctx{max-width:140px;}
+    .km-nav.is-scrolled{padding:6px 6px 6px 13px;}
+
+    /* --- capability widgets --- */
+    .km-w{height:118px;margin-top:15px;}
+    .cap-item .cap-note{font-size:12px;}
+
+    /* --- brand system --- */
+    .bs-ghost{font-size:96px;top:-8px;right:10px;}
+
+    /* --- compound --- */
+    .km-compound{margin:52px 0 6px;padding:26px 22px 22px;}
+    .km-compound-head{margin-bottom:20px;gap:14px;}
+    .km-compound-head h3{font-size:19px;max-width:none;}
+    .km-compound-chart{height:180px;margin-bottom:30px;}
+    .km-compound .kc-glow{stroke-width:8;}
+    .km-compound-foot div b{font-size:22px;}
+
+    /* --- orbit --- */
+    .km-orbit{max-width:250px;}
+    .km-orbit .ko-node{font-size:9px;padding:6px 10px;}
+    .km-orbit-wrap{margin-top:32px;padding-top:28px;}
+
+    /* --- ridge --- */
+    .km-ridge{height:66px;padding-top:16px;}
+    .km-ridge-bars,.km-ridge-line{height:50px;}
+}
+
+@media (max-width:640px){
+    /* --- nav pod: the context chip has no room, so it steps aside --- */
+    .km-nav.is-scrolled .km-nav-ctx,
+    .km-nav.is-scrolled:hover .km-nav-ctx{max-width:0;opacity:0;margin-left:0;}
+    .km-nav.is-scrolled:not(:hover) .lang-toggle{max-width:110px;opacity:1;margin-left:8px;padding:3px;}
+    .km-nav.is-scrolled:not(:hover) .km-logo-tail{max-width:64px;opacity:1;}
+    .km-nav.is-scrolled{scale:1;padding:8px 8px 8px 20px;gap:6px;}
+    .km-ring{top:-3px;left:-3px;width:48px;height:48px;}
+
+    /* --- menu --- */
+    .km-menu .menu-inner{padding:96px 20px 32px;gap:26px;}
+    .km-menu .menu-links a{font-size:27px;grid-template-columns:34px 1fr auto;gap:12px;padding:13px 2px;}
+    .km-menu .km-mi{font-size:10px;}
+    .km-menu .km-ma{font-size:16px;opacity:.35;transform:none;}
+    .km-menu-mark{font-size:44vw;right:-10%;bottom:-4%;}
+
+    /* --- capability widgets --- */
+    .km-w{height:126px;}
+    .km-w[data-km-w="copy"] .kw-copy{font-size:14px;}
+
+    /* --- brand system: the panel stops covering the whole photo --- */
+    .zigzag-visual{min-height:340px;}
+    .bs-scene{height:150px;left:10px;right:10px;bottom:10px;padding:11px 12px;border-radius:14px;}
+    .bs-scene .bss-head{font-size:8.5px;letter-spacing:.1em;margin-bottom:10px;}
+    .bs-scene[data-bs-scene="strategy"] .bss-board{height:96px;}
+    .bs-scene[data-bs-scene="strategy"] .bss-chip{font-size:7.5px;padding:3px 7px;}
+    .bs-scene[data-bs-scene="strategy"] .bss-you{font-size:8px;padding:4px 9px;}
+    .bs-scene[data-bs-scene="strategy"] .bss-price{font-size:10px;}
+    .bs-scene[data-bs-scene="identity"] .bss-kit{height:96px;grid-template-columns:68px 1fr;gap:12px;}
+    .bs-scene[data-bs-scene="identity"] .bss-mark{width:68px;height:68px;}
+    .bs-scene[data-bs-scene="identity"] .bss-mark span{font-size:22px;}
+    .bs-scene[data-bs-scene="identity"] .bss-draw{width:46px;height:46px;}
+    .bs-scene[data-bs-scene="identity"] .bss-right{height:80px;}
+    .bs-scene[data-bs-scene="identity"] .bss-type b:nth-child(3){font-size:24px;}
+    .bs-scene[data-bs-scene="website"] .bss-ship{height:94px;grid-template-columns:1fr 72px;gap:11px;}
+    .bs-scene[data-bs-scene="website"] .bss-score,
+    .bs-scene[data-bs-scene="website"] .bss-score svg{width:72px;height:72px;}
+    .bs-scene[data-bs-scene="website"] .bss-score span{font-size:20px;}
+    .bs-scene[data-bs-scene="website"] .bss-live{top:32px;right:12px;}
+    .bs-scene[data-bs-scene="website"] .bss-log{display:none;}
+    .bs-scene[data-bs-scene="assets"] .bss-file{font-size:9px;gap:8px;grid-template-columns:16px 1fr auto;}
+    .bs-scene[data-bs-scene="assets"] .bss-file .tick{width:16px;height:16px;font-size:9px;}
+    .bs-scene[data-bs-scene="assets"] .bss-files{gap:5px;}
+    .bs-scene[data-bs-scene="assets"] .bss-zip{font-size:11px;}
+    .bs-ghost{font-size:74px;top:-4px;right:8px;}
+
+    /* --- compound --- */
+    .km-compound{padding:22px 16px 18px;border-radius:20px;}
+    .km-compound-head h3{font-size:18px;}
+    .km-compound-legend{gap:14px;}
+    .km-compound-legend span{font-size:9.5px;}
+    .km-compound-chart{height:150px;margin-bottom:28px;}
+    .km-compound .kc-curve{stroke-width:2.5;}
+    .km-compound .kc-glow{stroke-width:7;}
+    .km-compound .kc-dot{width:9px;height:9px;margin:-4.5px 0 0 -4.5px;border-width:2.5px;}
+    .km-compound-axis span{font-size:9px;}
+    .km-compound-tag{font-size:9px;padding:5px 9px;}
+    .km-compound-tag.t-flat{display:none;}
+    .km-compound-foot{grid-template-columns:1fr 1fr;gap:14px 18px;}
+    .km-compound-foot div:last-child{grid-column:span 2;}
+    .km-compound-foot div b{font-size:20px;}
+
+    /* --- ridge --- */
+    .km-ridge{height:60px;padding-top:14px;}
+    .km-ridge-bars,.km-ridge-line{height:46px;gap:1.5px;}
+
+    /* --- orbit + value cards --- */
+    .km-orbit{max-width:210px;}
+    .km-orbit .ko-node{font-size:8.5px;padding:5px 9px;}
+    .km-orbit .ko-core{font-size:14px;}
+    .value-card .km-vnum{font-size:40px;right:12px;top:8px;}
+
+    /* --- preloader --- */
+    .km-pre-mark{font-size:20px;}
+    .km-pre-rail i{width:26px;}
+}
+
+@media (max-width:480px){
+    .km-menu .menu-links a{font-size:23px;grid-template-columns:28px 1fr auto;padding:11px 2px;}
+    .km-menu .menu-inner{padding:88px 16px 28px;}
+    .km-menu .menu-side{min-width:0;}
+
+    .km-w{height:120px;}
+    .km-w .kw-tag{font-size:8px;}
+
+    .zigzag-visual{min-height:320px;}
+    .bs-scene{height:142px;}
+    .bs-scene .bss-act{font-size:8px;}
+    .bs-scene[data-bs-scene="strategy"] .bss-axis{font-size:6.5px;}
+
+    .km-compound-chart{height:132px;}
+    .km-compound-foot{grid-template-columns:1fr;}
+    .km-compound-foot div:last-child{grid-column:auto;}
+    .km-compound-tag.t-curve{font-size:8.5px;top:-11px;}
+
+    .km-ridge{height:54px;padding-top:12px;}
+    .km-ridge-bars,.km-ridge-line{height:42px;}
+    .km-ridge-bars i{border-radius:1.5px;}
+
+    .km-cue{margin-top:26px;}
+    .km-cue .km-cue-rail{height:34px;}
+}
+
+/* --- touch devices: hover states never fire, so give them a resting state
+       that already reads well and drop the pointer-only effects --- */
+@media (hover:none){
+    .km-nav.is-scrolled:not(:hover) .km-nav-ctx{max-width:210px;opacity:1;margin-left:10px;}
+    .project-card::before,.folder-card::before{display:none;}
+    .km-menu .menu-links a{color:rgba(255,255,255,.72);}
+    .km-menu .km-ma{opacity:.4;transform:none;}
+    .value-card .km-vnum{color:var(--line);}
+    .cap-item:hover .km-w{--w-bg:#f7f6f1;--w-line:#e6e4db;--w-ink:#0d0d0d;--w-dim:#adaba2;--w-soft:#ffffff;}
+}
+
+/* ==========================================================================
+   4. REDUCED MOTION
+   ========================================================================== */
+@media (prefers-reduced-motion:reduce){
+    .km-w.is-live::after,
+    .km-w *,
+    .km-orbit.is-live .ko-ring,
+    .tier-card.featured .tier-featured-badge::after,
+    .bs-scene *,
+    .km-cue .km-cue-rail::after{animation:none !important;}
+    .km-nav.is-hidden{translate:0 0;opacity:1;}
+    .km-r,.bs-scene,.bs-ghost{opacity:1;transform:none;}
+    .bs-checklist .check-icon{transform:scale(1);}
+    .bs-checklist .check-icon path{stroke-dashoffset:0;}
+    .km-ridge-bars i{transform:scaleY(1);}
+    .km-ridge-line polyline,.km-compound .kc-flat,.km-compound .kc-curve{stroke-dashoffset:0;}
+    .km-compound .kc-drop{transform:scaleY(1);}
+    .km-compound .kc-dot,.km-compound .kc-cap,.km-compound .kc-area,
+    .km-compound .kc-drop,.km-compound .kc-glow,
+    .km-compound .kc-delta,.km-compound-tag{opacity:1;}
+}
