@@ -6,6 +6,20 @@
    3. Reveal / accent layer
    ========================================================================== */
 
+/* --- inline SVG stand-ins for arrow / tick / dot characters --------------- */
+.km-g{
+    width:1em;height:1em;display:inline-block;vertical-align:-.12em;flex:none;
+}
+.km-g-dot{
+    width:.42em;height:.42em;border-radius:50%;background:currentColor;
+    vertical-align:.12em;
+}
+/* belt and braces: never let a stray character pick the colour emoji font */
+.km-ma,.bss-file .tick,.bss-price em,.folder-open span,
+.link-arrow span,.project-view span,.btn-primary .chev{
+    font-variant-emoji:text;
+}
+
 :root{
     --km-ease:cubic-bezier(.22,1,.36,1);
     --km-ease-soft:cubic-bezier(.4,0,.2,1);
@@ -709,7 +723,13 @@
    3b. PAGE-SPECIFIC ACCENTS
    ========================================================================== */
 
-/* --- projects.html: folder cards get the same light sweep --- */
+/* ==========================================================================
+   3g. PROJECTS — the folders leaf through themselves
+   A photo is drawn up out of the folder, held while it is named, then tucked
+   back as the next one rises. Everything here is pointer-events:none so the
+   card underneath stays one big button.
+   ========================================================================== */
+
 .folder-card{position:relative;overflow:hidden;}
 .folder-card::before{
     content:'';position:absolute;inset:0;z-index:2;pointer-events:none;
@@ -719,6 +739,72 @@
 .folder-card:hover::before{transform:translateX(130%);}
 .folder-card .folder-illustration{transition:transform .6s var(--km-ease);}
 .folder-card:hover .folder-illustration{transform:translateY(-6px) scale(1.03);}
+
+/* the folder breathes very slightly while it is leafing */
+.km-folder[data-km-up] .folder-illustration{animation:km-folder-breathe 2.6s var(--km-ease) infinite;}
+@keyframes km-folder-breathe{
+    0%,100%{transform:translateY(0) scale(1);}
+    45%    {transform:translateY(-3px) scale(1.008);}
+}
+
+/* --- the photo that is currently up --- */
+.km-folder .folder-photo{
+    transition:transform .85s var(--km-ease),opacity .5s ease;
+}
+/* Risen positions are tuned so the photo's lower half stays behind the folder's
+   front panel (its top edge is at y=88 in the illustration's own coordinates)
+   while the top half clears the rim — it reads as being drawn out. Any higher
+   and it escapes the card, which clips it. */
+.km-folder .folder-photo.is-up{opacity:1;}
+.km-folder .folder-photo-a.is-up{transform:translate(150px,96px) rotate(-6deg) scale(1.05);}
+.km-folder .folder-photo-b.is-up{transform:translate(180px,90px) rotate(-1deg) scale(1.07);}
+.km-folder .folder-photo-c.is-up{transform:translate(210px,96px) rotate(6deg) scale(1.05);}
+.km-folder .folder-photo-single.is-up{transform:translate(184px,94px) rotate(0deg) scale(1.05);}
+/* hover always wins over the loop */
+.folder-card:hover .folder-photo{transition-duration:.55s;}
+
+/* --- the caption naming whatever is up --- */
+.folder-peek{
+    position:absolute;left:50%;bottom:14px;transform:translateX(-50%);
+    z-index:6;pointer-events:none;max-width:80%;
+    padding:6px 13px;border-radius:16px;white-space:nowrap;overflow:hidden;
+    text-overflow:ellipsis;
+    background:var(--ink);color:#fff;
+    font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;
+    letter-spacing:.08em;text-transform:uppercase;
+    opacity:0;transition:opacity .35s ease,transform .45s var(--km-ease);
+    box-shadow:0 10px 22px -12px rgba(0,0,0,.6);
+}
+.km-folder[data-km-up] .folder-peek{opacity:1;transform:translateX(-50%) translateY(0);}
+.km-folder .folder-peek.is-swap{opacity:0;transform:translateX(-50%) translateY(6px);}
+.km-folder[data-km-up="1"] .folder-peek{background:var(--accent);color:var(--accent-ink);}
+.km-folder[data-km-up="2"] .folder-peek{background:var(--accent-2);color:#fff;}
+.folder-card:hover .folder-peek{opacity:0;}
+
+/* --- press affordance: the open pill keeps pulsing an invitation --- */
+.km-folder .folder-open{position:relative;overflow:visible;}
+.km-folder[data-km-up] .folder-open::after{
+    content:'';position:absolute;inset:-2px;border-radius:inherit;
+    border:1.5px solid var(--accent);opacity:0;pointer-events:none;
+    animation:km-press-hint 2.6s var(--km-ease) infinite;
+}
+@keyframes km-press-hint{
+    0%     {opacity:.75;transform:scale(1);}
+    55%,100%{opacity:0;transform:scale(1.09);}
+}
+.folder-card:hover .folder-open::after{display:none;}
+
+/* --- the press itself --- */
+.folder-card:active{transform:translateY(-4px) scale(.986);}
+.km-press{
+    position:absolute;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;
+    background:rgba(198,255,74,.55);pointer-events:none;z-index:7;
+    animation:km-press-ink .65s var(--km-ease) forwards;
+}
+@keyframes km-press-ink{
+    from{transform:scale(1);opacity:.8;}
+    to  {transform:scale(26);opacity:0;}
+}
 
 /* --- projects.html: proof numbers tick up on a lime rail --- */
 .proof-item{position:relative;}
@@ -1084,7 +1170,10 @@
     color:rgba(255,255,255,.4);opacity:0;transform:translateY(5px);
     transition:opacity .45s ease .3s,transform .5s var(--km-ease) .3s;
 }
-.bs-scene[data-bs-scene="website"] .bss-log span::before{content:'✓ ';color:var(--accent);}
+.bs-scene[data-bs-scene="website"] .bss-log span::before{
+    content:'';display:inline-block;width:4px;height:4px;border-radius:50%;
+    background:var(--accent);vertical-align:2px;margin-right:6px;
+}
 .bs-scene[data-bs-scene="website"][data-act="4"] .bss-log{opacity:1;transform:translateY(0);}
 
 /* ---------- 04 Brand assets: collect → check → package → hand over ---------- */
@@ -1396,6 +1485,208 @@
 .value-card:nth-child(2):hover .km-vnum{color:var(--accent-2);}
 
 /* ==========================================================================
+   3h. THE BLACK BAND — a different long scene on every page
+   Each one runs behind the copy at low contrast, is purely decorative, and
+   tells that page's own story. They all loop slowly enough that you catch
+   something different every time you land on the page.
+   ========================================================================== */
+
+.km-cta-fx{
+    position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;
+    border-radius:inherit;
+}
+.km-cta-fx svg{position:absolute;inset:0;width:100%;height:100%;}
+.cta-band-inner{position:relative;z-index:2;}
+.cta-bolt{z-index:1;}
+
+/* ---------- home: three trails converging into one ---------- */
+.km-cta-fx[data-fx="converge"] .tr{
+    fill:none;stroke-width:1.6;stroke-linecap:round;
+    stroke-dasharray:1;stroke-dashoffset:1;
+    vector-effect:non-scaling-stroke;
+    animation:km-trail 17s var(--km-ease) infinite;
+}
+.km-cta-fx[data-fx="converge"] .t1{stroke:var(--accent);opacity:.5;}
+.km-cta-fx[data-fx="converge"] .t2{stroke:var(--accent-2);opacity:.5;animation-delay:.9s;}
+.km-cta-fx[data-fx="converge"] .t3{stroke:#fff;opacity:.3;animation-delay:1.8s;}
+@keyframes km-trail{
+    0%      {stroke-dashoffset:1;}
+    26%     {stroke-dashoffset:0;}
+    44%     {stroke-dashoffset:0;}
+    68%,100%{stroke-dashoffset:-1;}
+}
+/* 83.8% matches y=352 in the scene's 420-tall viewBox — just under the buttons */
+.km-cta-fx[data-fx="converge"] .bloom{
+    position:absolute;left:50%;top:83.8%;width:260px;height:260px;margin:-130px 0 0 -130px;
+    border-radius:50%;opacity:0;
+    background:radial-gradient(circle,rgba(198,255,74,.22),transparent 62%);
+    animation:km-bloom 17s var(--km-ease) infinite;
+}
+@keyframes km-bloom{
+    0%,30% {opacity:0;transform:scale(.5);}
+    42%    {opacity:1;transform:scale(1);}
+    58%    {opacity:.5;transform:scale(1.25);}
+    72%,100%{opacity:0;transform:scale(1.5);}
+}
+.km-cta-fx[data-fx="converge"] .core{
+    position:absolute;left:50%;top:83.8%;width:7px;height:7px;margin:-3.5px;
+    border-radius:50%;background:var(--accent);opacity:0;
+    animation:km-core 17s var(--km-ease) infinite;
+}
+@keyframes km-core{0%,32%{opacity:0;}44%,62%{opacity:1;}74%,100%{opacity:0;}}
+
+/* ---------- projects: a shipping line running past ---------- */
+.km-cta-fx[data-fx="ship"] .track{
+    position:absolute;left:0;display:flex;gap:34px;width:max-content;
+    animation:km-conveyor 34s linear infinite;
+}
+/* the tracks hug the very edges so they read as passing by, and never crowd
+   the badge or the buttons */
+.km-cta-fx[data-fx="ship"] .track.t1{top:4%;}
+.km-cta-fx[data-fx="ship"] .track.t2{bottom:4%;animation-duration:46s;animation-direction:reverse;}
+@keyframes km-conveyor{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+.km-cta-fx[data-fx="ship"] .track i{
+    display:block;width:104px;height:66px;border-radius:9px;flex:none;
+    border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.035);
+    position:relative;
+}
+.km-cta-fx[data-fx="ship"] .track i::before{
+    content:'';position:absolute;left:0;right:0;top:0;height:12px;
+    border-bottom:1px solid rgba(255,255,255,.12);
+    border-radius:9px 9px 0 0;background:rgba(255,255,255,.05);
+}
+.km-cta-fx[data-fx="ship"] .track i::after{
+    content:'';position:absolute;left:9px;right:9px;top:24px;height:5px;border-radius:3px;
+    background:rgba(255,255,255,.12);
+}
+.km-cta-fx[data-fx="ship"] .track i:nth-child(4n+1)::after{background:rgba(198,255,74,.4);}
+.km-cta-fx[data-fx="ship"] .track i:nth-child(4n+3)::after{background:rgba(217,119,87,.4);}
+/* the gate the work passes through on its way out */
+.km-cta-fx[data-fx="ship"] .gate{
+    position:absolute;left:50%;top:0;bottom:0;width:1px;
+    background:linear-gradient(180deg,transparent,rgba(198,255,74,.4),transparent);
+    animation:km-gate 5.5s ease-in-out infinite;
+}
+@keyframes km-gate{0%,100%{opacity:.25;}50%{opacity:1;}}
+
+/* ---------- brand system: three parts falling into line ---------- */
+.km-cta-fx[data-fx="orbit3"] .ring{
+    position:absolute;left:50%;top:50%;border-radius:50%;
+    border:1px solid rgba(255,255,255,.09);
+    transform:translate(-50%,-50%);
+}
+.km-cta-fx[data-fx="orbit3"] .r1{width:300px;height:300px;animation:km-spin 9s linear infinite;}
+.km-cta-fx[data-fx="orbit3"] .r2{width:440px;height:440px;animation:km-spin 18s linear infinite reverse;}
+.km-cta-fx[data-fx="orbit3"] .r3{width:580px;height:580px;animation:km-spin 27s linear infinite;}
+.km-cta-fx[data-fx="orbit3"] .ring i{
+    position:absolute;left:50%;top:-5px;width:10px;height:10px;margin-left:-5px;
+    border-radius:50%;background:var(--accent);box-shadow:0 0 14px rgba(198,255,74,.7);
+}
+.km-cta-fx[data-fx="orbit3"] .r2 i{background:var(--accent-2);box-shadow:0 0 14px rgba(217,119,87,.7);}
+.km-cta-fx[data-fx="orbit3"] .r3 i{background:#fff;box-shadow:0 0 14px rgba(255,255,255,.5);}
+/* every 54s the three line up and a seam runs through them */
+.km-cta-fx[data-fx="orbit3"] .seam{
+    position:absolute;left:50%;top:0;bottom:0;width:2px;margin-left:-1px;
+    background:linear-gradient(180deg,transparent,var(--accent),transparent);
+    opacity:0;animation:km-seam 54s linear infinite;
+}
+@keyframes km-seam{
+    0%,94%  {opacity:0;transform:scaleY(.4);}
+    96%     {opacity:.85;transform:scaleY(1);}
+    100%    {opacity:0;transform:scaleY(1.3);}
+}
+
+/* ---------- about: a field that keeps compounding ---------- */
+/* kept to the lower half and low in contrast — it is a backdrop, not a chart */
+.km-cta-fx[data-fx="growth"] .bars{
+    position:absolute;left:0;right:0;bottom:0;height:46%;
+    display:flex;align-items:flex-end;gap:6px;padding:0 4px;
+}
+.km-cta-fx[data-fx="growth"] .bars i{
+    flex:1;display:block;border-radius:3px 3px 0 0;min-width:2px;
+    background:linear-gradient(180deg,rgba(255,255,255,.1),rgba(255,255,255,.015));
+    height:100%;transform:scaleY(.1);transform-origin:bottom;
+    animation:km-grow 9s var(--km-ease) infinite;
+    animation-delay:calc(var(--i) * .16s);
+}
+@keyframes km-grow{
+    0%,100%{transform:scaleY(.08);}
+    38%    {transform:scaleY(1);}
+    62%    {transform:scaleY(.72);}
+}
+.km-cta-fx[data-fx="growth"] .bars i:nth-child(7n+1){
+    background:linear-gradient(180deg,rgba(198,255,74,.26),rgba(198,255,74,.015));
+}
+.km-cta-fx[data-fx="growth"] .bars i:nth-child(11n+5){
+    background:linear-gradient(180deg,rgba(217,119,87,.24),rgba(217,119,87,.015));
+}
+.km-cta-fx[data-fx="growth"] .sweep{
+    position:absolute;left:0;top:0;bottom:0;width:150px;
+    background:linear-gradient(90deg,transparent,rgba(198,255,74,.09),transparent);
+    animation:km-sweep 9s linear infinite;
+}
+@keyframes km-sweep{from{transform:translateX(-160px);}to{transform:translateX(calc(100vw + 160px));}}
+
+/* ---------- pricing: line items settling under one total ---------- */
+/* Two narrow ledgers live in the empty margins either side of the centred
+   copy, so no rule ever runs through a line of text. */
+.km-cta-fx[data-fx="ledger"] .rows{
+    position:absolute;top:50%;transform:translateY(-50%);width:23%;
+    display:flex;flex-direction:column;gap:20px;
+}
+.km-cta-fx[data-fx="ledger"] .rows.l{left:4%;}
+.km-cta-fx[data-fx="ledger"] .rows.r{right:4%;flex-direction:column-reverse;}
+.km-cta-fx[data-fx="ledger"] .row{
+    display:flex;align-items:center;gap:16px;
+    opacity:0;transform:translateX(-26px);
+    animation:km-ledger 15s var(--km-ease) infinite;
+    animation-delay:calc(var(--i) * .55s);
+}
+.km-cta-fx[data-fx="ledger"] .row u{
+    flex:1;height:1px;background:rgba(255,255,255,.14);display:block;
+}
+.km-cta-fx[data-fx="ledger"] .row b{
+    width:56px;height:9px;border-radius:5px;background:rgba(255,255,255,.16);flex:none;
+}
+.km-cta-fx[data-fx="ledger"] .row:nth-child(2) b{background:rgba(217,119,87,.42);}
+@keyframes km-ledger{
+    0%      {opacity:0;transform:translateX(-26px);}
+    12%,58% {opacity:1;transform:translateX(0);}
+    72%,100%{opacity:0;transform:translateX(20px);}
+}
+.km-cta-fx[data-fx="ledger"] .total{
+    position:absolute;left:4%;right:4%;bottom:13%;height:2px;border-radius:2px;
+    background:linear-gradient(90deg,var(--accent),rgba(198,255,74,0));
+    transform:scaleX(0);transform-origin:left;opacity:.75;
+    animation:km-total 15s var(--km-ease) infinite;
+}
+@keyframes km-total{
+    0%,30%  {transform:scaleX(0);}
+    46%,62% {transform:scaleX(1);}
+    76%,100%{transform:scaleX(0);transform-origin:right;}
+}
+
+@media (max-width:860px){
+    .km-cta-fx[data-fx="orbit3"] .r1{width:200px;height:200px;}
+    .km-cta-fx[data-fx="orbit3"] .r2{width:300px;height:300px;}
+    .km-cta-fx[data-fx="orbit3"] .r3{width:400px;height:400px;}
+    .km-cta-fx[data-fx="ship"] .track i{width:78px;height:52px;}
+    .km-cta-fx[data-fx="ship"] .track{gap:24px;}
+    .km-cta-fx[data-fx="ledger"] .rows{gap:14px;width:20%;}
+    .km-cta-fx[data-fx="ledger"] .row b{width:34px;height:7px;}
+    .km-cta-fx[data-fx="converge"] .bloom{width:170px;height:170px;margin:-85px 0 0 -85px;}
+}
+@media (max-width:560px){
+    /* the band gets tight — keep the scene, drop its density */
+    .km-cta-fx{opacity:.7;}
+    .km-cta-fx[data-fx="growth"] .bars{gap:4px;}
+    .km-cta-fx[data-fx="ship"] .track.t2{display:none;}
+    /* one narrow band has no room for two ledgers side by side */
+    .km-cta-fx[data-fx="ledger"] .rows.r{display:none;}
+    .km-cta-fx[data-fx="ledger"] .rows.l{width:26%;gap:11px;}
+}
+
+/* ==========================================================================
    3f. RESPONSIVE
    Every component this file adds, checked down to 320px. Breakpoints follow
    the site's own (1024 / 860 / 640 / 480) so nothing fights the base styles.
@@ -1508,6 +1799,9 @@ html,body{max-width:100%;}
     .km-ridge{height:60px;padding-top:14px;}
     .km-ridge-bars,.km-ridge-line{height:46px;gap:1.5px;}
 
+    /* --- folders --- */
+    .folder-peek{font-size:9.5px;padding:5px 11px;bottom:11px;max-width:86%;}
+
     /* --- orbit + value cards --- */
     .km-orbit{max-width:210px;}
     .km-orbit .ko-node{font-size:8.5px;padding:5px 9px;}
@@ -1568,6 +1862,9 @@ html,body{max-width:100%;}
     .km-cue .km-cue-rail::after{animation:none !important;}
     .km-nav.is-hidden{translate:0 0;opacity:1;}
     .km-r,.bs-scene,.bs-ghost{opacity:1;transform:none;}
+    .km-folder[data-km-up] .folder-illustration,
+    .km-folder[data-km-up] .folder-open::after,
+    .km-press{animation:none !important;}
     .bs-checklist .check-icon{transform:scale(1);}
     .bs-checklist .check-icon path{stroke-dashoffset:0;}
     .km-ridge-bars i{transform:scaleY(1);}

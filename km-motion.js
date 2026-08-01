@@ -56,6 +56,64 @@
     }
 
     /* ======================================================================
+       0a. GLYPH SWEEP
+       Arrows, ticks and dots written as characters can fall back to the colour
+       emoji font on some systems. Every one of them is swapped for inline SVG
+       so they always render as flat type, on desktop and on mobile alike.
+       ====================================================================== */
+    var SVG_HEAD = '<svg class="km-g" viewBox="0 0 16 16" fill="none" stroke="currentColor" ' +
+        'stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">';
+    var GLYPHS = {
+        '↗': SVG_HEAD + '<path d="M4.5 11.5 11.5 4.5M5.6 4.5h5.9v5.9"/></svg>',      /* ↗ */
+        '→': SVG_HEAD + '<path d="M2.5 8h11M9.5 4l4 4-4 4"/></svg>',                  /* → */
+        '←': SVG_HEAD + '<path d="M13.5 8h-11M6.5 4l-4 4 4 4"/></svg>',               /* ← */
+        '✓': SVG_HEAD + '<path d="M3.2 8.4 6.4 11.6 12.8 4.8"/></svg>',               /* ✓ */
+        '✔': SVG_HEAD + '<path d="M3.2 8.4 6.4 11.6 12.8 4.8"/></svg>',               /* ✔ */
+        '✕': SVG_HEAD + '<path d="M4 4l8 8M12 4l-8 8"/></svg>',                       /* ✕ */
+        '×': SVG_HEAD + '<path d="M4 4l8 8M12 4l-8 8"/></svg>',                       /* × */
+        '●': '<span class="km-g km-g-dot" aria-hidden="true"></span>',                /* ● */
+        '•': '<span class="km-g km-g-dot" aria-hidden="true"></span>'                 /* • */
+    };
+
+    /* characters that a system may decide to draw with the colour emoji font */
+    var RISKY = /[←-⇿☀-➿⬀-⯿✓✔✖●•]/g;
+    var VS15 = '︎'; /* text presentation selector */
+
+    function stripGlyphs(root) {
+        var scope = root || document.body;
+        if (!scope) return;
+
+        /* 1. an element that is nothing but one of these characters becomes a
+              crisp inline SVG instead */
+        $$('span, b, i, em, u, div, button, a', scope).forEach(function (n) {
+            if (n.childElementCount) return;
+            var t = (n.textContent || '').trim();
+            if (t.length !== 1 || !GLYPHS[t]) return;
+            if (n.dataset.en || n.dataset.nl) return;
+            n.innerHTML = GLYPHS[t];
+        });
+
+        /* 2. characters sitting inside a sentence ("Skip →") stay as text, but
+              get the text-presentation selector appended so no system can
+              promote them to an emoji. Runs again after a language switch,
+              since i18n rewrites those strings. */
+        var walker = document.createTreeWalker(scope, NodeFilter.SHOW_TEXT, {
+            acceptNode: function (node) {
+                var p = node.parentNode;
+                if (!p || /SCRIPT|STYLE|TEXTAREA/.test(p.nodeName)) return NodeFilter.FILTER_REJECT;
+                return RISKY.test(node.nodeValue) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+            }
+        });
+        var hits = [], n;
+        while ((n = walker.nextNode())) hits.push(n);
+        hits.forEach(function (node) {
+            node.nodeValue = node.nodeValue.replace(RISKY, function (ch, i, s) {
+                return s.charAt(i + 1) === VS15 ? ch : ch + VS15;
+            });
+        });
+    }
+
+    /* ======================================================================
        0. PRELOADER
        Full play once per session, a clipped version on every page after that,
        so moving between pages never costs the visitor a second.
@@ -277,7 +335,8 @@
             a.textContent = '';
             a.appendChild(el('span', 'km-mi', num));
             a.appendChild(wrap);
-            a.appendChild(el('span', 'km-ma', a.classList.contains('active') ? '●' : '↗'));
+            a.appendChild(el('span', 'km-ma',
+                a.classList.contains('active') ? GLYPHS['●'] : GLYPHS['↗']));
         });
 
         /* small labels above the blocks in the side column */
@@ -802,7 +861,7 @@
                             bilingual(c.en, c.nl) + '</span>';
                     }).join('') +
                     '<span class="bss-you"' + bilingual('You', 'Jij') + '</span>' +
-                    '<span class="bss-price"><b>€8k</b><em>→</em><b class="up">€12k</b></span>' +
+                    '<span class="bss-price"><b>€8k</b><em>' + GLYPHS['→'] + '</em><b class="up">€12k</b></span>' +
                     '</div>';
             }
         },
@@ -862,7 +921,8 @@
                 ];
                 return '<div class="bss-files">' + files.map(function (f, i) {
                     return '<div class="bss-file" style="--i:' + i + '">' +
-                        '<span class="tick">✓</span><span>' + f[0] + '</span><span class="sz">' + f[1] + '</span></div>';
+                        '<span class="tick">' + GLYPHS['✓'] + '</span><span>' + f[0] +
+                    '</span><span class="sz">' + f[1] + '</span></div>';
                 }).join('') + '</div>' +
                     '<div class="bss-zip">km-dev-brand.zip</div>' +
                     '<div class="bss-bar"><i></i></div>';
@@ -978,6 +1038,223 @@
         refreshI18n();
     }
 
+    /* ======================================================================
+       projects.html — the folders leaf through themselves
+       One photo at a time is drawn up out of the folder, named, and tucked
+       back in while the next one rises. The loop never blocks the button: it
+       pauses on hover, focus and press, and the card stays fully clickable.
+       ====================================================================== */
+    var FOLDER_SETS = {
+        websites: [
+            ["foto's/nexafoto.png", 'Nexa'],
+            ["foto's/wildcore.png", 'Wildcore Retreats'],
+            ["foto's/fit-by.png", 'Fit by Zaalman'],
+            ["foto's/tuintoppers.png", 'TuinToppersPro'],
+            ["foto's/kainmckancylareinefoto.png", 'Kain Mckancy La Reine'],
+            ["foto's/huizefeniks.png", 'Huize Feniks'],
+            ["foto's/aurora.png", 'Aurora'],
+            ["foto's/bitquiz.png", 'BitQuiz']
+        ],
+        brand: [
+            ["foto's/brandaset.png", 'Brand assets'],
+            ["foto's/Identity.png", 'Identity'],
+            ["foto's/kmap.png", 'KMAP'],
+            ["foto's/Website.png", 'Website']
+        ],
+        apps: [
+            ["foto's/applogotelefoon.PNG", 'In productie']
+        ]
+    };
+    var FOLDER_STEP_MS = 2600;
+
+    function initFolders() {
+        var cards = $$('.folder-card');
+        if (!cards.length) return;
+
+        cards.forEach(function (card, cardIndex) {
+            if (card.dataset.kmDone) return;
+            card.dataset.kmDone = '1';
+
+            var key = card.getAttribute('data-folder') || '';
+            var set = FOLDER_SETS[key] || [];
+            var slots = $$('.folder-photo', card);
+            if (!slots.length) return;
+
+            /* the caption that names whatever is currently up */
+            var visual = $('.folder-visual', card);
+            var cap = el('span', 'folder-peek');
+            cap.setAttribute('aria-hidden', 'true');
+            if (visual) visual.appendChild(cap);
+
+            /* press feedback that works for mouse and touch alike */
+            card.classList.add('km-folder');
+            card.addEventListener('pointerdown', function (e) {
+                var r = card.getBoundingClientRect();
+                var ink = el('span', 'km-press');
+                ink.style.left = (e.clientX - r.left) + 'px';
+                ink.style.top = (e.clientY - r.top) + 'px';
+                card.appendChild(ink);
+                setTimeout(function () { if (ink.parentNode) ink.parentNode.removeChild(ink); }, 700);
+            });
+
+            /* single-photo folders have nothing to leaf through, so they get
+               the rise-and-settle beat without the swap */
+            var multi = set.length > 1 && slots.length > 1;
+            var step = 0, timer = null, imgIndex = 0;
+
+            function imageOf(slot) { return slot.querySelector('image'); }
+
+            function show(i) {
+                var slot = slots[i % slots.length];
+                slots.forEach(function (s) { s.classList.remove('is-up'); });
+                slot.classList.add('is-up');
+                card.setAttribute('data-km-up', String(i % slots.length));
+
+                if (set.length) {
+                    var entry = set[imgIndex % set.length];
+                    if (multi) {
+                        var img = imageOf(slot);
+                        if (img) img.setAttribute('href', entry[0]);
+                    }
+                    cap.textContent = entry[1];
+                    cap.classList.remove('is-swap');
+                    imgIndex++;
+                }
+            }
+
+            function rest() {
+                slots.forEach(function (s) { s.classList.remove('is-up'); });
+                card.removeAttribute('data-km-up');
+                cap.classList.add('is-swap');
+            }
+
+            function onScreen() {
+                var r = card.getBoundingClientRect();
+                return r.bottom > 60 && r.top < (window.innerHeight || 0) - 60;
+            }
+            function handsOff() {
+                /* the visitor is driving: hover, keyboard focus, or a modal */
+                return card.matches(':hover') || card === document.activeElement ||
+                    document.querySelector('.folder-modal.active');
+            }
+
+            /* One interval that never stops and decides on each beat whether to
+               advance. Edge-triggered start/stop turned out to be easy to
+               strand — a card could end up parked with the loop switched off. */
+            function tick() {
+                if (!onScreen() || handsOff()) { if (!handsOff()) rest(); return; }
+                cap.classList.add('is-swap');
+                setTimeout(function () {
+                    if (!onScreen() || handsOff()) return;
+                    step++; show(step);
+                }, 260);
+            }
+
+            if (REDUCED) {
+                slots[0].classList.add('is-up');
+                card.setAttribute('data-km-up', '0');
+                if (set.length) cap.textContent = set[0][1];
+                return;
+            }
+
+            /* Each card is offset so the row never swaps in unison — one folder
+               is always mid-lift while another is settling. */
+            var offset = cardIndex * 820;
+            setTimeout(function () { if (onScreen() && !handsOff()) show(step); }, 600 + offset);
+            setTimeout(function () {
+                timer = setInterval(tick, FOLDER_STEP_MS);
+            }, 600 + offset);
+        });
+    }
+
+    /* ======================================================================
+       The black band gets a scene of its own on every page
+       Which one is chosen from what the page actually contains, so each band
+       tells that page's story rather than repeating the same loop everywhere.
+       ====================================================================== */
+    function ctaFlavour() {
+        if ($('.folders-grid')) return 'ship';        /* projects  */
+        if ($('.bs-section')) return 'orbit3';        /* the system */
+        if ($('.tier-grid, .tier-card')) return 'ledger';  /* pricing */
+        if ($('.philosophy-grid, .km-compound')) return 'growth'; /* about */
+        return 'converge';                            /* home      */
+    }
+
+    var CTA_SCENES = {
+        /* three trails run in from the edges and fuse into one point */
+        /* The three trails hug the lower edge and fuse below the buttons, so
+           they never run through the headline. preserveAspectRatio="none" so
+           the meeting point maps to a fixed percentage of the band's height. */
+        converge: function () {
+            return '<svg viewBox="0 0 1200 420" preserveAspectRatio="none" aria-hidden="true">' +
+                '<path class="tr t1" pathLength="1" vector-effect="non-scaling-stroke" ' +
+                'd="M-60,404 C170,398 390,378 600,352"></path>' +
+                '<path class="tr t2" pathLength="1" vector-effect="non-scaling-stroke" ' +
+                'd="M1260,404 C1030,398 810,378 600,352"></path>' +
+                '<path class="tr t3" pathLength="1" vector-effect="non-scaling-stroke" ' +
+                'd="M600,470 C600,428 600,388 600,352"></path>' +
+                '</svg><span class="bloom"></span><span class="core"></span>';
+        },
+        /* work moving down the line and out the door */
+        ship: function () {
+            var frame = '<i></i>';
+            var run = new Array(9).join(frame) + new Array(9).join(frame);
+            return '<div class="track t1">' + run + '</div>' +
+                '<div class="track t2">' + run + '</div>' +
+                '<span class="gate"></span>';
+        },
+        /* three rings drifting until they line up, then a seam fires */
+        orbit3: function () {
+            return '<span class="ring r1"><i></i></span>' +
+                '<span class="ring r2"><i></i></span>' +
+                '<span class="ring r3"><i></i></span>' +
+                '<span class="seam"></span>';
+        },
+        /* a field that keeps compounding, wave after wave */
+        growth: function () {
+            var bars = '';
+            for (var i = 0; i < 46; i++) bars += '<i style="--i:' + i + '"></i>';
+            return '<div class="bars">' + bars + '</div><span class="sweep"></span>';
+        },
+        /* line items arriving and settling under a single total */
+        ledger: function () {
+            function group(offset) {
+                var rows = '';
+                for (var i = 0; i < 4; i++) {
+                    rows += '<span class="row" style="--i:' + (i + offset) + '"><u></u><b></b></span>';
+                }
+                return rows;
+            }
+            return '<div class="rows l">' + group(0) + '</div>' +
+                '<div class="rows r">' + group(2) + '</div>' +
+                '<span class="total"></span>';
+        }
+    };
+
+    function initCtaScene() {
+        var band = $('.cta-band');
+        if (!band || $('.km-cta-fx', band)) return;
+        if (REDUCED) return;
+
+        var kind = ctaFlavour();
+        var fx = el('div', 'km-cta-fx', CTA_SCENES[kind]());
+        fx.setAttribute('data-fx', kind);
+        fx.setAttribute('aria-hidden', 'true');
+        band.insertBefore(fx, band.firstChild);
+
+        /* the loops are long, so let them idle while the band is off screen */
+        if ('IntersectionObserver' in window) {
+            new IntersectionObserver(function (entries) {
+                entries.forEach(function (e) {
+                    fx.style.animationPlayState = e.isIntersecting ? '' : 'paused';
+                    $$('*', fx).forEach(function (n) {
+                        n.style.animationPlayState = e.isIntersecting ? '' : 'paused';
+                    });
+                });
+            }, { threshold: 0.05 }).observe(band);
+        }
+    }
+
     /* --- scroll cue under the hero --- */
     function initHeroCue() {
         var hero = $('.hero .hero-text');
@@ -1008,7 +1285,14 @@
         try { initCompound(); } catch (e) {}
         try { initValueCards(); } catch (e) {}
         try { initOrbit(); } catch (e) {}
+        try { initFolders(); } catch (e) {}
+        try { initCtaScene(); } catch (e) {}
         try { initCounters(); } catch (e) {}
+        try { stripGlyphs(); } catch (e) {}
+        /* i18n rewrites text on a language switch, so run the pass again */
+        document.addEventListener('km:langchange', function () {
+            setTimeout(function () { try { stripGlyphs(); } catch (e) {} }, 40);
+        });
         try { initHeroCue(); } catch (e) {}
 
         /* Failsafe: nothing this file adds should ever be able to leave content
