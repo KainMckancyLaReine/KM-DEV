@@ -27,6 +27,16 @@ html.km-slides body{overscroll-behavior-y:none;}
     justify-content:flex-end;
 }
 
+/* samengevoegde slide: CTA-band gecentreerd, footer eronder geplakt */
+.km-merge{display:flex;flex-direction:column;}
+.km-slides .km-merge{justify-content:flex-start;padding-top:0;}
+.km-merge > *:first-child{
+    flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;
+    padding-top:clamp(40px,7vh,90px);padding-bottom:clamp(30px,5vh,60px);
+}
+.km-merge > footer{flex:0 0 auto;}
+.km-slides .km-merge.km-tall{justify-content:flex-start;padding-top:0;}
+
 /* het bewegende laagje = de directe kinderen van de sectie */
 .km-slides .km-slide > *,
 .km-reveal .km-slide > *{

@@ -201,16 +201,117 @@ button,input,textarea,select{font-family:inherit;font-size:inherit;color:inherit
 .scroller{flex:1;overflow-y:auto;overflow-x:hidden;position:relative;}
 
 /* cover */
-.cover{height:0;background-size:cover;background-position:center;position:relative;transition:height .28s cubic-bezier(.16,1,.3,1);}
-.cover.on{height:210px;}
-.cover-acts{position:absolute;right:22px;bottom:16px;display:flex;gap:7px;opacity:0;transition:opacity .18s;}
+.cover{
+    height:0;background-size:cover;background-position:center;background-repeat:no-repeat;
+    position:relative;transition:height .28s cubic-bezier(.16,1,.3,1);overflow:hidden;
+}
+.cover.on{height:230px;}
+.cover-acts{position:absolute;right:22px;bottom:16px;display:flex;gap:7px;opacity:0;transition:opacity .18s;z-index:2;}
 .cover:hover .cover-acts{opacity:1;}
 .cover-btn{
     background:rgba(255,255,255,.94);color:#0d0d0d;border:0;padding:7px 14px;border-radius:999px;
-    font-size:12px;cursor:pointer;font-weight:600;font-family:'Space Mono',monospace;
-    letter-spacing:.06em;text-transform:uppercase;box-shadow:0 2px 10px rgba(0,0,0,.18);
+    font-size:11px;cursor:pointer;font-weight:700;font-family:'Space Mono',monospace;
+    letter-spacing:.08em;text-transform:uppercase;box-shadow:0 2px 10px rgba(0,0,0,.2);
+    transition:background .16s,transform .16s;
 }
-.cover-btn:hover{background:var(--accent);}
+.cover-btn:hover{background:var(--accent);transform:translateY(-1px);}
+
+/* herpositioneren */
+.cover.repo{cursor:grab;}
+.cover.repo:active{cursor:grabbing;}
+.cover.repo::after{content:'';position:absolute;inset:0;box-shadow:inset 0 0 0 2px var(--accent);pointer-events:none;}
+.cover .repo-bar{
+    position:absolute;left:0;right:0;bottom:0;display:none;align-items:center;gap:12px;
+    padding:11px 20px;background:rgba(13,13,13,.82);backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);z-index:3;
+}
+.cover.repo .repo-bar{display:flex;}
+.cover.repo .cover-acts{display:none;}
+.repo-bar span{
+    color:rgba(255,255,255,.75);font-family:'Space Mono',monospace;font-size:10.5px;
+    letter-spacing:.12em;text-transform:uppercase;flex:1;
+}
+.repo-bar button{
+    border:0;padding:7px 15px;border-radius:999px;cursor:pointer;font-size:12px;font-weight:700;
+    font-family:'Space Mono',monospace;letter-spacing:.06em;text-transform:uppercase;
+}
+.repo-bar .save{background:var(--accent);color:var(--ink);}
+.repo-bar .cancel{background:rgba(255,255,255,.14);color:#fff;}
+
+/* =========================================================
+   COVER PICKER
+   ========================================================= */
+.cover-picker{
+    background:var(--paper);border-radius:var(--r-lg);box-shadow:var(--shadow);
+    width:100%;max-width:720px;max-height:74vh;display:flex;flex-direction:column;overflow:hidden;
+    animation:modalIn .28s cubic-bezier(.16,1,.3,1);
+}
+.cp-tabs{
+    display:flex;align-items:center;gap:2px;padding:8px 10px;
+    border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none;
+}
+.cp-tabs::-webkit-scrollbar{display:none;}
+.cp-tab{
+    border:0;background:transparent;padding:8px 13px;border-radius:999px;cursor:pointer;flex:0 0 auto;
+    font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--text-faint);transition:all .18s;
+}
+.cp-tab:hover{background:var(--hover);color:var(--text-soft);}
+.cp-tab.on{background:var(--ink);color:#fff;}
+html[data-theme="dark"] .cp-tab.on{background:var(--accent);color:var(--ink);}
+.cp-tabs .icon-btn{margin-left:auto;flex:0 0 auto;}
+
+.cp-body{flex:1;overflow-y:auto;padding:18px 20px 22px;}
+.cp-group{
+    font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--text-faint);margin:18px 0 10px;
+}
+.cp-group:first-child{margin-top:0;}
+.cp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:10px;}
+.cp-grid.tight{grid-template-columns:repeat(auto-fill,minmax(76px,1fr));}
+.cp-tile{
+    position:relative;aspect-ratio:16/7;border-radius:10px;border:1px solid var(--line);
+    cursor:pointer;overflow:hidden;background-size:cover;background-position:center;
+    transition:transform .2s cubic-bezier(.16,1,.3,1),box-shadow .2s,border-color .2s;
+    padding:0;
+}
+.cp-grid.tight .cp-tile{aspect-ratio:1/1;border-radius:12px;}
+.cp-tile:hover{transform:translateY(-3px) scale(1.02);box-shadow:var(--shadow-soft);border-color:var(--text-faint);}
+.cp-tile.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent);}
+.cp-tile .cp-del{
+    position:absolute;top:4px;right:4px;width:22px;height:22px;border-radius:50%;border:0;
+    background:rgba(13,13,13,.6);color:#fff;font-size:11px;cursor:pointer;opacity:0;transition:opacity .16s;
+}
+.cp-tile:hover .cp-del{opacity:1;}
+
+.cp-drop{
+    border:1.5px dashed var(--line);border-radius:var(--r-md);padding:44px 20px;text-align:center;
+    cursor:pointer;transition:all .2s;background:var(--bg);
+}
+.cp-drop:hover,.cp-drop.over{border-color:var(--accent);background:var(--accent-soft);}
+.cp-drop b{
+    display:block;font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:600;
+    letter-spacing:-.02em;margin-bottom:6px;color:var(--text);
+}
+.cp-drop span{font-size:13px;color:var(--text-faint);}
+.cp-link{display:flex;gap:9px;margin-bottom:14px;}
+.cp-link input{
+    flex:1;border:1px solid var(--line);background:var(--bg);border-radius:12px;
+    padding:12px 15px;outline:none;font-size:15px;transition:border-color .18s;
+}
+.cp-link input:focus{border-color:var(--accent);}
+.cp-note{font-size:12.5px;color:var(--text-faint);line-height:1.6;}
+.cp-preview{
+    height:120px;border-radius:var(--r-md);border:1px solid var(--line);margin-top:14px;
+    background-size:cover;background-position:center;background-repeat:no-repeat;
+}
+.cp-foot{
+    display:flex;align-items:center;gap:12px;padding:13px 20px;border-top:1px solid var(--line);
+}
+.cp-foot .cp-hint{
+    flex:1;font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.13em;
+    text-transform:uppercase;color:var(--text-faint);
+}
 
 .page{max-width:880px;margin:0 auto;padding:0 64px 40vh;}
 .page.wide{max-width:1440px;}
@@ -746,6 +847,18 @@ html[data-theme="dark"] .fab{background:var(--accent);color:var(--ink);}
     .mi .mi-ico{width:34px;height:34px;flex-basis:34px;}
     .menu-search{padding:12px 14px;font-size:16px;}
 
+    /* cover picker als bottom sheet */
+    .cover-picker{
+        max-width:100%;max-height:88vh;border-radius:var(--r-lg) var(--r-lg) 0 0;
+        margin-top:auto;animation:sheetIn .3s cubic-bezier(.16,1,.3,1);
+    }
+    .cp-grid{grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px;}
+    .cp-grid.tight{grid-template-columns:repeat(auto-fill,minmax(62px,1fr));}
+    .cp-body{padding:16px 16px 20px;}
+    .cover.on{height:170px;}
+    .cover-acts{right:12px;bottom:12px;opacity:1;flex-wrap:wrap;justify-content:flex-end;}
+    .cover-btn{padding:6px 11px;font-size:10px;}
+
     /* zoeken fullscreen */
     .overlay{padding-top:0;align-items:stretch;}
     .modal{max-width:100%;max-height:100%;height:100%;border-radius:0;}
@@ -902,6 +1015,27 @@ html[data-theme="dark"] .fab{background:var(--accent);color:var(--ink);}
             <span class="mi-kbd">esc</span>
         </div>
         <div class="modal-body" id="searchResults"></div>
+    </div>
+</div>
+
+<!-- cover picker -->
+<div class="overlay" id="coverOverlay">
+    <div class="cover-picker">
+        <div class="cp-tabs" id="cpTabs">
+            <button class="cp-tab on" data-tab="gallery">Galerij</button>
+            <button class="cp-tab" data-tab="gradient">Gradients</button>
+            <button class="cp-tab" data-tab="color">Kleuren</button>
+            <button class="cp-tab" data-tab="upload">Upload</button>
+            <button class="cp-tab" data-tab="link">Link</button>
+            <button class="icon-btn" id="cpClose" aria-label="Sluiten">
+                <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+            </button>
+        </div>
+        <div class="cp-body" id="cpBody"></div>
+        <div class="cp-foot">
+            <span class="cp-hint">Klik om direct toe te passen</span>
+            <button class="chip" id="cpRemove">Cover verwijderen</button>
+        </div>
     </div>
 </div>
 
@@ -1275,10 +1409,16 @@ function renderPage(){
     if(!p){ $('#view').innerHTML = '<div class="empty-note">Pagina niet gevonden</div>'; return; }
     const wide = p.type === 'db';
     $('#view').innerHTML = `
-        <div class="cover ${p.cover?'on':''}" id="cover" style="${p.cover?`background-image:${p.cover}`:''}">
+        <div class="cover ${p.cover?'on':''}" id="cover" style="${coverStyle(p)}">
             <div class="cover-acts">
+                <button class="cover-btn" id="coverReposition">Positie</button>
                 <button class="cover-btn" id="coverChange">Wijzig cover</button>
                 <button class="cover-btn" id="coverRemove">Verwijder</button>
+            </div>
+            <div class="repo-bar">
+                <span>Sleep de cover omhoog of omlaag</span>
+                <button class="cancel" id="repoCancel">Annuleer</button>
+                <button class="save" id="repoSave">Opslaan</button>
             </div>
         </div>
         <div class="page ${wide?'wide':''}">
@@ -1309,9 +1449,10 @@ function renderPage(){
 
     if($('#pageIcon')) $('#pageIcon').onclick = e => emojiMenu(e.currentTarget, v => { p.icon = v; touch(p); renderPage(); renderSidebar(); });
     if($('#addIcon')) $('#addIcon').onclick = () => { p.icon = randomEmoji(); touch(p); renderPage(); renderSidebar(); };
-    if($('#addCover')) $('#addCover').onclick = () => { p.cover = randomCover(); touch(p); renderPage(); };
-    if($('#coverChange')) $('#coverChange').onclick = () => { p.cover = randomCover(); touch(p); renderPage(); };
-    if($('#coverRemove')) $('#coverRemove').onclick = () => { p.cover = ''; touch(p); renderPage(); };
+    if($('#addCover')) $('#addCover').onclick = () => { p.cover = randomCover(); p.coverPos = 50; touch(p); renderPage(); setTimeout(openCoverPicker, 120); };
+    if($('#coverChange')) $('#coverChange').onclick = openCoverPicker;
+    if($('#coverReposition')) $('#coverReposition').onclick = startRepo;
+    if($('#coverRemove')) $('#coverRemove').onclick = () => { p.cover = ''; p.coverPos = 50; touch(p); renderPage(); };
 
     renderBody();
 }
@@ -2592,6 +2733,278 @@ function importAll(){
     inp.click();
 }
 
+
+/* ===============================================================
+   10b. COVER GALERIJ
+   =============================================================== */
+function svgBg(svg){
+    return 'url("data:image/svg+xml,' + encodeURIComponent(svg.replace(/\s{2,}/g,' ').trim()) + '")';
+}
+
+/* --- patronen: SVG-tegel bovenop een achtergrondkleur --- */
+const PAT_SETS = [
+    { name:'ink',   bg:'#0d0d0d', fg:'#c6ff4a', op:.5 },
+    { name:'paper', bg:'#f4f3ef', fg:'#0d0d0d', op:.16 },
+    { name:'lime',  bg:'#c6ff4a', fg:'#0d0d0d', op:.3 },
+    { name:'sand',  bg:'#e8e3d5', fg:'#7a5c4b', op:.32 },
+    { name:'deep',  bg:'#12233a', fg:'#8fc7ff', op:.34 },
+    { name:'plum',  bg:'#2a1b33', fg:'#e0b6ff', op:.32 }
+];
+const PAT_SHAPES = {
+    grid: (fg,op) => `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"><g stroke="${fg}" stroke-opacity="${op}" stroke-width="1"><path d="M0 .5H40M.5 0V40"/></g></svg>`,
+    dots: (fg,op) => `<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26"><circle cx="3" cy="3" r="2" fill="${fg}" fill-opacity="${op}"/></svg>`,
+    diag: (fg,op) => `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"><path d="M-6 6 6-6M0 24 24 0M18 30 30 18" stroke="${fg}" stroke-opacity="${op}" stroke-width="3"/></svg>`,
+    wave: (fg,op) => `<svg xmlns="http://www.w3.org/2000/svg" width="80" height="34"><path d="M0 17c10-14 30-14 40 0s30 14 40 0" fill="none" stroke="${fg}" stroke-opacity="${op}" stroke-width="2"/></svg>`,
+    topo: (fg,op) => `<svg xmlns="http://www.w3.org/2000/svg" width="90" height="90"><g fill="none" stroke="${fg}" stroke-opacity="${op}" stroke-width="1.4"><circle cx="45" cy="45" r="10"/><circle cx="45" cy="45" r="21"/><circle cx="45" cy="45" r="32"/><circle cx="45" cy="45" r="43"/></g></svg>`,
+    cross:(fg,op) => `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path d="M16 10v12M10 16h12" stroke="${fg}" stroke-opacity="${op}" stroke-width="2" stroke-linecap="round"/></svg>`,
+    tri:  (fg,op) => `<svg xmlns="http://www.w3.org/2000/svg" width="44" height="38"><path d="M22 6 38 32H6z" fill="none" stroke="${fg}" stroke-opacity="${op}" stroke-width="1.6"/></svg>`,
+    chev: (fg,op) => `<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30"><path d="M0 20 15 6l15 14" fill="none" stroke="${fg}" stroke-opacity="${op}" stroke-width="2"/></svg>`,
+    bolt: (fg,op) => `<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60"><path d="M33 8 20 33h11l-3 20 17-27H33l3-18Z" fill="${fg}" fill-opacity="${op}"/></svg>`
+};
+const PAT_SIZE = { grid:'40px', dots:'26px', diag:'24px', wave:'80px 34px', topo:'90px', cross:'32px', tri:'44px 38px', chev:'30px', bolt:'60px' };
+
+function buildPatterns(){
+    const out = [];
+    Object.keys(PAT_SHAPES).forEach(function(shape){
+        PAT_SETS.forEach(function(set){
+            out.push({
+                img: svgBg(PAT_SHAPES[shape](set.fg, set.op)) + ', linear-gradient(' + set.bg + ',' + set.bg + ')',
+                size: PAT_SIZE[shape] + ', cover',
+                repeat: 'repeat, no-repeat',
+                label: shape + ' / ' + set.name
+            });
+        });
+    });
+    return out;
+}
+
+const GRADIENTS = [
+    'linear-gradient(120deg,#c6ff4a,#3f5a17)',
+    'linear-gradient(135deg,#0d0d0d 0%,#25341a 55%,#c6ff4a 100%)',
+    'linear-gradient(120deg,#f4f3ef,#c6ff4a)',
+    'linear-gradient(200deg,#0d0d0d,#6f6d66)',
+    'linear-gradient(120deg,#2383e2,#0d1b2a)',
+    'linear-gradient(120deg,#8fc7ff,#12233a)',
+    'linear-gradient(120deg,#f5e0e9,#8f4463)',
+    'linear-gradient(120deg,#fdecc8,#a2603a)',
+    'linear-gradient(120deg,#dbeddb,#28618c)',
+    'linear-gradient(120deg,#e8deee,#61468a)',
+    'linear-gradient(120deg,#ffe2dd,#9b3d33)',
+    'linear-gradient(120deg,#e6ffb8,#4d6b18)',
+    'linear-gradient(160deg,#ff9a4a,#c6ff4a)',
+    'linear-gradient(160deg,#0f2027,#203a43,#2c5364)',
+    'linear-gradient(160deg,#232526,#414345)',
+    'linear-gradient(160deg,#ede7d9,#c9c0aa)',
+    'linear-gradient(45deg,#c6ff4a 0%,#c6ff4a 50%,#0d0d0d 50%,#0d0d0d 100%)',
+    'linear-gradient(90deg,#0d0d0d 0 20%,#c6ff4a 20% 40%,#f4f3ef 40% 60%,#c6ff4a 60% 80%,#0d0d0d 80% 100%)',
+    'repeating-linear-gradient(45deg,#0d0d0d 0 14px,#171717 14px 28px)',
+    'repeating-linear-gradient(90deg,#c6ff4a 0 10px,#b4ec36 10px 20px)',
+    /* mesh gradients */
+    'radial-gradient(at 18% 24%,#c6ff4a 0,transparent 52%),radial-gradient(at 82% 18%,#2383e2 0,transparent 48%),radial-gradient(at 60% 88%,#8f4463 0,transparent 52%),linear-gradient(#0d0d0d,#0d0d0d)',
+    'radial-gradient(at 12% 78%,#ffd166 0,transparent 50%),radial-gradient(at 88% 26%,#ef6f6c 0,transparent 50%),radial-gradient(at 46% 50%,#6f8ffc 0,transparent 55%),linear-gradient(#14121c,#14121c)',
+    'radial-gradient(at 30% 20%,#a8ff78 0,transparent 50%),radial-gradient(at 78% 70%,#78ffd6 0,transparent 50%),linear-gradient(#06281f,#06281f)',
+    'radial-gradient(at 70% 22%,#f4f3ef 0,transparent 55%),radial-gradient(at 22% 74%,#c6ff4a 0,transparent 50%),linear-gradient(#3f5a17,#3f5a17)'
+];
+
+const SOLIDS = ['#0d0d0d','#37352f','#6f6d66','#b6b4ac','#f4f3ef','#ffffff',
+                '#c6ff4a','#3f5a17','#e3e2e0','#eee0da','#fadec9','#fdecc8',
+                '#dbeddb','#d3e5ef','#e8deee','#f5e0e9','#ffe2dd','#12233a'];
+
+let PATTERNS = null;
+const asCover = v => (typeof v === 'string' ? { img:v } : v);
+
+function coverStyle(p){
+    if(!p || !p.cover) return '';
+    const o = asCover(p.cover);
+    const pos = (p.coverPos == null ? 50 : p.coverPos);
+    return 'background-image:' + o.img +
+           ';background-size:' + (o.size || 'cover') +
+           ';background-repeat:' + (o.repeat || 'no-repeat') +
+           ';background-position:center ' + pos + '%;';
+}
+function tileStyle(c){
+    const o = asCover(c);
+    return 'background-image:' + o.img +
+           ';background-size:' + (o.size || 'cover') +
+           ';background-repeat:' + (o.repeat || 'no-repeat') + ';';
+}
+function sameCover(a, b){
+    if(!a || !b) return false;
+    return asCover(a).img === asCover(b).img;
+}
+
+/* ---------- picker ---------- */
+let cpTab = 'gallery';
+function openCoverPicker(){
+    if(!PATTERNS) PATTERNS = buildPatterns();
+    if(!S.covers) S.covers = [];
+    $('#coverOverlay').classList.add('on');
+    drawCP();
+}
+function closeCoverPicker(){ $('#coverOverlay').classList.remove('on'); }
+
+function applyCover(c){
+    const p = P(cur); if(!p) return;
+    p.cover = c;
+    if(p.coverPos == null) p.coverPos = 50;
+    touch(p);
+    const cov = $('#cover');
+    if(cov){ cov.setAttribute('style', coverStyle(p)); cov.classList.add('on'); }
+    else renderPage();
+    drawCP();
+}
+
+function tilesHTML(list, tight){
+    const p = P(cur);
+    return '<div class="cp-grid' + (tight ? ' tight' : '') + '">' + list.map(function(c, i){
+        return '<button class="cp-tile' + (p && sameCover(p.cover, c) ? ' on' : '') + '" data-i="' + i + '" style="' + tileStyle(c) + '"></button>';
+    }).join('') + '</div>';
+}
+
+function drawCP(){
+    const body = $('#cpBody');
+    const p = P(cur);
+    let lists = {};
+
+    if(cpTab === 'gallery'){
+        lists.pat = PATTERNS;
+        body.innerHTML = '<div class="cp-group">Patronen — ' + PATTERNS.length + ' stuks</div>' + tilesHTML(PATTERNS);
+    }
+    else if(cpTab === 'gradient'){
+        lists.grad = GRADIENTS;
+        body.innerHTML = '<div class="cp-group">Kleurverlopen</div>' + tilesHTML(GRADIENTS);
+    }
+    else if(cpTab === 'color'){
+        lists.sol = SOLIDS.map(function(h){ return 'linear-gradient(' + h + ',' + h + ')'; });
+        body.innerHTML = '<div class="cp-group">Effen kleuren</div>' + tilesHTML(lists.sol, true);
+    }
+    else if(cpTab === 'upload'){
+        body.innerHTML =
+            '<div class="cp-drop" id="cpDrop"><b>Sleep een afbeelding hierheen</b>' +
+            '<span>of klik om te bladeren — png, jpg of webp, max ~1,4 MB</span></div>' +
+            (S.covers.length
+                ? '<div class="cp-group">Jouw covers</div>' + tilesHTML(S.covers)
+                : '<div class="cp-group">Jouw covers</div><div class="cp-note">Nog geen eigen covers. Alles wat je uploadt of via een link toevoegt, bewaren we hier.</div>');
+        lists.own = S.covers;
+        const drop = $('#cpDrop');
+        drop.onclick = function(){ pickImage(function(url){ addOwnCover({ img:'url("' + url + '")' }); }); };
+        ['dragenter','dragover'].forEach(function(ev){ drop.addEventListener(ev, function(e){ e.preventDefault(); drop.classList.add('over'); }); });
+        ['dragleave','drop'].forEach(function(ev){ drop.addEventListener(ev, function(e){ e.preventDefault(); drop.classList.remove('over'); }); });
+        drop.addEventListener('drop', function(e){
+            const f = e.dataTransfer.files && e.dataTransfer.files[0];
+            if(!f || !/^image\//.test(f.type)) return;
+            if(f.size > 1.4e6){ toast('Afbeelding te groot (max ~1,4 MB)'); return; }
+            const r = new FileReader();
+            r.onload = function(){ addOwnCover({ img:'url("' + r.result + '")' }); };
+            r.readAsDataURL(f);
+        });
+    }
+    else if(cpTab === 'link'){
+        body.innerHTML =
+            '<div class="cp-link"><input id="cpUrl" placeholder="https://…  plak een afbeeldings-URL" spellcheck="false"></div>' +
+            '<div class="cp-note">Werkt met elke directe afbeeldingslink — bijvoorbeeld een foto van Unsplash of Pexels. ' +
+            'Rechtermuisknop op de foto → “Afbeeldingsadres kopiëren”.</div>' +
+            '<div class="cp-preview" id="cpPrev"></div>' +
+            (S.covers.length ? '<div class="cp-group">Jouw covers</div>' + tilesHTML(S.covers) : '');
+        lists.own = S.covers;
+        const inp = $('#cpUrl');
+        const upd = function(){
+            const v = inp.value.trim();
+            $('#cpPrev').style.backgroundImage = v ? 'url("' + v + '")' : '';
+        };
+        inp.oninput = upd;
+        inp.onkeydown = function(e){
+            if(e.key !== 'Enter') return;
+            const v = inp.value.trim(); if(!v) return;
+            addOwnCover({ img:'url("' + v + '")' });
+            inp.value = ''; upd();
+        };
+        setTimeout(function(){ inp.focus(); }, 40);
+    }
+
+    // tegels aanklikbaar maken
+    const src = lists.pat || lists.grad || lists.sol || lists.own || [];
+    const own = src === S.covers;
+    body.querySelectorAll('.cp-tile').forEach(function(t){
+        t.onclick = function(e){
+            if(e.target.dataset.del !== undefined) return;
+            applyCover(src[+t.dataset.i]);
+        };
+        if(own){
+            const del = document.createElement('button');
+            del.className = 'cp-del'; del.dataset.del = ''; del.textContent = '✕';
+            del.onclick = function(e){ e.stopPropagation(); S.covers.splice(+t.dataset.i, 1); save(); drawCP(); };
+            t.appendChild(del);
+        }
+    });
+}
+function addOwnCover(c){
+    if(!S.covers) S.covers = [];
+    if(!S.covers.some(function(x){ return asCover(x).img === c.img; })){
+        S.covers.unshift(c);
+        if(S.covers.length > 14) S.covers.length = 14;
+    }
+    save();
+    applyCover(c);
+    toast('Cover toegevoegd');
+}
+$('#cpTabs').addEventListener('click', function(e){
+    const b = e.target.closest('.cp-tab'); if(!b) return;
+    cpTab = b.dataset.tab;
+    $$('#cpTabs .cp-tab').forEach(function(t){ t.classList.toggle('on', t === b); });
+    drawCP();
+});
+$('#cpClose').onclick = closeCoverPicker;
+$('#cpRemove').onclick = function(){
+    const p = P(cur); if(!p) return;
+    p.cover = ''; p.coverPos = 50; touch(p); closeCoverPicker(); renderPage();
+};
+$('#coverOverlay').addEventListener('click', function(e){ if(e.target === $('#coverOverlay')) closeCoverPicker(); });
+
+/* ---------- herpositioneren ---------- */
+function startRepo(){
+    const p = P(cur), cov = $('#cover');
+    if(!p || !cov) return;
+    const before = p.coverPos == null ? 50 : p.coverPos;
+    cov.classList.add('repo');
+    let dragging = false, startY = 0, startPos = before;
+
+    const down = function(e){
+        dragging = true;
+        startY = (e.touches ? e.touches[0].clientY : e.clientY);
+        startPos = p.coverPos == null ? 50 : p.coverPos;
+        e.preventDefault();
+    };
+    const move = function(e){
+        if(!dragging) return;
+        const y = (e.touches ? e.touches[0].clientY : e.clientY);
+        const d = (startY - y) / cov.offsetHeight * 100;
+        p.coverPos = Math.max(0, Math.min(100, Math.round(startPos + d)));
+        cov.style.backgroundPosition = 'center ' + p.coverPos + '%';
+        e.preventDefault();
+    };
+    const up = function(){ dragging = false; };
+
+    cov.addEventListener('mousedown', down);
+    window.addEventListener('mousemove', move);
+    window.addEventListener('mouseup', up);
+    cov.addEventListener('touchstart', down, { passive:false });
+    window.addEventListener('touchmove', move, { passive:false });
+    window.addEventListener('touchend', up);
+
+    const cleanup = function(){
+        cov.classList.remove('repo');
+        cov.removeEventListener('mousedown', down);
+        window.removeEventListener('mousemove', move);
+        window.removeEventListener('mouseup', up);
+        cov.removeEventListener('touchstart', down);
+        window.removeEventListener('touchmove', move);
+        window.removeEventListener('touchend', up);
+    };
+    $('#repoSave').onclick = function(){ touch(p); cleanup(); toast('Positie opgeslagen'); };
+    $('#repoCancel').onclick = function(){ p.coverPos = before; cov.style.backgroundPosition = 'center ' + before + '%'; save(); cleanup(); };
+}
+
 /* ===============================================================
    11. UI WIRING
    =============================================================== */
@@ -2686,7 +3099,8 @@ document.addEventListener('keydown', e => {
     if(meta && e.key.toLowerCase() === 's'){ e.preventDefault(); saveNow(); toast('Opgeslagen'); return; }
     if(meta && e.shiftKey && e.key.toLowerCase() === 'n'){ e.preventDefault(); createPage('page'); return; }
     if(e.key === 'Escape'){
-        if($('#searchOverlay').classList.contains('on')) closeSearch();
+        if($('#coverOverlay').classList.contains('on')) closeCoverPicker();
+        else if($('#searchOverlay').classList.contains('on')) closeSearch();
         else if($('#peek').classList.contains('on')) closePeek();
         else closeMenus();
     }

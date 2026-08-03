@@ -32,7 +32,27 @@
             if(tag === 'SECTION' || tag === 'FOOTER') out.push(el);
             else if(tag === 'DIV' && el.querySelector(':scope > .cta-band')) out.push(el);
         }
-        return out;
+        return mergeTail(out);
+    }
+
+    /* De laatste twee (CTA-band + footer) horen bij elkaar: samen één slide.
+       Ze worden in een wrapper gezet zodat de engine ze als één element ziet. */
+    function mergeTail(list){
+        if(list.length < 2) return list;
+        var last = list[list.length - 1];
+        var prev = list[list.length - 2];
+        if(last.tagName !== 'FOOTER') return list;
+        if(!prev.parentNode || prev.parentNode !== document.body) return list;
+        if(prev.classList.contains('km-merge')) return list;
+
+        var wrap = document.createElement('div');
+        wrap.className = 'km-merge';
+        prev.parentNode.insertBefore(wrap, prev);
+        wrap.appendChild(prev);
+        wrap.appendChild(last);
+
+        list.splice(list.length - 2, 2, wrap);
+        return list;
     }
 
     var LABELS = {
@@ -52,7 +72,7 @@
 
     function labelFor(el, i){
         for(var c in LABELS){ if(el.classList.contains(c)) return LABELS[c]; }
-        if(el.tagName === 'FOOTER') return 'Contact';
+        if(el.tagName === 'FOOTER' || el.classList.contains('km-merge')) return 'Contact';
         if(isCta(el)) return 'Plan een call';
         var h = el.querySelector('.section-label, .eyebrow, h2, h3');
         var t = h ? h.textContent.replace(/\s+/g,' ').trim() : '';
@@ -61,7 +81,7 @@
     }
     function fxFor(el, i){
         for(var c in FX_BY_CLASS){ if(el.classList.contains(c)) return FX_BY_CLASS[c]; }
-        if(el.tagName === 'FOOTER') return 8;
+        if(el.tagName === 'FOOTER' || el.classList.contains('km-merge')) return 8;
         if(isCta(el)) return 7;
         return FX_CYCLE[i % FX_CYCLE.length];
     }
@@ -75,7 +95,7 @@
             s.dataset.kmIndex = i;
             if(s.tagName === 'FOOTER') s.classList.add('km-footer');
             // donker/licht vooraf bepalen — scheelt DOM-werk tijdens het scrollen
-            darkFlags[i] = s.tagName === 'FOOTER' ||
+            darkFlags[i] = s.tagName === 'FOOTER' || s.classList.contains('km-merge') ||
                            s.classList.contains('process-section') ||
                            s.classList.contains('stats-section') ||
                            isCta(s);
