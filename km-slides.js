@@ -15,7 +15,7 @@
 
     var slides = [], dots = [], idx = 0;
     var animating = false, lastJump = 0, enabled = false;
-    var hint, progress, dotsWrap;
+    var hint, progress, dotsWrap, counter;
 
     /* ---------- setup ---------- */
     function collect(){
@@ -30,14 +30,46 @@
         return out;
     }
 
+    var LABELS = {
+        'hero':'Start',
+        'reveal-block':'Intro',
+        'projects':'Werk',
+        'capabilities':'Wat we doen',
+        'stats-section':'Resultaten',
+        'process-section':'Proces',
+        'pricing-section':'Prijzen',
+        'faq-section':'FAQ',
+        'testimonials':'Reviews'
+    };
     function labelFor(el, i){
-        if(el.classList.contains('hero')) return 'Start';
+        for(var c in LABELS){ if(el.classList.contains(c)) return LABELS[c]; }
         if(el.tagName === 'FOOTER') return 'Contact';
         if(el.querySelector(':scope > .container > .cta-band, :scope > .cta-band')) return 'Plan een call';
-        var h = el.querySelector('h2, h3, .section-label, .eyebrow');
-        var t = h ? h.textContent.trim() : '';
-        if(t.length > 22) t = t.slice(0, 20).trim() + '…';
+        var h = el.querySelector('.section-label, .eyebrow, h2, h3');
+        var t = h ? h.textContent.replace(/\s+/g, ' ').trim() : '';
+        if(t.length > 20) t = t.slice(0, 18).trim() + '…';
         return t || ('Sectie ' + (i + 1));
+    }
+
+    // vaste overgang per sectie-type, anders een roterende volgorde
+    var FX_BY_CLASS = {
+        'hero':1,               // rise
+        'reveal-block':2,       // wipe
+        'projects':3,           // zoom
+        'capabilities':4,       // slide
+        'stats-section':5,      // flip
+        'process-section':6,    // push
+        'pricing-section':3,
+        'faq-section':2,
+        'testimonials':4
+    };
+    var FX_CYCLE = [1,3,4,5,2,6,7,8];
+
+    function fxFor(el, i){
+        for(var c in FX_BY_CLASS){ if(el.classList.contains(c)) return FX_BY_CLASS[c]; }
+        if(el.tagName === 'FOOTER') return 8;                       // cover
+        if(el.querySelector(':scope > .container > .cta-band, :scope > .cta-band')) return 7; // drop
+        return FX_CYCLE[i % FX_CYCLE.length];
     }
 
     function build(){
@@ -45,7 +77,7 @@
         if(slides.length < 3) return false;
 
         slides.forEach(function(s, i){
-            s.classList.add('km-slide');
+            s.classList.add('km-slide', 'km-fx-' + fxFor(s, i));
             s.dataset.kmIndex = i;
             if(s.tagName === 'FOOTER') s.classList.add('km-footer');
         });
@@ -76,6 +108,11 @@
         hint.className = 'km-hint';
         hint.innerHTML = '<span class="km-mouse"></span><span>Scroll</span>';
         document.body.appendChild(hint);
+
+        // teller rechtsonder
+        counter = document.createElement('div');
+        counter.className = 'km-count';
+        document.body.appendChild(counter);
 
         return true;
     }
@@ -131,6 +168,10 @@
         var dark = s && (s.tagName === 'FOOTER' || s.classList.contains('process-section') ||
                          s.classList.contains('stats-section') || !!s.querySelector(':scope > .container > .cta-band'));
         if(dotsWrap) dotsWrap.classList.toggle('on-dark', !!dark);
+        if(counter){
+            counter.innerHTML = '<b>' + String(idx + 1).padStart(2, '0') + '</b> / ' + String(slides.length).padStart(2, '0');
+            counter.classList.toggle('on-dark', !!dark);
+        }
     }
 
     function goTo(i, dir){
