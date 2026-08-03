@@ -623,20 +623,163 @@ tr:hover .row-del{opacity:1;}
 }
 .toast button:hover{filter:brightness(1.08);}
 
-/* mobile */
-.scrim{position:fixed;inset:0;background:rgba(13,13,13,.5);z-index:19;display:none;backdrop-filter:blur(3px);}
+/* =========================================================
+   MOBIEL
+   ========================================================= */
+.scrim{
+    position:fixed;inset:0;background:rgba(13,13,13,.55);z-index:19;
+    display:none;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+    animation:fadeIn .22s ease;
+}
 .scrim.on{display:block;}
+
+/* zwevende actieknop — vervangt de blok-handvatten op touch */
+.fab{
+    position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom));z-index:180;
+    width:56px;height:56px;border-radius:50%;border:0;cursor:pointer;
+    background:var(--ink);color:#fff;display:none;place-items:center;
+    box-shadow:0 8px 26px rgba(13,13,13,.32);
+    transition:transform .24s cubic-bezier(.16,1,.3,1),background .2s;
+}
+.fab:active{transform:scale(.92);}
+html[data-theme="dark"] .fab{background:var(--accent);color:var(--ink);}
+
 @media(max-width:860px){
-    .app{padding:0;gap:0;}
-    .sidebar{position:fixed;top:0;bottom:0;left:0;border-radius:0;box-shadow:8px 0 40px rgba(0,0,0,.3);}
-    .sidebar.hidden{margin-left:calc(-1 * var(--sb-w));}
+    html,body{height:100%;height:100dvh;}
+    .app{padding:0;gap:0;height:100dvh;}
+
+    /* sidebar als drawer */
+    .sidebar{
+        position:fixed;top:0;bottom:0;left:0;z-index:22;
+        width:min(85vw,320px);flex-basis:min(85vw,320px);
+        border-radius:0 var(--r-lg) var(--r-lg) 0;
+        box-shadow:10px 0 50px rgba(0,0,0,.45);
+        padding-top:env(safe-area-inset-top);
+    }
+    .sidebar.hidden{margin-left:calc(-1 * min(85vw,320px) - 20px);}
+    .sb-item,.tree-row{padding-top:11px;padding-bottom:11px;}
+    .tree-acts{opacity:1;}
+    .tree-acts .icon-btn,.sb-label .icon-btn{opacity:.75;width:30px;height:30px;}
+
     .main{border-radius:0;}
-    .page{padding:0 24px 40vh;}
-    .peek{top:0;right:0;bottom:0;border-radius:0;}
-    .peek-body{padding:24px 22px 50px;}
-    .blk-handles{left:-46px;}
-    h1.title{font-size:32px;}
-    .page-icon{font-size:56px;}
+    .topbar{
+        height:58px;flex-basis:58px;padding:0 12px;
+        padding-top:env(safe-area-inset-top);
+        border-bottom:1px solid var(--line);
+    }
+    .crumbs{font-size:13px;}
+    .crumb{max-width:130px;padding:5px 8px;}
+    .crumb:not(:last-child),.crumb-sep{display:none;}
+    .tb-text,.topbar-right .icon-btn{width:38px;height:38px;font-size:17px;}
+
+    /* pagina */
+    .page{padding:0 20px 34vh;max-width:100%;}
+    .page.wide{max-width:100%;}
+    .page-head{padding-top:26px;}
+    .cover.on{height:150px;}
+    .page-icon{font-size:52px;margin-bottom:6px;}
+    .page-tools{opacity:1;height:auto;flex-wrap:wrap;}
+    h1.title{font-size:30px;letter-spacing:-.03em;}
+    .peek-body h1.title{font-size:26px;}
+    .page-meta{gap:14px;font-size:9.5px;}
+
+    /* blokken: handvatten weg, FAB erin */
+    .blk-handles{display:none;}
+    .fab{display:grid;}
+    .blocks{margin-top:18px;}
+    .ce,.cell,.prop-val{font-size:16px;}      /* voorkomt inzoomen op iOS */
+    .blk[data-t="text"] .ce{min-height:34px;padding:6px 2px;}
+    .blk[data-t="h1"] .ce{font-size:27px;padding:20px 2px 4px;}
+    .blk[data-t="h2"] .ce{font-size:22px;padding:16px 2px 3px;}
+    .blk[data-t="h3"] .ce{font-size:18.5px;}
+    .blk[data-t="quote"] .ce{font-size:17.5px;}
+    .blk[data-t="code"] .blk-body{padding:18px 16px;overflow-x:auto;}
+    .cb{width:22px;height:22px;flex-basis:22px;margin-top:4px;}
+    .blk[data-t="callout"] .blk-body{padding:15px 16px;}
+    .pagelink{padding:14px;}
+
+    /* database */
+    .db-toolbar{
+        flex-wrap:nowrap;overflow-x:auto;gap:2px;margin-top:18px;
+        scrollbar-width:none;-ms-overflow-style:none;
+    }
+    .db-toolbar::-webkit-scrollbar{display:none;}
+    .view-tab{padding:10px;flex:0 0 auto;font-size:10px;}
+    .db-tools{margin-left:0;padding-left:8px;flex:0 0 auto;}
+    #dbFilter{width:104px;}
+    .tbl-wrap{margin:0 -20px;padding:0 20px;-webkit-overflow-scrolling:touch;}
+    table.db th,table.db td{min-width:150px;}
+    table.db th:first-child,table.db td:first-child{min-width:200px;}
+    .row-del{left:auto;right:4px;opacity:1;}
+    .open-row{opacity:1;}
+    .board{margin:0 -20px;padding:18px 20px 22px;-webkit-overflow-scrolling:touch;}
+    .col{flex-basis:82vw;max-height:none;}
+    .kcard{padding:15px;}
+    .gallery{grid-template-columns:1fr 1fr;gap:12px;}
+    .gtop{height:96px;font-size:28px;}
+    .listrow{padding:15px 10px;}
+    .listrow:hover{padding-left:10px;}
+    .calbar{flex-wrap:wrap;gap:8px;margin:18px 0 10px;}
+    .calbar h3{font-size:19px;min-width:0;flex:1;}
+    .cal{margin:0 -20px;border-radius:0;border-left:0;border-right:0;}
+    .day{min-height:74px;padding:5px 4px;}
+    .dnum{width:21px;height:21px;font-size:10px;}
+    .ev{font-size:9.5px;padding:2px 6px;}
+    .cal .dow{padding:7px 4px;font-size:8.5px;letter-spacing:.1em;}
+    .day-add{opacity:1;width:18px;height:18px;font-size:10px;}
+
+    /* menus als bottom sheet */
+    .menu{
+        left:0 !important;right:0 !important;top:auto !important;bottom:0 !important;
+        width:100% !important;min-width:0;max-width:100%;
+        max-height:74vh;border-radius:var(--r-lg) var(--r-lg) 0 0;
+        padding:10px 10px calc(18px + env(safe-area-inset-bottom));
+        border:0;border-top:1px solid var(--line);
+        box-shadow:0 -10px 50px rgba(13,13,13,.3);
+    }
+    .menu.on{animation:sheetIn .3s cubic-bezier(.16,1,.3,1);}
+    .menu::before{
+        content:'';display:block;width:38px;height:4px;border-radius:4px;
+        background:var(--line);margin:0 auto 12px;
+    }
+    .mi{padding:12px;font-size:15px;}
+    .mi .mi-ico{width:34px;height:34px;flex-basis:34px;}
+    .menu-search{padding:12px 14px;font-size:16px;}
+
+    /* zoeken fullscreen */
+    .overlay{padding-top:0;align-items:stretch;}
+    .modal{max-width:100%;max-height:100%;height:100%;border-radius:0;}
+    .modal-search{padding:calc(16px + env(safe-area-inset-top)) 18px 16px;}
+    .modal-search input{font-size:17px;}
+    .res{padding:13px;}
+
+    /* peek fullscreen */
+    .peek{
+        top:0;right:0;bottom:0;left:0;width:100%;border-radius:0;
+        transform:translateY(100%);
+        transition:transform .34s cubic-bezier(.16,1,.3,1);
+    }
+    .peek.on{transform:none;}
+    .peek-bar{padding:calc(12px + env(safe-area-inset-top)) 14px 12px;}
+    .peek-body{padding:22px 20px calc(60px + env(safe-area-inset-bottom));}
+    .prop-row{flex-wrap:wrap;gap:2px;margin-bottom:8px;}
+    .prop-key{width:100%;flex-basis:100%;padding:6px 4px;}
+    .prop-val{width:100%;padding:10px;background:var(--bg);border-radius:12px;}
+
+    .toast{
+        left:12px;right:12px;bottom:calc(16px + env(safe-area-inset-bottom));
+        transform:translateY(140px);border-radius:18px;justify-content:space-between;
+    }
+    .toast.on{transform:none;}
+}
+@keyframes sheetIn{from{opacity:0;transform:translateY(40px);}to{opacity:1;transform:none;}}
+
+@media(max-width:420px){
+    .page{padding:0 16px 34vh;}
+    h1.title{font-size:26px;}
+    .gallery{grid-template-columns:1fr;}
+    .tbl-wrap,.board,.cal{margin-left:-16px;margin-right:-16px;}
+    .tbl-wrap,.board{padding-left:16px;padding-right:16px;}
 }
 
 </style>
@@ -765,6 +908,10 @@ tr:hover .row-del{opacity:1;}
 <div class="menu" id="ctxMenu"></div>
 <div class="menu" id="slashMenu"></div>
 <div class="toast" id="toast"><span id="toastMsg"></span></div>
+<button class="fab" id="fab" aria-label="Toevoegen">
+    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+</button>
+
 <input type="file" id="filePick" accept="image/*" style="display:none;">
 <input type="file" id="importPick" accept="application/json" style="display:none;">
 
@@ -1222,9 +1369,18 @@ function renderBlocks(page, host, list, depth){
         if(e.target === host || e.target === wrap){
             const last = blocks[blocks.length-1];
             if(last && last.t === 'text' && !stripTags(last.x)) { focusBlock(last.id); return; }
-            const nb = blankBlock(); blocks.push(nb); save(); renderBody(); focusBlock(nb.id);
+            const nb = blankBlock(); blocks.push(nb); save(); refreshBlocks(); focusBlock(nb.id);
         }
     };
+}
+function refreshBlocks(){
+    if(peekCtx && document.getElementById('peek').classList.contains('on')){
+        const row = peekCtx.row;
+        row.blocks = row.blocks && row.blocks.length ? row.blocks : [blankBlock()];
+        renderBlocks({ id:peekCtx.db.id, type:'page', blocks:row.blocks, children:[] }, $('#peekBlocks'), row.blocks);
+    }else{
+        renderBody();
+    }
 }
 function stripTags(h){ const d = document.createElement('div'); d.innerHTML = h||''; return d.textContent.trim(); }
 
@@ -1251,7 +1407,7 @@ function blockEl(page, b, list, idx){
     }
     // handles
     el.querySelector('[data-plus]').onclick = () => {
-        const nb = blankBlock(); list.splice(idx+1, 0, nb); save(); renderBody();
+        const nb = blankBlock(); list.splice(idx+1, 0, nb); save(); refreshBlocks();
         focusBlock(nb.id); setTimeout(() => openSlash(nb.id), 40);
     };
     const grab = el.querySelector('[data-grab]');
@@ -1285,12 +1441,12 @@ function blockEl(page, b, list, idx){
         let to = list.findIndex(x => x.id === b.id);
         if(!above) to++;
         list.splice(to, 0, moved);
-        save(); renderBody();
+        save(); refreshBlocks();
     });
 
     // type-specific wiring
     if(b.t === 'todo'){
-        el.querySelector('.cb').onclick = () => { b.done = !b.done; touch(page); renderBody(); };
+        el.querySelector('.cb').onclick = () => { b.done = !b.done; touch(page); refreshBlocks(); };
     }
     if(b.t === 'toggle'){
         const arrow = el.querySelector('.tg-arrow');
@@ -1302,25 +1458,25 @@ function blockEl(page, b, list, idx){
         }
     }
     if(b.t === 'callout'){
-        el.querySelector('.callout-icon').onclick = e => emojiMenu(e.currentTarget, v => { b.icon = v; touch(page); renderBody(); });
+        el.querySelector('.callout-icon').onclick = e => emojiMenu(e.currentTarget, v => { b.icon = v; touch(page); refreshBlocks(); });
     }
     if(b.t === 'code'){
         el.querySelector('.code-lang').onclick = e => {
             const langs = ['javascript','typescript','html','css','python','json','bash','sql','markdown','plain'];
-            showMenu(e.currentTarget, langs.map(l => ({ label:l, run:() => { b.lang = l; touch(page); renderBody(); } })));
+            showMenu(e.currentTarget, langs.map(l => ({ label:l, run:() => { b.lang = l; touch(page); refreshBlocks(); } })));
         };
     }
     if(b.t === 'image'){
         const drop = el.querySelector('.img-drop');
-        if(drop) drop.onclick = () => pickImage(url => { b.src = url; touch(page); renderBody(); });
+        if(drop) drop.onclick = () => pickImage(url => { b.src = url; touch(page); refreshBlocks(); });
         const img = el.querySelector('img');
-        if(img) img.onclick = () => pickImage(url => { b.src = url; touch(page); renderBody(); });
+        if(img) img.onclick = () => pickImage(url => { b.src = url; touch(page); refreshBlocks(); });
     }
     if(b.t === 'pagelink'){
         const link = el.querySelector('.pagelink');
         link.onclick = () => {
             if(b.ref && P(b.ref)) go(b.ref);
-            else pagePicker(id => { b.ref = id; touch(page); renderBody(); });
+            else pagePicker(id => { b.ref = id; touch(page); refreshBlocks(); });
         };
     }
     return el;
@@ -1358,7 +1514,7 @@ function blockKeys(e, page, b, ce, list, idx){
         e.preventDefault();
         // empty list item → convert back to text
         if(['todo','bullet','number','quote'].includes(b.t) && empty){
-            b.t = 'text'; b.x = ''; save(); renderBody(); focusBlock(b.id); return;
+            b.t = 'text'; b.x = ''; save(); refreshBlocks(); focusBlock(b.id); return;
         }
         const carry = ['todo','bullet','number'].includes(b.t) ? b.t : 'text';
         const nb = blankBlock(carry);
@@ -1373,7 +1529,7 @@ function blockKeys(e, page, b, ce, list, idx){
             nb.x = tmp.innerHTML;
             b.x = ce.innerHTML;
         }
-        list.splice(idx+1, 0, nb); save(); renderBody(); focusBlock(nb.id);
+        list.splice(idx+1, 0, nb); save(); refreshBlocks(); focusBlock(nb.id);
         return;
     }
     if(e.key === 'Enter' && e.shiftKey && b.t !== 'code'){
@@ -1381,10 +1537,10 @@ function blockKeys(e, page, b, ce, list, idx){
     }
     if(e.key === 'Backspace' && empty){
         e.preventDefault();
-        if(b.t !== 'text'){ b.t = 'text'; b.done = false; save(); renderBody(); focusBlock(b.id); return; }
+        if(b.t !== 'text'){ b.t = 'text'; b.done = false; save(); refreshBlocks(); focusBlock(b.id); return; }
         if(list.length > 1){
             const prev = list[idx-1];
-            list.splice(idx,1); save(); renderBody();
+            list.splice(idx,1); save(); refreshBlocks();
             if(prev) focusBlock(prev.id, true);
         }
         return;
@@ -1461,7 +1617,7 @@ function markdownShortcut(page, b, ce, el, list, idx){
             b.t = type; b.x = txt.replace(re,'');
             if(type === 'divider'){ b.x = ''; list.splice(idx+1,0,blankBlock()); }
             if(type === 'todo') b.done = false;
-            save(); renderBody();
+            save(); refreshBlocks();
             if(type === 'divider'){ focusBlock(list[idx+1].id); } else focusBlock(b.id, true);
             return;
         }
@@ -1529,7 +1685,8 @@ const BLOCK_TYPES = [
 let slashCtx = null;
 function openSlash(blockId){
     const page = P(cur);
-    const found = findBlock(page, blockId);
+    let found = findBlock(page, blockId);
+    if(!found && peekCtx) found = findBlock({ blocks: peekCtx.row.blocks }, blockId);
     if(!found) return;
     slashCtx = { page, ...found, q:'' };
     const anchor = document.querySelector(`.blk[data-id="${blockId}"] .ce`);
@@ -1586,18 +1743,18 @@ function applySlash(type){
         const np = newPage({ parent: page.id }); S.pages[np.id] = np;
         page.children.push(np.id); page.open = true;
         b.t = 'pagelink'; b.ref = np.id; b.x = '';
-        save(); renderSidebar(); renderBody(); cleanupSlash(); return;
+        save(); renderSidebar(); refreshBlocks(); cleanupSlash(); return;
     }
     if(t === 'newdb'){
         const nd = newDatabase({ parent: page.id, title:'Nieuwe database' }); S.pages[nd.id] = nd;
         page.children.push(nd.id); page.open = true;
         b.t = 'pagelink'; b.ref = nd.id; b.x = '';
-        save(); renderSidebar(); renderBody(); cleanupSlash(); return;
+        save(); renderSidebar(); refreshBlocks(); cleanupSlash(); return;
     }
     if(t === 'pagelink'){
         b.t = 'pagelink'; b.x = '';
-        save(); renderBody(); cleanupSlash();
-        pagePicker(id => { b.ref = id; save(); renderBody(); });
+        save(); refreshBlocks(); cleanupSlash();
+        pagePicker(id => { b.ref = id; save(); refreshBlocks(); });
         return;
     }
     b.t = t;
@@ -1606,7 +1763,7 @@ function applySlash(type){
     if(t === 'code') b.lang = b.lang || 'javascript';
     if(t === 'callout') b.icon = b.icon || '💡';
     if(t === 'divider'){ b.x = ''; list.splice(idx+1, 0, blankBlock()); }
-    save(); renderBody();
+    save(); refreshBlocks();
     if(t === 'divider') focusBlock(list[idx+1].id);
     else if(t !== 'image') focusBlock(b.id, true);
     cleanupSlash();
@@ -1622,14 +1779,14 @@ function findBlock(page, id, list){
 
 function blockMenu(page, b, list, idx, anchor){
     showMenu(anchor, [
-        { label:'Verwijderen', icon:'🗑️', danger:true, kbd:'⌫', run:() => { list.splice(idx,1); if(!list.length) list.push(blankBlock()); save(); renderBody(); } },
-        { label:'Dupliceren', icon:'⧉', kbd:'⌘D', run:() => { const c = JSON.parse(JSON.stringify(b)); c.id = uid(); list.splice(idx+1,0,c); save(); renderBody(); } },
-        { label:'Omhoog', icon:'↑', run:() => { if(idx>0){ [list[idx-1],list[idx]]=[list[idx],list[idx-1]]; save(); renderBody(); } } },
-        { label:'Omlaag', icon:'↓', run:() => { if(idx<list.length-1){ [list[idx+1],list[idx]]=[list[idx],list[idx+1]]; save(); renderBody(); } } },
+        { label:'Verwijderen', icon:'🗑️', danger:true, kbd:'⌫', run:() => { list.splice(idx,1); if(!list.length) list.push(blankBlock()); save(); refreshBlocks(); } },
+        { label:'Dupliceren', icon:'⧉', kbd:'⌘D', run:() => { const c = JSON.parse(JSON.stringify(b)); c.id = uid(); list.splice(idx+1,0,c); save(); refreshBlocks(); } },
+        { label:'Omhoog', icon:'↑', run:() => { if(idx>0){ [list[idx-1],list[idx]]=[list[idx],list[idx-1]]; save(); refreshBlocks(); } } },
+        { label:'Omlaag', icon:'↓', run:() => { if(idx<list.length-1){ [list[idx+1],list[idx]]=[list[idx],list[idx+1]]; save(); refreshBlocks(); } } },
         { sep:true },
         { group:'Omzetten naar' },
         ...BLOCK_TYPES.filter(t => !['newpage','newdb','pagelink','image'].includes(t.t)).map(t => ({
-            label:t.label, icon:t.icon, run:() => { b.t = t.t; if(t.t==='todo') b.done=false; if(t.t==='toggle'){b.open=true;b.kids=b.kids||[blankBlock()];} save(); renderBody(); }
+            label:t.label, icon:t.icon, run:() => { b.t = t.t; if(t.t==='todo') b.done=false; if(t.t==='toggle'){b.open=true;b.kids=b.kids||[blankBlock()];} save(); refreshBlocks(); }
         }))
     ]);
 }
@@ -2438,11 +2595,13 @@ function importAll(){
 /* ===============================================================
    11. UI WIRING
    =============================================================== */
+const isMobile = () => innerWidth <= 860;
 function sidebarOpen(on){
-    S.sidebar = on; save();
+    if(!isMobile()){ S.sidebar = on; save(); }   // voorkeur alleen op desktop onthouden
     $('#sidebar').classList.toggle('hidden', !on);
-    $('#expandBtn').style.display = on ? 'none' : 'grid';
-    $('#scrim').classList.toggle('on', on && innerWidth <= 860);
+    $('#expandBtn').style.display = on && !isMobile() ? 'none' : 'grid';
+    $('#scrim').classList.toggle('on', on && isMobile());
+    document.body.style.overflow = (on && isMobile()) ? 'hidden' : '';
 }
 $('#collapseBtn').onclick = e => { e.stopPropagation(); sidebarOpen(false); };
 $('#expandBtn').onclick = () => sidebarOpen(true);
@@ -2478,6 +2637,26 @@ $('#moreBtn').onclick = e => showMenu(e.currentTarget, [
     }}
 ]);
 $('#logoutBtn').onclick = logout;
+
+/* zwevende actieknop (mobiel) */
+$('#fab').onclick = () => {
+    const p = P(cur);
+    if(!p){ createPage('page'); return; }
+    // in het peek-paneel: blok toevoegen aan het item
+    if(peekCtx && $('#peek').classList.contains('on')){
+        const list = peekCtx.row.blocks;
+        const nb = blankBlock(); list.push(nb);
+        save(); refreshBlocks(); focusBlock(nb.id);
+        setTimeout(() => openSlash(nb.id), 70);
+        return;
+    }
+    if(p.type === 'db'){
+        const r = newRow(p); p.rows.unshift(r); touch(p); drawView(p); openPeek(p, r); return;
+    }
+    const nb = blankBlock(); p.blocks.push(nb);
+    save(); refreshBlocks(); focusBlock(nb.id);
+    setTimeout(() => openSlash(nb.id), 70);
+};
 function logout(){
     localStorage.removeItem('kmdev_session');
     location.href = 'login.html';
@@ -2513,14 +2692,22 @@ document.addEventListener('keydown', e => {
     }
 });
 window.addEventListener('beforeunload', saveNow);
-window.addEventListener('resize', () => { if(innerWidth > 860) $('#scrim').classList.remove('on'); });
+let _wasMobile = isMobile();
+window.addEventListener('resize', () => {
+    const now = isMobile();
+    if(now !== _wasMobile){ _wasMobile = now; sidebarOpen(now ? false : S.sidebar !== false); }
+    else if(!now){ $('#scrim').classList.remove('on'); document.body.style.overflow = ''; }
+});
+window.addEventListener('orientationchange', () => setTimeout(() => {
+    if(isMobile()) sidebarOpen(false);
+}, 250));
 
 /* ===============================================================
    12. BOOT
    =============================================================== */
 load();
 renderSidebar();
-sidebarOpen(S.sidebar !== false);
+sidebarOpen(isMobile() ? false : S.sidebar !== false);
 (function boot(){
     const hash = location.hash.slice(1);
     const last = localStorage.getItem('kmdev_last');
