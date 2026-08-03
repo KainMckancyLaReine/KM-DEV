@@ -7,157 +7,159 @@
 <title>KM.OS</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://api.open-meteo.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="km-os.css">
 <style>
 /* ---------- hero ---------- */
-.hero{position:relative;padding:40px 34px 30px;overflow:hidden;border-bottom:1px solid var(--line);}
-.hero-bg{
-    position:absolute;inset:0;pointer-events:none;
-    background:
-        radial-gradient(760px 340px at 10% -12%, rgba(198,255,74,.30), transparent 68%),
-        radial-gradient(620px 300px at 88% -4%, rgba(35,131,226,.15), transparent 70%);
-    animation:drift 18s ease-in-out infinite alternate;
-}
-@keyframes drift{to{transform:translate3d(2%,1.5%,0) scale(1.06);}}
+.hero{position:relative;padding:38px 34px 30px;overflow:hidden;isolation:isolate;}
 .hero-grid{
-    position:absolute;inset:0;pointer-events:none;opacity:.55;
+    position:absolute;inset:0;pointer-events:none;opacity:.5;z-index:1;
     background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
-    background-size:52px 52px;
-    mask-image:radial-gradient(ellipse 80% 100% at 50% 0%,#000 10%,transparent 80%);
-    -webkit-mask-image:radial-gradient(ellipse 80% 100% at 50% 0%,#000 10%,transparent 80%);
+    background-size:58px 58px;
+    mask-image:radial-gradient(ellipse 85% 100% at 40% 0%,#000 5%,transparent 78%);
+    -webkit-mask-image:radial-gradient(ellipse 85% 100% at 40% 0%,#000 5%,transparent 78%);
 }
-.hero-in{position:relative;max-width:1240px;margin:0 auto;}
-.hero-top{display:flex;align-items:flex-start;gap:30px;flex-wrap:wrap;}
-.bigclock{
-    margin-left:auto;text-align:right;flex:0 0 auto;
-    font-family:'Space Grotesk',sans-serif;font-weight:700;letter-spacing:-.05em;
-    font-size:clamp(34px,5vw,58px);line-height:1;color:var(--text);
+.hero-in{position:relative;z-index:2;max-width:1320px;margin:0 auto;}
+.hero-top{display:flex;align-items:flex-end;gap:30px;flex-wrap:wrap;}
+.eyebrow{
+    display:inline-flex;align-items:center;gap:9px;padding:5px 13px;border-radius:999px;
+    background:var(--paper);background:color-mix(in srgb, var(--paper) 70%, transparent);border:1px solid var(--line);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-soft);
 }
-.bigclock small{
-    display:block;font-family:'Space Mono',monospace;font-size:10px;font-weight:400;
-    letter-spacing:.2em;text-transform:uppercase;color:var(--text-faint);margin-top:8px;
+.greet{
+    font-family:'Space Grotesk',sans-serif;font-size:clamp(34px,5vw,62px);
+    font-weight:700;letter-spacing:-.055em;line-height:.96;margin-top:16px;
 }
-.bigclock .s{opacity:.28;font-size:.5em;}
-.greet{font-family:'Space Grotesk',sans-serif;font-size:clamp(28px,4vw,46px);font-weight:700;letter-spacing:-.04em;line-height:1.05;}
-.greet em{font-style:normal;color:var(--accent-ink);}
-html[data-theme="dark"] .greet em{color:var(--accent);}
-.greet-sub{margin-top:11px;color:var(--text-soft);font-size:15.5px;max-width:520px;}
+.greet em{
+    font-style:normal;
+    background:linear-gradient(100deg,var(--accent-ink),var(--accent) 70%);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+}
+html[data-theme="dark"] .greet em{background:linear-gradient(100deg,var(--accent),#8fc7ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+.greet-sub{margin-top:13px;color:var(--text-soft);font-size:16px;max-width:520px;line-height:1.6;}
 
-.capture{display:flex;gap:10px;margin-top:24px;max-width:660px;}
+.clockbox{margin-left:auto;text-align:right;flex:0 0 auto;}
+.clockbox .t{
+    font-family:'Space Grotesk',sans-serif;font-weight:700;letter-spacing:-.06em;
+    font-size:clamp(40px,6vw,72px);line-height:.9;font-variant-numeric:tabular-nums;
+}
+.clockbox .t .s{opacity:.22;font-size:.44em;}
+.clockbox .m{
+    margin-top:9px;font-family:'Space Mono',monospace;font-size:9.5px;
+    letter-spacing:.18em;text-transform:uppercase;color:var(--text-faint);
+}
+.clockbox .prog{width:150px;height:3px;border-radius:99px;background:var(--line);margin-top:10px;margin-left:auto;overflow:hidden;}
+.clockbox .prog i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-ink));transition:width 1s linear;}
+
+.capture{display:flex;gap:10px;margin-top:26px;max-width:700px;position:relative;}
 .capture input{
-    flex:1;border:1px solid var(--line);background:var(--paper);border-radius:999px;
-    padding:14px 22px;outline:none;font-size:15.5px;transition:all .22s var(--ease);box-shadow:var(--shadow-soft);
+    flex:1;border:1px solid var(--line);border-radius:999px;
+    background:var(--paper);background:color-mix(in srgb, var(--paper) 82%, transparent);
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    padding:15px 24px;outline:none;font-size:15.5px;
+    transition:all .28s var(--ease);box-shadow:0 1px 2px rgba(13,13,13,.04),0 12px 30px -20px rgba(13,13,13,.6);
 }
-.capture input:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft),var(--shadow-soft);}
-.stats{display:flex;gap:32px;margin-top:26px;flex-wrap:wrap;}
-.stats .stat b{font-size:clamp(24px,3vw,34px);}
+.capture input:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft),0 14px 34px -20px rgba(13,13,13,.6);}
+.capture .hint{
+    position:absolute;right:150px;top:50%;transform:translateY(-50%);pointer-events:none;
+    font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;color:var(--text-faint);
+    border:1px solid var(--line);border-radius:6px;padding:3px 7px;
+}
+.capture input:focus + .hint{opacity:0;}
 
-/* ---------- dashboard ---------- */
-.dash{display:grid;grid-template-columns:1.05fr 1fr 1fr;gap:14px;}
-.panel{
-    background:var(--paper);border:1px solid var(--line);border-radius:var(--r-md);
-    padding:20px;display:flex;flex-direction:column;min-width:0;
-    transition:border-color .25s,box-shadow .25s;
-}
-.panel:hover{border-color:var(--text-faint);box-shadow:var(--shadow-soft);}
-.panel-h{display:flex;align-items:center;gap:9px;margin-bottom:14px;}
-.panel-h b{font-family:'Space Grotesk',sans-serif;font-size:14.5px;font-weight:600;}
-.panel-h .label{margin-left:auto;}
-.panel-c{flex:1;display:flex;align-items:center;justify-content:center;min-height:0;}
-.panel.wide{grid-column:span 2;}
-.panel.full{grid-column:1/-1;}
+/* ---------- secties ---------- */
+.zone{max-width:1320px;margin:0 auto;padding:0 34px;}
+.zone-h{display:flex;align-items:center;gap:14px;margin:34px 0 16px;}
+.zone-h h2{font-size:13px;font-family:'Space Mono',monospace;font-weight:400;letter-spacing:.22em;text-transform:uppercase;color:var(--text-faint);}
+.zone-h .line{flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent);}
+.zone-h a,.zone-h button{flex:0 0 auto;}
 
 /* ---------- apps ---------- */
-.apps{display:grid;grid-template-columns:repeat(auto-fill,minmax(248px,1fr));gap:14px;}
+.apps{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;}
 .app{
-    position:relative;display:block;text-decoration:none;color:inherit;
-    background:var(--paper);border:1px solid var(--line);border-radius:var(--r-md);
-    padding:22px 20px 18px;overflow:hidden;
-    transition:transform .34s var(--ease),box-shadow .34s var(--ease),border-color .3s;
+    position:relative;display:block;text-decoration:none;color:inherit;overflow:hidden;
+    background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:20px 18px 16px;
+    transition:transform .4s var(--ease),box-shadow .4s var(--ease),border-color .3s;
 }
-.app::before{
-    content:'';position:absolute;inset:0;opacity:0;transition:opacity .34s ease;
-    background:radial-gradient(420px 200px at var(--mx,50%) var(--my,0%), var(--tint-a), transparent 70%);
+.app::after{
+    content:'';position:absolute;inset:0;opacity:0;transition:opacity .4s ease;pointer-events:none;
+    background:radial-gradient(340px 180px at var(--mx,50%) var(--my,0%), var(--tint-a), transparent 66%);
 }
-.app:hover{transform:translateY(-6px);box-shadow:var(--shadow);border-color:var(--tint);}
-.app:hover::before{opacity:1;}
+.app:hover{transform:translateY(-5px) scale(1.012);box-shadow:0 24px 46px -26px rgba(13,13,13,.65);border-color:var(--tint);}
+.app:hover::after{opacity:1;}
 .app-ico{
-    position:relative;width:44px;height:44px;border-radius:14px;display:grid;place-items:center;
-    font-size:20px;color:var(--tint);border:1px solid var(--line);background:var(--bg);
-    transition:transform .4s var(--ease),background .3s,color .3s,border-color .3s;
+    position:relative;width:42px;height:42px;border-radius:13px;display:grid;place-items:center;
+    font-size:19px;color:var(--tint);border:1px solid var(--line);background:var(--bg);
+    transition:transform .45s var(--ease),background .3s,color .3s,border-color .3s;
 }
-.app:hover .app-ico{transform:scale(1.08) rotate(-6deg);background:var(--tint);color:#fff;border-color:var(--tint);}
-.app h3{position:relative;font-size:16.5px;font-weight:600;margin:14px 0 5px;}
-.app p{position:relative;font-size:12.5px;color:var(--text-faint);line-height:1.55;min-height:36px;}
+.app:hover .app-ico{transform:scale(1.1) rotate(-8deg);background:var(--tint);color:#fff;border-color:var(--tint);}
+.app h3{position:relative;font-size:15.5px;font-weight:600;margin:13px 0 4px;letter-spacing:-.02em;}
+.app p{position:relative;font-size:12px;color:var(--text-faint);line-height:1.5;min-height:34px;}
 .app-meta{
-    position:relative;display:flex;align-items:center;gap:8px;margin-top:12px;padding-top:12px;
-    border-top:1px solid var(--line-soft);font-family:'Space Mono',monospace;font-size:9.5px;
+    position:relative;display:flex;align-items:center;gap:8px;margin-top:11px;padding-top:11px;
+    border-top:1px solid var(--line-soft);font-family:'Space Mono',monospace;font-size:9px;
     letter-spacing:.14em;text-transform:uppercase;color:var(--text-faint);
 }
-.app-meta .go{margin-left:auto;transition:transform .3s var(--ease);font-size:14px;}
+.app-meta .go{margin-left:auto;transition:transform .35s var(--ease);font-size:13px;}
 .app:hover .app-meta .go{transform:translateX(5px);}
-.app-spark{position:absolute;right:16px;top:20px;opacity:.5;}
+.app-spark{position:absolute;right:15px;top:18px;opacity:.55;}
 
 /* ---------- status ---------- */
-.status{display:flex;gap:10px;flex-wrap:wrap;}
+.status{display:flex;gap:9px;flex-wrap:wrap;}
 .st{
-    display:flex;align-items:center;gap:9px;padding:11px 16px;border-radius:999px;
-    border:1px solid var(--line);font-size:13px;color:var(--text-soft);background:var(--paper);
+    display:flex;align-items:center;gap:9px;padding:10px 15px;border-radius:999px;
+    border:1px solid var(--line);font-size:12.5px;color:var(--text-soft);background:var(--paper);
+    transition:all .25s var(--ease);
 }
-.st .led{width:8px;height:8px;border-radius:50%;background:var(--text-faint);flex:0 0 8px;}
+.st:hover{transform:translateY(-2px);box-shadow:var(--shadow-soft);}
+.st .led{width:7px;height:7px;border-radius:50%;background:var(--text-faint);flex:0 0 7px;}
 .st.on .led{background:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
-.st.on{color:var(--text);border-color:var(--accent);}
+.st.on{color:var(--text);border-color:var(--accent);border-color:color-mix(in srgb, var(--accent) 60%, var(--line));}
 
 /* ---------- focus ---------- */
-.focus-list{display:flex;flex-direction:column;gap:8px;}
+.flist{display:flex;flex-direction:column;gap:6px;width:100%;}
 .fitem{
-    display:flex;align-items:center;gap:12px;padding:13px 16px;border-radius:14px;
-    border:1px solid var(--line);background:var(--paper);transition:all .22s var(--ease);
+    display:flex;align-items:center;gap:12px;padding:11px 13px;border-radius:14px;
+    transition:all .24s var(--ease);border:1px solid transparent;
 }
-.fitem:hover{border-color:var(--text-faint);transform:translateX(3px);}
+.fitem:hover{background:var(--hover);border-color:var(--line);transform:translateX(3px);}
 .fbox{
     width:19px;height:19px;border-radius:6px;border:1.6px solid var(--text-faint);flex:0 0 19px;
-    display:grid;place-items:center;transition:all .2s var(--ease);cursor:pointer;
+    display:grid;place-items:center;transition:all .22s var(--ease);cursor:pointer;
 }
-.fbox:hover{border-color:var(--accent-ink);transform:scale(1.12);}
+.fbox:hover{border-color:var(--accent-ink);transform:scale(1.14);}
 .fbox.on{background:var(--accent);border-color:var(--accent);}
 .fbox svg{opacity:0;color:var(--accent-ink);} .fbox.on svg{opacity:1;}
 .fitem.done .ftxt{text-decoration:line-through;color:var(--text-faint);}
-.ftxt{flex:1;font-size:14.5px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ftxt{flex:1;font-size:14px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.fbar{width:3px;height:22px;border-radius:3px;flex:0 0 3px;}
 .fplay{
-    width:30px;height:30px;border-radius:10px;border:1px solid var(--line);background:transparent;
-    display:grid;place-items:center;font-size:11px;color:var(--text-faint);opacity:0;transition:all .2s var(--ease);
+    width:28px;height:28px;border-radius:9px;border:1px solid var(--line);background:transparent;
+    display:grid;place-items:center;font-size:10px;color:var(--text-faint);opacity:0;transition:all .22s var(--ease);
 }
 .fitem:hover .fplay{opacity:1;}
 .fplay:hover{background:var(--accent);border-color:var(--accent);color:var(--ink);}
 
-/* nu bezig */
-.nowbox{
-    display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:var(--r-md);
-    border:1px solid var(--accent);background:var(--accent-soft);margin-bottom:14px;
-}
-.nowbox .nt{flex:1;min-width:0;}
-.nowbox .nt b{display:block;font-family:'Space Grotesk',sans-serif;font-size:15.5px;font-weight:600;}
-.nowbox .nt span{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--accent-ink);}
-html[data-theme="dark"] .nowbox .nt span{color:var(--accent);}
-.nowbox .nv{font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:700;letter-spacing:-.03em;}
+/* ---------- nu bezig ---------- */
+.nowtile{border-color:var(--accent);background:var(--paper);background:linear-gradient(150deg,var(--accent-soft),var(--paper) 62%);}
+.nowtile .nv{font-family:'Space Grotesk',sans-serif;font-size:34px;font-weight:700;letter-spacing:-.04em;font-variant-numeric:tabular-nums;}
 
-@media(max-width:1080px){ .dash{grid-template-columns:1fr 1fr;} .panel.wide{grid-column:span 2;} }
 @media(max-width:820px){
-    .hero{padding:22px 16px 22px;}
-    .hero-top{gap:14px;}
-    .bigclock{margin-left:0;text-align:left;font-size:34px;}
-    .stats{gap:18px;}
-    .dash{grid-template-columns:1fr;}
-    .panel.wide,.panel.full{grid-column:span 1;}
-    .apps{grid-template-columns:1fr 1fr;gap:10px;}
-    .app{padding:15px 13px 13px;border-radius:18px;}
-    .app-ico{width:36px;height:36px;font-size:16px;border-radius:12px;}
-    .app h3{font-size:14px;margin:11px 0 4px;}
-    .app p{font-size:11.5px;min-height:0;}
-    .app-meta,.app-spark{display:none;}
+    .hero{padding:20px 16px 20px;}
+    .zone{padding:0 16px;}
+    .hero-top{gap:12px;align-items:flex-start;}
+    .clockbox{margin-left:0;text-align:left;}
+    .clockbox .prog{margin-left:0;}
     .capture{flex-direction:column;}
+    .capture .hint{display:none;}
+    .apps{grid-template-columns:1fr 1fr;gap:9px;}
+    .app{padding:14px 12px 12px;border-radius:16px;}
+    .app-ico{width:34px;height:34px;font-size:15px;border-radius:11px;}
+    .app h3{font-size:13.5px;margin:10px 0 3px;}
+    .app p{font-size:11px;min-height:0;}
+    .app-meta,.app-spark{display:none;}
 }
 </style>
 </head>
@@ -168,52 +170,54 @@ html[data-theme="dark"] .nowbox .nt span{color:var(--accent);}
         <div class="os-scroll" id="scroll">
 
             <div class="hero">
-                <div class="hero-bg"></div>
+                <div class="aurora" id="aurora"><i></i><i></i><i></i></div>
                 <div class="hero-grid"></div>
                 <div class="hero-in">
                     <div class="hero-top">
                         <div style="min-width:0;">
-                            <div class="label" id="dateLine">—</div>
-                            <h1 class="greet" id="greet" style="margin-top:9px;">Goedemorgen, <em>Kain</em>.</h1>
+                            <span class="eyebrow"><span class="dot-live"></span><span id="dateLine">—</span></span>
+                            <h1 class="greet" id="greet">Goedemorgen, <em>Kain</em>.</h1>
                             <p class="greet-sub" id="sub">Je systeem draait.</p>
                         </div>
-                        <div class="bigclock" id="bigClock">--:--<span class="s">:--</span><small id="clockSub">—</small></div>
+                        <div class="clockbox">
+                            <div class="t" id="bigClock">--:--<span class="s">:--</span></div>
+                            <div class="m" id="clockSub">—</div>
+                            <div class="prog"><i id="dayProg" style="width:0"></i></div>
+                        </div>
                     </div>
 
                     <div class="capture">
-                        <input id="capture" placeholder="Snel iets vastleggen — taak, idee, notitie…" autocomplete="off">
-                        <button class="btn accent" id="captureBtn">Vastleggen ⏎</button>
+                        <input id="capture" placeholder="Leg iets vast — taak, idee, notitie…" autocomplete="off">
+                        <span class="hint">/</span>
+                        <button class="btn accent" id="captureBtn">Vastleggen</button>
                     </div>
-
-                    <div class="stats" id="stats"></div>
                 </div>
             </div>
 
-            <div class="pad">
-                <div class="wrap">
+            <div class="zone">
+                <div class="zone-h"><h2>Nu</h2><span class="line"></span>
+                    <button class="chip" id="startFocus">▶ Focusblok</button></div>
+                <div class="bento" id="bentoNow"></div>
 
-                    <div class="sec-head"><h2 class="grotesk">Puls</h2>
-                        <span class="pulse-badge" id="pulseBadge"><span class="dot-live"></span>live</span></div>
-                    <div class="dash" id="dash"></div>
+                <div class="zone-h"><h2>Vandaag</h2><span class="line"></span>
+                    <a class="chip" href="life-os.html">Life OS →</a></div>
+                <div class="bento" id="bentoToday"></div>
 
-                    <div class="sec-head" style="margin-top:26px;"><h2 class="grotesk">Vandaag</h2>
-                        <a class="chip" href="life-os.html">Open Life OS →</a></div>
-                    <div id="nowSlot"></div>
-                    <div class="focus-list" id="focus"></div>
+                <div class="zone-h"><h2>Ritme</h2><span class="line"></span></div>
+                <div class="bento" id="bentoRhythm"></div>
 
-                    <div class="sec-head"><h2 class="grotesk">Apps</h2></div>
-                    <div class="apps" id="apps"></div>
+                <div class="zone-h"><h2>Apps</h2><span class="line"></span></div>
+                <div class="apps" id="apps"></div>
 
-                    <div class="sec-head"><h2 class="grotesk">Systeem</h2>
-                        <a class="chip" href="integrations.html">Instellen →</a></div>
-                    <div class="status" id="status"></div>
+                <div class="zone-h"><h2>Systeem</h2><span class="line"></span>
+                    <a class="chip" href="integrations.html">Instellen →</a></div>
+                <div class="status" id="status"></div>
 
-                    <div style="margin-top:30px;display:flex;gap:10px;flex-wrap:wrap;">
-                        <a class="chip" href="../index.html">← Terug naar de website</a>
-                        <button class="chip" id="exportAll">Backup downloaden</button>
-                        <button class="chip" id="syncNow">Nu synchroniseren</button>
-                        <button class="chip" id="startFocus">Focusblok starten</button>
-                    </div>
+                <div style="margin:26px 0 70px;display:flex;gap:9px;flex-wrap:wrap;">
+                    <a class="chip" href="../index.html">← Website</a>
+                    <button class="chip" id="exportAll">Backup</button>
+                    <button class="chip" id="syncNow">Synchroniseren</button>
+                    <button class="chip" id="wxRefresh">Weer verversen</button>
                 </div>
             </div>
 
@@ -224,34 +228,29 @@ html[data-theme="dark"] .nowbox .nt span{color:var(--accent);}
 <script src="km-os.js"></script>
 <script src="km-viz.js"></script>
 <script src="km-live.js"></script>
+<script src="km-weather.js"></script>
 <script>
 if(KM.boot()){
     KM.shell({ app:'home' });
 
-    var $ = KM.$, $$ = KM.$$, OS = KM.OS, D = OS.data, V = KMviz, L = KMlive;
+    var $ = KM.$, $$ = KM.$$, OS = KM.OS, D = OS.data;
+    var V = KMviz, L = KMlive, W = KMweather;
+    var wx = null, wxErr = null;
 
     /* =====================================================
-       Afgeleide reeksen
+       1. Afgeleide reeksen
        ===================================================== */
-    function doneOn(dayISO){
-        return D.tasks.filter(function(t){ return t.doneAt && KM.iso(new Date(t.doneAt)) === dayISO; }).length;
-    }
-    function habitsOn(dayISO){
-        return D.habits.filter(function(h){ return h.log[dayISO]; }).length;
-    }
+    function doneOn(k){ return D.tasks.filter(function(t){ return t.doneAt && KM.iso(new Date(t.doneAt)) === k; }).length; }
+    function habitsOn(k){ return D.habits.filter(function(h){ return h.log[k]; }).length; }
     function series(n){
-        var out = [], labels = [];
-        for(var i = n - 1; i >= 0; i--){
-            var k = KM.iso(KM.addDays(new Date(), -i));
-            out.push(doneOn(k) + habitsOn(k));
-            labels.push(k);
-        }
-        return { values:out, labels:labels };
+        var v = [], l = [];
+        for(var i = n - 1; i >= 0; i--){ var k = KM.iso(KM.addDays(new Date(), -i)); v.push(doneOn(k) + habitsOn(k)); l.push(k); }
+        return { values:v, labels:l };
     }
     function heatDays(){
         var m = {};
-        D.tasks.forEach(function(t){ if(t.doneAt){ var k = KM.iso(new Date(t.doneAt)); m[k] = (m[k]||0) + 1; } });
-        D.habits.forEach(function(h){ Object.keys(h.log).forEach(function(k){ m[k] = (m[k]||0) + 1; }); });
+        D.tasks.forEach(function(t){ if(t.doneAt){ var k = KM.iso(new Date(t.doneAt)); m[k] = (m[k]||0)+1; } });
+        D.habits.forEach(function(h){ Object.keys(h.log).forEach(function(k){ m[k] = (m[k]||0)+1; }); });
         return m;
     }
     function balance(){
@@ -260,141 +259,349 @@ if(KM.boot()){
             var done = ts.filter(function(t){ return t.status === 'done'; }).length;
             var gs = D.goals.filter(function(g){ return g.area === a.id; }).length;
             var recent = D.tasks.filter(function(t){ return t.area === a.id && t.doneAt && t.doneAt > Date.now() - 14*864e5; }).length;
-            // aandacht = mix van doelen, afgerond werk en recente activiteit
-            var v = Math.min(1, (gs * .22) + (ts.length ? done/ts.length * .4 : 0) + Math.min(.38, recent * .13));
-            return { label:a.name.split(' ')[0], icon:a.icon, color:a.hex, value:Math.max(.06, v), raw:{ gs:gs, ts:ts.length, done:done } };
+            return { label:a.name.split(' ')[0], icon:a.icon, color:a.hex,
+                     value:Math.max(.06, Math.min(1, gs*.22 + (ts.length ? done/ts.length*.4 : 0) + Math.min(.38, recent*.13))) };
         });
     }
     function weekLoad(){
-        var days = [], total = 0, cap = 0;
-        var start = KM.startOfWeek();
+        var days = [], total = 0, cap = 0, start = KM.startOfWeek();
         for(var i = 0; i < 7; i++){
             var k = KM.iso(KM.addDays(start, i));
             var mins = ((D.plan||{})[k] || []).reduce(function(a,b){ return a + b.mins; }, 0);
             var work = (D.planCfg && D.planCfg.weekend) ? true : i < 5;
-            days.push({ label:KM.DOW[i], value:Math.round(mins/60*10)/10, color: k === KM.iso() ? 'var(--accent)' : (work ? 'var(--a-work)' : 'var(--line)') });
-            total += mins;
-            if(work) cap += (D.planCfg ? D.planCfg.maxHours : 6) * 60;
+            days.push({ label:KM.DOW[i], value:Math.round(mins/60*10)/10,
+                        color: k === KM.iso() ? 'var(--accent)' : (work ? 'var(--a-work)' : 'var(--line)') });
+            total += mins; if(work) cap += (D.planCfg ? D.planCfg.maxHours : 6) * 60;
         }
         return { days:days, total:total, cap:cap };
     }
+    function weekDone(offset){
+        var s = KM.addDays(KM.startOfWeek(), (offset||0)*7).getTime();
+        var e = s + 7*864e5;
+        return D.tasks.filter(function(t){ return t.doneAt && t.doneAt >= s && t.doneAt < e; }).length;
+    }
 
     /* =====================================================
-       Hero
+       2. Hero
        ===================================================== */
     function greet(){
         var h = new Date().getHours();
         var g = h < 6 ? 'Nog wakker' : h < 12 ? 'Goedemorgen' : h < 18 ? 'Goedemiddag' : 'Goedenavond';
         $('#greet').innerHTML = g + ', <em>Kain</em>.';
         var d = new Date();
-        $('#dateLine').textContent = KM.DOW_LONG[(d.getDay()+6)%7] + ' ' + d.getDate() + ' ' + KM.MONTHS[d.getMonth()] + ' ' + d.getFullYear();
+        $('#dateLine').textContent = KM.DOW_LONG[(d.getDay()+6)%7] + ' ' + d.getDate() + ' ' + KM.MONTHS[d.getMonth()];
         var open = KM.q.today().length;
-        $('#sub').textContent = open
-            ? open + (open === 1 ? ' taak vraagt vandaag om aandacht.' : ' taken vragen vandaag om aandacht.')
-            : 'Niets staat vandaag open. Mooi moment om vooruit te werken.';
+        var late = KM.q.open().filter(function(t){ return KM.dayDiff(t.due) < 0; }).length;
+        $('#sub').textContent = late
+            ? late + (late === 1 ? ' taak staat over datum. ' : ' taken staan over datum. ') + (open ? 'Plus ' + open + ' voor vandaag.' : '')
+            : open ? open + (open === 1 ? ' taak vraagt vandaag om aandacht.' : ' taken vragen vandaag om aandacht.')
+                   : 'Niets staat vandaag open. Mooi moment om vooruit te werken.';
     }
     L.every(1, function(){
-        var d = new Date();
-        var el = $('#bigClock'); if(!el) return;
+        var d = new Date(), el = $('#bigClock'); if(!el) return;
         el.firstChild.nodeValue = String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
         $('.s', el).textContent = ':' + String(d.getSeconds()).padStart(2,'0');
         var mins = d.getHours()*60 + d.getMinutes();
         var cfg = D.planCfg || { startH:9, endH:18 };
+        var span = cfg.endH*60 - cfg.startH*60;
+        var p = KM.clamp((mins - cfg.startH*60) / span, 0, 1);
+        $('#dayProg').style.width = (p*100) + '%';
         var left = cfg.endH*60 - mins;
-        $('#clockSub').textContent = left > 0 && mins > cfg.startH*60
-            ? 'nog ' + Math.floor(left/60) + 'u ' + (left%60) + 'm werkdag'
-            : (mins <= cfg.startH*60 ? 'werkdag begint om ' + cfg.startH + ':00' : 'werkdag voorbij');
+        $('#clockSub').textContent = mins < cfg.startH*60 ? 'werkdag start ' + cfg.startH + ':00'
+            : left > 0 ? 'nog ' + Math.floor(left/60) + 'u ' + String(left%60).padStart(2,'0') + 'm'
+            : 'werkdag voorbij';
     });
 
-    function stats(){
-        var doneWeek = D.tasks.filter(function(t){ return t.doneAt && t.doneAt > Date.now() - 7*864e5; }).length;
-        var items = [
-            { n: D.goals.filter(function(g){ return g.status === 'active'; }).length, l:'Actieve doelen' },
-            { n: D.projects.filter(function(p){ return p.status !== 'done'; }).length, l:'Lopende projecten' },
-            { n: KM.q.open().length, l:'Open taken' },
-            { n: doneWeek, l:'Af deze week' },
-            { n: KM.q.momentum(), l:'Momentum', s:'%' }
-        ];
-        var host = $('#stats');
-        if(host.children.length !== items.length){
-            host.innerHTML = items.map(function(s){ return '<div class="stat"><b>0</b><span>' + s.l + '</span></div>'; }).join('');
+    /* =====================================================
+       3. Weer
+       ===================================================== */
+    var WXBG = {
+        clear:   ['linear-gradient(150deg,#2f7fc4,#0f2138 68%)', 'linear-gradient(150deg,#141d33,#07080d 70%)'],
+        partly:  ['linear-gradient(150deg,#3d7fae,#131f2e 68%)', 'linear-gradient(150deg,#16202f,#08090e 70%)'],
+        cloudy:  ['linear-gradient(150deg,#54616d,#171b1f 68%)', 'linear-gradient(150deg,#1a1e22,#08090b 70%)'],
+        fog:     ['linear-gradient(150deg,#6b6d69,#1a1b19 68%)', 'linear-gradient(150deg,#1c1d1b,#0a0a09 70%)'],
+        drizzle: ['linear-gradient(150deg,#3f6f96,#141d26 68%)', 'linear-gradient(150deg,#141c25,#07090c 70%)'],
+        rain:    ['linear-gradient(150deg,#2e5f8c,#101922 68%)', 'linear-gradient(150deg,#111a24,#06080b 70%)'],
+        shower:  ['linear-gradient(150deg,#356a95,#121b25 68%)', 'linear-gradient(150deg,#131c26,#07090c 70%)'],
+        snow:    ['linear-gradient(150deg,#7d9bb5,#1d242b 68%)', 'linear-gradient(150deg,#1e252c,#0a0c0e 70%)'],
+        storm:   ['linear-gradient(150deg,#4b3f7a,#150f24 68%)', 'linear-gradient(150deg,#171029,#08060f 70%)']
+    };
+    function wxTheme(){
+        if(!wx) return;
+        var bg = (WXBG[wx.cond.group] || WXBG.cloudy)[wx.isDay ? 0 : 1];
+        var el = $('.wx-bg'); if(el) el.style.background = bg;
+        var orb = $('.wx-orb'); if(orb) orb.style.setProperty('--wxg', wx.cond.glow);
+        var au = $('#aurora');
+        if(au){
+            au.style.setProperty('--au1', wx.isDay ? '#c6ff4a' : '#3f5a17');
+            au.style.setProperty('--au2', wx.cond.tint);
+            au.style.setProperty('--au3', wx.cond.group === 'storm' ? '#8b5cf6' : (wx.isDay ? '#8fc7ff' : '#2a3a5c'));
         }
-        $$('#stats .stat b').forEach(function(el, i){ V.count(el, items[i].n, 900, items[i].s || ''); });
+    }
+    function wxTile(){
+        if(wxErr && !wx){
+            return tile('span5 tall wide-m', 'Weer', '—',
+                '<div class="wx-err">' + KM.esc(wxErr) + '<br><br>' +
+                '<button class="btn ghost sm" id="wxRetry">Opnieuw proberen</button></div>');
+        }
+        if(!wx){
+            return tile('span5 tall wide-m', 'Weer', 'laden',
+                '<div style="width:100%"><div class="shimmer" style="height:80px;margin-bottom:12px;"></div>' +
+                '<div class="shimmer" style="height:22px;width:60%;margin-bottom:10px;"></div>' +
+                '<div class="shimmer" style="height:60px;"></div></div>');
+        }
+        var d = wx.days.slice(0, 6);
+        return '<div class="tile wx span5 tall wide-m" data-spot="rgba(255,255,255,.14)">' +
+            '<div class="wx-bg"></div><div class="wx-orb"></div>' +
+            '<div class="wx-top">' +
+                '<div style="flex:1;min-width:0;">' +
+                    '<div class="wx-temp">' + wx.temp + '<sup>°C</sup></div>' +
+                    '<div class="wx-desc">' + KM.esc(wx.cond.text) + '</div>' +
+                    '<div class="wx-place" id="wxPlace">' +
+                        '<svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-6.3 7-11a7 7 0 1 0-14 0c0 4.7 7 11 7 11Z"/><circle cx="12" cy="10" r="2.4"/></svg>' +
+                        KM.esc(wx.place) + ' · wijzig' +
+                    '</div>' +
+                '</div>' +
+                W.icon(wx.cond.group, wx.isDay, 78) +
+            '</div>' +
+            '<div class="wx-stats">' +
+                wxStat('Gevoel', wx.feels + '°') +
+                wxStat('Wind', wx.wind + ' km/u') +
+                wxStat('Vocht', wx.humidity + '%') +
+                (wx.uv != null ? wxStat('UV', String(wx.uv)) : '') +
+                wxStat('Vandaag', wx.today.min + '° / ' + wx.today.max + '°') +
+            '</div>' +
+            (wx.today.rain >= 40 ? '<div class="wx-alert">☔ ' + wx.today.rain + '% kans op neerslag vandaag — houd rekening met binnenwerk</div>' : '') +
+            (wx.stale ? '<div class="wx-alert">⚠ Even geen verbinding — dit is de laatst opgehaalde stand</div>' : '') +
+            '<div class="wx-days">' + d.map(function(x, i){
+                return '<div class="wx-day"><div class="d">' + (i === 0 ? 'vandaag' : x.dow) + '</div>' +
+                    W.icon(x.cond.group, 1, 26) +
+                    '<div class="t">' + x.max + '°<i>' + x.min + '°</i></div></div>';
+            }).join('') + '</div>' +
+        '</div>';
+    }
+    function wxStat(l, v){ return '<div class="wx-st"><b>' + v + '</b><span>' + l + '</span></div>'; }
+
+    function wxSunTile(){
+        if(!wx) return tile('span7 wide-m', 'Zon en uren', '—', '<div class="shimmer" style="height:150px;width:100%"></div>');
+        return '<div class="tile span7 wide-m">' +
+            '<div class="tile-h"><span class="dot" style="background:' + wx.cond.tint + '"></span>' +
+                '<b>Vandaag per uur</b><span class="label">' + W.hhmm(wx.sunrise) + ' → ' + W.hhmm(wx.sunset) + '</span></div>' +
+            '<div class="tile-c" style="flex-direction:column;gap:6px;align-items:stretch;">' +
+                W.hourly(wx.hours, { count:12, w:640, h:132 }) +
+            '</div>' +
+            '<div class="tile-f" style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;">' +
+                W.sunArc(0, wx.sunrise, wx.sunset, new Date(), { w:300, h:88 }) +
+                '<div style="display:flex;flex-direction:column;gap:10px;min-width:130px;">' +
+                    miniRow('Daglicht', daylight(), 'var(--accent)', dayPct()) +
+                    miniRow('Neerslagkans', wx.today.rain + '%', '#4a8fd4', wx.today.rain) +
+                '</div>' +
+            '</div>' +
+        '</div>';
+    }
+    function daylight(){
+        if(!wx || !wx.sunrise) return '—';
+        var m = (new Date(wx.sunset) - new Date(wx.sunrise)) / 60000;
+        return Math.floor(m/60) + 'u ' + Math.round(m%60) + 'm';
+    }
+    function dayPct(){
+        if(!wx || !wx.sunrise) return 0;
+        var a = new Date(wx.sunrise).getTime(), b = new Date(wx.sunset).getTime();
+        return KM.clamp((Date.now() - a) / (b - a) * 100, 0, 100);
+    }
+
+    function loadWeather(force){
+        W.load(force).then(function(d){
+            wx = d; wxErr = d.error || null;
+            renderNow(); wxTheme();
+        }).catch(function(e){
+            wxErr = 'Weer niet beschikbaar — ' + e.message;
+            renderNow();
+        });
+    }
+    function placeModal(){
+        KM.modal({
+            title:'Waar wil je het weer van zien?',
+            body:'<div class="field"><label>Zoek een plaats</label>' +
+                    '<input class="inp" id="wxQ" placeholder="Amsterdam, Berlijn, Lissabon…" autocomplete="off"></div>' +
+                 '<button class="btn ghost sm" id="wxGeo">📍 Gebruik mijn locatie</button>' +
+                 '<div class="wx-search" id="wxRes"></div>',
+            actions:[{ label:'Sluiten', ghost:true }],
+            mounted:function(ov, close){
+                var q = KM.$('#wxQ', ov), box = KM.$('#wxRes', ov), tmr;
+                setTimeout(function(){ q.focus(); }, 60);
+                q.oninput = function(){
+                    clearTimeout(tmr);
+                    tmr = setTimeout(function(){
+                        if(q.value.trim().length < 2){ box.innerHTML = ''; return; }
+                        box.innerHTML = '<div class="wx-err"><span class="spin" style="margin:0 auto;"></span></div>';
+                        W.search(q.value.trim()).then(function(list){
+                            if(!list.length){ box.innerHTML = '<div class="wx-err">Niets gevonden</div>'; return; }
+                            box.innerHTML = list.map(function(r, i){
+                                return '<div class="wx-res" data-i="' + i + '"><b>' + KM.esc(r.name) + '</b>' +
+                                    '<span>' + KM.esc(r.region) + '</span></div>';
+                            }).join('');
+                            KM.$$('.wx-res', box).forEach(function(el){
+                                el.onclick = function(){
+                                    W.setPlace(list[+el.dataset.i]);
+                                    close(); wx = null; renderNow(); loadWeather(true);
+                                    KM.toast('Weer voor ' + list[+el.dataset.i].name);
+                                };
+                            });
+                        });
+                    }, 280);
+                };
+                KM.$('#wxGeo', ov).onclick = function(){
+                    box.innerHTML = '<div class="wx-err">Locatie ophalen…</div>';
+                    W.locate().then(function(p){
+                        W.setPlace(p); close(); wx = null; renderNow(); loadWeather(true);
+                        KM.toast('Weer voor je huidige locatie');
+                    }).catch(function(e){ box.innerHTML = '<div class="wx-err">' + KM.esc(e.message) + '</div>'; });
+                };
+            }
+        });
     }
 
     /* =====================================================
-       Puls-dashboard
+       4. Tegels
        ===================================================== */
-    function dash(){
-        var s30 = series(30);
-        var bal = balance();
-        var wl = weekLoad();
-        var open = KM.q.open();
-        var prios = KM.PRIOS.map(function(p){
-            return { label:p.name, value:open.filter(function(t){ return t.prio === p.id; }).length, color:p.color };
-        });
-        var late = open.filter(function(t){ return KM.dayDiff(t.due) < 0; }).length;
-
-        $('#dash').innerHTML =
-            panel('Levensbalans', 'zes gebieden', V.radar({ axes:bal, size:250 }), '') +
-
-            panel('Werkverdeling', open.length + ' open', V.donut({
-                slices:prios, size:170, thickness:20,
-                center:{ big:String(open.length), small:'open taken' }
-            }), keyList(prios)) +
-
-            panel('Weekbelasting', Math.round(wl.total/60*10)/10 + ' van ' + Math.round(wl.cap/60) + ' u',
-                V.gauge({ value: wl.cap ? wl.total/wl.cap : 0, size:180,
-                    label: (wl.cap ? Math.round(wl.total/wl.cap*100) : 0) + '%', sub:'ingepland' }),
-                V.bars({ items:wl.days, h:74 })) +
-
-            panel('30 dagen momentum', 'taken + gewoontes', V.area({
-                points:s30.values, labels:s30.labels, w:640, h:150
-            }), '', 'wide') +
-
-            panel('Vandaag scherp', late ? late + ' te laat' : 'niets te laat', '', todayMini(late), '') +
-
-            panel('Activiteit', 'laatste 17 weken', V.heatmap({ days:heatDays(), weeks:17 }), '', 'full') +
-
-            panel('Live feed', 'wat er net gebeurde', '', '<div class="feed" id="feed"></div>', 'wide') +
-
-            panel('Doelen', D.goals.length + ' actief', '', goalMini(), '');
-
-        L.feed($('#feed'), 9);
-        V.animate($('#dash'));
-    }
-    function panel(title, meta, chart, extra, cls){
-        return '<div class="panel rise ' + (cls||'') + '">' +
-            '<div class="panel-h"><b>' + title + '</b><span class="label">' + KM.esc(meta) + '</span></div>' +
-            (chart ? '<div class="panel-c">' + chart + '</div>' : '') +
-            (extra ? '<div style="margin-top:' + (chart ? '14px' : '0') + ';">' + extra + '</div>' : '') +
+    function tile(cls, title, meta, body, foot){
+        return '<div class="tile ' + cls + '">' +
+            (title ? '<div class="tile-h"><b>' + title + '</b><span class="label">' + KM.esc(meta||'') + '</span></div>' : '') +
+            '<div class="tile-c">' + (body||'') + '</div>' +
+            (foot ? '<div class="tile-f">' + foot + '</div>' : '') +
         '</div>';
     }
-    function keyList(items){
-        return '<div class="viz-key">' + items.filter(function(i){ return i.value; }).map(function(i){
-            return '<div class="k"><i style="background:' + i.color + '"></i>' + i.label + '<b>' + i.value + '</b></div>';
-        }).join('') + '</div>';
-    }
-    function todayMini(late){
-        var td = KM.iso();
-        var done = doneOn(td), hab = habitsOn(td), tot = D.habits.length;
-        return '<div style="display:flex;flex-direction:column;gap:14px;">' +
-            miniRow('Afgerond vandaag', done, done ? 'var(--accent)' : 'var(--line)', Math.min(100, done*20)) +
-            miniRow('Gewoontes', hab + '/' + tot, 'var(--a-health)', tot ? hab/tot*100 : 0) +
-            miniRow('Te laat', late, late ? 'var(--danger)' : 'var(--line)', Math.min(100, late*25)) +
-            miniRow('Deze week gepland', Math.round(weekLoad().total/60*10)/10 + 'u', 'var(--a-work)',
-                Math.min(100, weekLoad().cap ? weekLoad().total/weekLoad().cap*100 : 0)) +
+    function metric(cls, label, value, sub, delta, spark){
+        return '<div class="tile ' + cls + '">' +
+            '<div class="metric" style="height:100%;justify-content:center;">' +
+                '<span>' + label + '</span>' +
+                '<b data-count="' + value + '">0</b>' +
+                (sub ? '<span style="text-transform:none;letter-spacing:0;font-family:Inter,sans-serif;font-size:12px;color:var(--text-soft);">' + sub + '</span>' : '') +
+                (delta ? '<span class="delta ' + delta.dir + '">' + delta.txt + '</span>' : '') +
+            '</div>' +
+            (spark ? '<div class="tile-f">' + spark + '</div>' : '') +
         '</div>';
     }
     function miniRow(label, val, color, pct){
-        return '<div><div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px;">' +
+        return '<div><div style="display:flex;align-items:baseline;gap:8px;margin-bottom:5px;">' +
             '<span class="label" style="flex:1;">' + label + '</span>' +
-            '<b class="grotesk" style="font-size:17px;">' + val + '</b></div>' +
+            '<b class="grotesk" style="font-size:15px;">' + val + '</b></div>' +
             '<div class="bar"><i style="width:' + pct + '%;background:' + color + '"></i></div></div>';
     }
+
+    function renderNow(){
+        var s30 = series(30), wl = weekLoad();
+        var open = KM.q.open();
+        var thisW = weekDone(0), lastW = weekDone(-1);
+        var diff = thisW - lastW;
+        var prios = KM.PRIOS.map(function(p){
+            return { label:p.name, value:open.filter(function(t){ return t.prio === p.id; }).length, color:p.color };
+        });
+
+        $('#bentoNow').innerHTML =
+            wxTile() +
+            wxSunTile() +
+
+            metric('span3', 'Open taken', open.length, KM.q.today().length + ' voor vandaag', null,
+                V.spark({ points:s30.values.slice(-14), w:120, h:30 })) +
+            metric('span3', 'Af deze week', thisW, 'taken afgerond',
+                { dir: diff > 0 ? 'up' : diff < 0 ? 'down' : '', txt: (diff > 0 ? '↑ +' : diff < 0 ? '↓ ' : '= ') + Math.abs(diff) + ' vs vorige week' }) +
+            metric('span3', 'Momentum', KM.q.momentum(), 'procent dagen actief') +
+
+            '<div class="tile span3">' +
+                '<div class="tile-h"><b>Weekbezetting</b><span class="label">' + Math.round(wl.total/60*10)/10 + 'u</span></div>' +
+                '<div class="tile-c">' + V.gauge({ value: wl.cap ? wl.total/wl.cap : 0, size:150,
+                    label:(wl.cap ? Math.round(wl.total/wl.cap*100) : 0) + '%', sub:'gepland' }) + '</div>' +
+            '</div>' +
+
+            '<div class="tile span4 tall">' +
+                '<div class="tile-h"><b>Levensbalans</b><span class="label">zes gebieden</span></div>' +
+                '<div class="tile-c">' + V.radar({ axes:balance(), size:240 }) + '</div>' +
+            '</div>' +
+
+            '<div class="tile span5 tall wide-m">' +
+                '<div class="tile-h"><b>30 dagen momentum</b><span class="label">taken + gewoontes</span></div>' +
+                '<div class="tile-c">' + V.area({ points:s30.values, labels:s30.labels, w:620, h:170 }) + '</div>' +
+            '</div>' +
+
+            '<div class="tile span3">' +
+                '<div class="tile-h"><b>Werkverdeling</b><span class="label">' + open.length + ' open</span></div>' +
+                '<div class="tile-c">' + V.donut({ slices:prios, size:150, thickness:18,
+                    center:{ big:String(open.length), small:'taken' } }) + '</div>' +
+                '<div class="tile-f"><div class="viz-key">' + prios.filter(function(p){ return p.value; }).map(function(p){
+                    return '<div class="k"><i style="background:' + p.color + '"></i>' + p.label + '<b>' + p.value + '</b></div>';
+                }).join('') + '</div></div>' +
+            '</div>';
+
+        bindTiles($('#bentoNow'));
+        if($('#wxPlace')) $('#wxPlace').onclick = placeModal;
+        if($('#wxRetry')) $('#wxRetry').onclick = function(){ wxErr = null; renderNow(); loadWeather(true); };
+        V.animate($('#bentoNow'));
+        $$('#bentoNow [data-count]').forEach(function(el){ V.count(el, +el.dataset.count, 1000); });
+        wxTheme();
+    }
+
+    function renderToday(){
+        var T = L.timer.state();
+        var list = KM.q.today().sort(function(a,b){ return (a.prio||'p3').localeCompare(b.prio||'p3'); }).slice(0,7);
+        var td = KM.iso();
+
+        $('#bentoToday').innerHTML =
+            (T ? '<div class="tile span4 nowtile wide-m">' +
+                '<div class="tile-h"><span class="dot-live"></span><b>Focusblok loopt</b>' +
+                    '<span class="label">' + (T.pausedAt ? 'gepauzeerd' : 'bezig') + '</span></div>' +
+                '<div class="tile-c" style="gap:16px;">' +
+                    V.ring(100 - L.timer.left()/(T.mins*60000)*100, 62, 6, 'var(--accent-ink)') +
+                    '<div><div class="nv" id="nowV">' + fmtMs(L.timer.left()) + '</div>' +
+                    '<div class="label" style="margin-top:4px;">' + KM.esc(T.title) + '</div></div>' +
+                '</div></div>' : '') +
+
+            '<div class="tile ' + (T ? 'span8' : 'span7') + ' tall wide-m">' +
+                '<div class="tile-h"><b>Scherp op vandaag</b><span class="label">' + list.length + ' taken</span></div>' +
+                '<div class="tile-c" style="align-items:flex-start;">' +
+                    (list.length ? '<div class="flist" id="focus">' + list.map(function(t){
+                        var a = KM.areaOf(t.area);
+                        var pr = KM.PRIOS.filter(function(p){ return p.id === t.prio; })[0] || KM.PRIOS[2];
+                        var late = KM.dayDiff(t.due) < 0;
+                        return '<div class="fitem" data-id="' + t.id + '">' +
+                            '<span class="fbar" style="background:' + pr.color + '"></span>' +
+                            '<span class="fbox"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round"><path d="m5 12.5 4.5 4.5L19 7"/></svg></span>' +
+                            '<span class="ftxt">' + KM.esc(t.title) + '</span>' +
+                            (late ? '<span class="tag" style="background:rgba(209,80,63,.14);color:var(--danger);">te laat</span>' : '') +
+                            '<button class="fplay" data-play title="Focusblok starten">▶</button>' +
+                            '<span class="tag" style="background:' + a.hex + '1e;color:' + a.hex + ';">' + a.icon + '</span>' +
+                        '</div>';
+                    }).join('') + '</div>'
+                    : '<div class="empty" style="width:100%">Niets voor vandaag — plan iets via AI Scheduling</div>') +
+                '</div>' +
+            '</div>' +
+
+            (T ? '' : '<div class="tile span2">' +
+                '<div class="tile-h"><b>Gewoontes</b></div>' +
+                '<div class="tile-c">' + V.ring(D.habits.length ? habitsOn(td)/D.habits.length*100 : 0, 92, 8) + '</div>' +
+                '<div class="tile-f label" style="text-align:center;">' + habitsOn(td) + ' van ' + D.habits.length + ' af</div>' +
+            '</div>') +
+
+            '<div class="tile span5 tall wide-m">' +
+                '<div class="tile-h"><span class="dot-live"></span><b>Live feed</b><span class="label">wat er net gebeurde</span></div>' +
+                '<div class="tile-c" style="align-items:flex-start;"><div class="feed" id="feed" style="width:100%"></div></div>' +
+            '</div>' +
+
+            '<div class="tile span' + (T ? '5' : '5') + ' wide-m">' +
+                '<div class="tile-h"><b>Doelen</b><span class="label">' + D.goals.length + ' actief</span></div>' +
+                '<div class="tile-c" style="align-items:stretch;">' + goalMini() + '</div>' +
+            '</div>';
+
+        L.feed($('#feed'), 8);
+        bindFocus();
+        bindTiles($('#bentoToday'));
+        V.animate($('#bentoToday'));
+    }
+    function fmtMs(ms){ var s = Math.ceil(ms/1000); return String(Math.floor(s/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0'); }
     function goalMini(){
-        if(!D.goals.length) return '<div class="empty">Nog geen doelen</div>';
-        return '<div style="display:flex;flex-direction:column;gap:13px;">' + D.goals.slice(0,4).map(function(g){
+        if(!D.goals.length) return '<div class="empty" style="width:100%">Nog geen doelen</div>';
+        return '<div style="display:flex;flex-direction:column;gap:14px;width:100%;">' + D.goals.slice(0,4).map(function(g){
             var a = KM.areaOf(g.area), pct = KM.q.progress(g.id);
             return '<a href="life-os.html#goals" style="display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;">' +
                 '<span style="font-size:17px;">' + (g.icon||'🎯') + '</span>' +
@@ -403,92 +610,71 @@ if(KM.boot()){
                 '<span class="label">' + pct + '%</span></a>';
         }).join('') + '</div>';
     }
-
-    /* =====================================================
-       Nu bezig + focus
-       ===================================================== */
-    function nowBox(){
-        var T = L.timer.state();
-        var host = $('#nowSlot');
-        if(!T){ host.innerHTML = ''; return; }
-        var left = L.timer.left();
-        host.innerHTML = '<div class="nowbox">' +
-            V.ring(100 - left / (T.mins*60000) * 100, 46, 5, 'var(--accent-ink)') +
-            '<span class="nt"><b>' + KM.esc(T.title) + '</b><span>' + (T.pausedAt ? 'gepauzeerd' : 'focusblok loopt') + '</span></span>' +
-            '<span class="nv" id="nowV">' + fmt(left) + '</span></div>';
-        V.animate(host);
-    }
-    function fmt(ms){ var s = Math.ceil(ms/1000); return String(Math.floor(s/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0'); }
-    L.every(1, function(){
-        var T = L.timer.state();
-        var v = $('#nowV');
-        if(T && v) v.textContent = fmt(L.timer.left());
-        else if(!!T !== !!$('.nowbox')) nowBox();
-    });
-    L.on('timer', nowBox);
-
-    function focus(){
-        var list = KM.q.today().sort(function(a,b){ return (a.prio||'p3').localeCompare(b.prio||'p3'); }).slice(0,6);
-        var host = $('#focus');
-        if(!list.length){
-            host.innerHTML = '<div class="empty">Geen taken voor vandaag — plan iets in via AI Scheduling</div>';
-            return;
-        }
-        host.innerHTML = list.map(function(t){
-            var a = KM.areaOf(t.area);
-            var pr = KM.PRIOS.filter(function(p){ return p.id === t.prio; })[0] || KM.PRIOS[2];
-            return '<div class="fitem rise" data-id="' + t.id + '">' +
-                '<span class="fbox"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round"><path d="m5 12.5 4.5 4.5L19 7"/></svg></span>' +
-                '<span class="ftxt">' + KM.esc(t.title) + '</span>' +
-                '<button class="fplay" data-play title="Focusblok hierop starten">▶</button>' +
-                '<span class="tag" style="background:' + pr.color + '22;color:' + pr.color + ';">' + pr.name + '</span>' +
-                '<span class="tag" style="background:' + a.hex + '1e;color:' + a.hex + ';">' + a.icon + '</span>' +
-            '</div>';
-        }).join('');
+    function bindFocus(){
         $$('#focus .fbox').forEach(function(b){
             b.onclick = function(){
-                var row = b.closest('.fitem');
-                var t = KM.q.task(row.dataset.id);
+                var row = b.closest('.fitem'), t = KM.q.task(row.dataset.id);
                 t.status = 'done'; t.doneAt = Date.now();
                 b.classList.add('on'); row.classList.add('done');
                 OS.save(); KM.track('task_done', { from:'launcher' });
                 L.log('task_done', 'Afgevinkt: ' + t.title);
-                setTimeout(function(){ refresh(); }, 550);
-                KM.toast('Afgevinkt — ' + t.title, null, 'Ongedaan maken', function(){
+                setTimeout(refresh, 550);
+                KM.toast('Afgevinkt — ' + t.title, null, 'Ongedaan', function(){
                     t.status = 'todo'; t.doneAt = null; OS.save(); refresh();
                 });
             };
         });
         $$('#focus [data-play]').forEach(function(b){
-            b.onclick = function(){
-                var t = KM.q.task(b.closest('.fitem').dataset.id);
-                L.timer.start(25, t.id, t.title);
-            };
+            b.onclick = function(){ var t = KM.q.task(b.closest('.fitem').dataset.id); L.timer.start(25, t.id, t.title); };
+        });
+    }
+
+    function renderRhythm(){
+        var wl = weekLoad();
+        $('#bentoRhythm').innerHTML =
+            '<div class="tile span8 wide-m">' +
+                '<div class="tile-h"><b>Activiteit</b><span class="label">17 weken</span></div>' +
+                '<div class="tile-c">' + V.heatmap({ days:heatDays(), weeks:17 }) + '</div>' +
+            '</div>' +
+            '<div class="tile span4 wide-m">' +
+                '<div class="tile-h"><b>Uren per dag</b><span class="label">deze week</span></div>' +
+                '<div class="tile-c">' + V.bars({ items:wl.days, h:150 }) + '</div>' +
+            '</div>';
+        bindTiles($('#bentoRhythm'));
+        V.animate($('#bentoRhythm'));
+    }
+
+    /* spotlight die de muis volgt */
+    function bindTiles(root){
+        $$('.tile', root).forEach(function(el){
+            if(el.dataset.spot) el.style.setProperty('--spot', el.dataset.spot);
+            el.addEventListener('mousemove', function(e){
+                var r = el.getBoundingClientRect();
+                el.style.setProperty('--mx', ((e.clientX - r.left)/r.width*100) + '%');
+                el.style.setProperty('--my', ((e.clientY - r.top)/r.height*100) + '%');
+            });
         });
     }
 
     /* =====================================================
-       Apps + status
+       5. Apps + status
        ===================================================== */
     function apps(){
-        var s14 = series(14).values;
+        var s14 = series(14).values, wl = weekLoad();
         $('#apps').innerHTML = KM.APPS.filter(function(a){ return a.id !== 'home'; }).map(function(a){
             var count = '', sp = '';
-            if(a.id === 'life'){ count = KM.q.open().length + ' open'; sp = V.spark({ points:s14, w:60, h:22, color:a.tint }); }
+            if(a.id === 'life'){ count = KM.q.open().length + ' open'; sp = V.spark({ points:s14, w:56, h:20, color:a.tint }); }
             if(a.id === 'matrix') count = (D.goals.length + D.projects.length + D.tasks.length) + ' knopen';
-            if(a.id === 'plan'){
-                var wl = weekLoad();
-                count = Math.round(wl.total/60*10)/10 + ' u gepland';
-                sp = V.spark({ points:wl.days.map(function(d){ return d.value; }), w:60, h:22, color:a.tint });
-            }
+            if(a.id === 'plan'){ count = Math.round(wl.total/60*10)/10 + ' u gepland';
+                sp = V.spark({ points:wl.days.map(function(d){ return d.value; }), w:56, h:20, color:a.tint }); }
             if(a.id === 'video')  count = (D.scenes||[]).length + ' scenes';
             if(a.id === 'design') count = (D.designs||[]).length + ' ontwerpen';
             if(a.id === 'notes'){
                 var ws = null; try{ ws = JSON.parse(localStorage.getItem('kmdev_workspace_v1')||'null'); }catch(e){}
                 count = ws ? Object.keys(ws.pages||{}).length + ' pagina\'s' : 'leeg';
             }
-            if(a.id === 'stack')  count = statusCount() + '/3 verbonden';
-            return '<a class="app rise" href="' + a.file + '" style="--tint:' + a.tint + ';--tint-a:' + a.tint + '22;">' +
+            if(a.id === 'stack') count = statusCount() + '/3 verbonden';
+            return '<a class="app" href="' + a.file + '" style="--tint:' + a.tint + ';--tint-a:' + a.tint + '26;">' +
                 '<span class="app-ico">' + a.icon + '</span>' +
                 (sp ? '<span class="app-spark">' + sp + '</span>' : '') +
                 '<h3 class="grotesk">' + KM.esc(a.name) + '</h3>' +
@@ -515,32 +701,30 @@ if(KM.boot()){
     function status(){
         var s = KM.SET.data;
         var items = [
-            { on: !!(s.supabase.url && s.supabase.key), name:'Supabase', off:'niet gekoppeld', onTxt: s.supabase.auto ? 'auto-sync aan' : 'gekoppeld' },
-            { on: !!(s.posthog.on && s.posthog.key),    name:'PostHog',  off:'uit',            onTxt:'events actief' },
-            { on: !!s.ai.on,                            name:'AI-proxy', off:'uit',            onTxt: s.ai.endpoint },
-            { on: navigator.onLine,                     name:'Netwerk',  off:'offline',        onTxt:'online' },
-            { on: true, name:'Lokale opslag', off:'', onTxt: Math.round(JSON.stringify(D).length/1024) + ' kB' }
+            { on: !!(s.supabase.url && s.supabase.key), name:'Supabase', off:'niet gekoppeld', onTxt: s.supabase.auto ? 'auto-sync' : 'gekoppeld' },
+            { on: !!(s.posthog.on && s.posthog.key),    name:'PostHog',  off:'uit', onTxt:'events actief' },
+            { on: !!s.ai.on,                            name:'AI-proxy', off:'uit', onTxt: s.ai.endpoint },
+            { on: navigator.onLine,                     name:'Netwerk',  off:'offline', onTxt:'online' },
+            { on: !!wx && !wx.stale,                    name:'Weer',     off: wx ? 'verouderd' : 'geen data', onTxt: wx ? wx.place : '' },
+            { on: true, name:'Opslag', off:'', onTxt: Math.round(JSON.stringify(D).length/1024) + ' kB' }
         ];
         $('#status').innerHTML = items.map(function(i){
             return '<div class="st' + (i.on ? ' on' : '') + '"><span class="led"></span><b style="font-weight:600;">' + i.name + '</b>' +
-                   '<span style="color:var(--text-faint);font-size:12px;">' + KM.esc(i.on ? i.onTxt : i.off) + '</span></div>';
+                '<span style="color:var(--text-faint);font-size:11.5px;">' + KM.esc(i.on ? i.onTxt : i.off) + '</span></div>';
         }).join('');
     }
 
     /* =====================================================
-       Vastleggen + acties
+       6. Vastleggen + acties
        ===================================================== */
     function capture(){
-        var v = $('#capture').value.trim();
-        if(!v) return;
+        var v = $('#capture').value.trim(); if(!v) return;
         var prio = /!/.test(v) ? 'p1' : 'p3';
         var due  = /vandaag|today/i.test(v) ? KM.iso() : /morgen|tomorrow/i.test(v) ? KM.iso(KM.addDays(new Date(),1)) : '';
         var tags = (v.match(/#[\wàéèêëïöü-]+/gi) || []).map(function(x){ return x.slice(1); });
         var title = v.replace(/#[\wàéèêëïöü-]+/gi,'').replace(/!/g,'').replace(/\b(vandaag|morgen|today|tomorrow)\b/gi,'').replace(/\s{2,}/g,' ').trim();
-        D.tasks.unshift({
-            id:KM.uid(), title:title || v, projectId:null, goalId:null, area:'work',
-            status:'todo', due:due, prio:prio, energy:'focus', tags:tags, created:Date.now(), doneAt:null
-        });
+        D.tasks.unshift({ id:KM.uid(), title:title || v, projectId:null, goalId:null, area:'work',
+            status:'todo', due:due, prio:prio, energy:'focus', tags:tags, created:Date.now(), doneAt:null });
         OS.save();
         $('#capture').value = '';
         KM.toast('Vastgelegd in je inbox');
@@ -556,26 +740,34 @@ if(KM.boot()){
     };
     $('#syncNow').onclick = function(){ KM.sync.push(); };
     $('#startFocus').onclick = function(){ L.timer.modal(); };
+    $('#wxRefresh').onclick = function(){ KM.toast('Weer wordt ververst…'); loadWeather(true); };
     document.addEventListener('keydown', function(e){
         if(e.key === '/' && document.activeElement.tagName !== 'INPUT'){ e.preventDefault(); $('#capture').focus(); }
     });
 
     /* =====================================================
-       Live verversen
+       7. Live
        ===================================================== */
-    function refresh(){
-        D = OS.data;
-        greet(); stats(); dash(); focus(); apps(); status(); nowBox();
-    }
+    function refresh(){ D = OS.data; greet(); renderNow(); renderToday(); renderRhythm(); apps(); status(); }
     L.on('data', function(){ D = OS.data; refresh(); KM.toast('Bijgewerkt vanuit een ander tabblad'); });
-    L.on('activity', function(){ L.feed($('#feed'), 9); });
+    L.on('activity', function(){ L.feed($('#feed'), 8); });
+    L.on('timer', function(){ renderToday(); });
+    L.every(1, function(){
+        var T = L.timer.state(), v = $('#nowV');
+        if(T && v) v.textContent = fmtMs(L.timer.left());
+    });
     L.every(20, function(){ L.refreshAgo($('#feed')); });
-    L.every(60, function(){ stats(); status(); });
-    window.addEventListener('online',  status);
+    L.every(60, function(){ greet(); status(); });
+    L.every(600, function(){ loadWeather(); });
+    window.addEventListener('online',  function(){ status(); loadWeather(true); });
     window.addEventListener('offline', status);
 
     refresh();
-    window.HOME = { refresh:refresh, series:series, balance:balance, weekLoad:weekLoad, heatDays:heatDays, capture:capture };
+    loadWeather();
+
+    window.HOME = { refresh:refresh, series:series, balance:balance, weekLoad:weekLoad, heatDays:heatDays,
+                    capture:capture, renderNow:renderNow, renderToday:renderToday, setWx:function(x){ wx = x; renderNow(); },
+                    getWx:function(){ return wx; } };
 }
 </script>
 </body>

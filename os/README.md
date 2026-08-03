@@ -19,7 +19,7 @@ echo -n "jouwnieuwewachtwoord" | shasum -a 256
 
 | App | Bestand | Wat het doet |
 |---|---|---|
-| Launcher | `index.html` | Startscherm, snelle vastlegging, live cijfers, systeemstatus |
+| Dashboard | `index.html` | Bento-dashboard met weer, live cijfers, charts, feed en snelle vastlegging |
 | Life OS | `life-os.html` | Levensgebieden → doelen → projecten → taken, gewoontes, prioriteitenmatrix, weekreview |
 | Mind Matrix | `matrix.html` | Alles als één graaf: sleep, zoom, filter, focus |
 | AI Scheduling | `schedule.html` | Plant je week automatisch op deadline, prioriteit, energie en capaciteit |
@@ -61,6 +61,24 @@ de launcher, dan zie je dat terug in de voortgangsring van het doel.
 Alles animeert bij binnenkomst: bogen tellen op, staven groeien, de radar klapt open,
 de heatmap komt cel voor cel binnen.
 
+## Weer
+
+Live weer via **Open-Meteo** — geen API-sleutel, geen account, geen limiet voor persoonlijk gebruik.
+
+- Huidige temperatuur, gevoelstemperatuur, wind, luchtvochtigheid en UV
+- Zesdaagse verwachting met min/max en een eigen geanimeerd icoon per dag
+- Uurverwachting met temperatuurcurve en neerslagkans als balkjes eronder
+- Zonneboog met de stand van de zon op dit moment, plus daglengte
+- De hele tegel én de aurora op de achtergrond kleuren mee met het weer en met
+  dag of nacht — onweer wordt paars, regen blauw, helder weer warm
+- Iconen zijn zelfgetekende SVG's die bewegen: de zon draait, wolken driften,
+  druppels vallen, sneeuw dwarrelt, de bliksem flitst
+- Antwoorden worden 20 minuten gecachet; ben je offline, dan zie je de laatste
+  stand met een melding erbij
+
+Plaats wijzigen doe je door op de plaatsnaam in de weertegel te klikken: zoek een
+stad of gebruik je huidige locatie.
+
 ## Live
 
 `km-live.js` maakt het systeem levend:
@@ -87,6 +105,7 @@ de heatmap komt cel voor cel binnen.
 | `kmdev_os_settings` | Integraties en thema |
 | `kmdev_session` | Je inlogsessie |
 | `kmdev_focus_timer` | De lopende focus-timer |
+| `kmdev_weather` / `kmdev_weather_place` | Weercache en gekozen plaats |
 
 localStorage heeft ongeveer 5 MB ruimte. De opslagmeter staat bij Integraties.
 **Browsergeschiedenis wissen wist ook je data** — maak dus regelmatig een backup,
