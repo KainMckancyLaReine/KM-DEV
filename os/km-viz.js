@@ -208,6 +208,33 @@ function heatmap(o){
 }
 
 /* =========================================================
+   5b. STACK — gestapelde capsule (vervangt de donut)
+   ========================================================= */
+function stack(o){
+    var items = (o.items || []).filter(function(x){ return x.value > 0; });
+    var total = items.reduce(function(a,x){ return a + x.value; }, 0);
+    var h = o.h || 14;
+    if(!total) return '<div class="viz-empty">Nog niets te verdelen</div>';
+
+    var bar = '<div class="viz-stack" style="--h:' + h + 'px">' + items.map(function(x, i){
+        var pct = x.value / total * 100;
+        return '<i data-w="' + pct.toFixed(2) + '" style="background:' + x.color + ';--d:' + (i*.07) + 's" ' +
+               'title="' + esc(x.label) + ': ' + x.value + '"></i>';
+    }).join('') + '</div>';
+
+    var key = o.key === false ? '' : '<div class="viz-key stack-key">' + items.map(function(x){
+        return '<div class="k"><i style="background:' + x.color + '"></i>' + esc(x.label) +
+               '<b>' + x.value + (o.suffix || '') + '</b></div>';
+    }).join('') + '</div>';
+
+    var head = o.head === false ? '' :
+        '<div class="stack-head"><b>' + esc(o.big != null ? o.big : total) + '</b>' +
+        (o.small ? '<span>' + esc(o.small) + '</span>' : '') + '</div>';
+
+    return '<div class="viz viz-stackwrap" style="width:100%">' + head + bar + key + '</div>';
+}
+
+/* =========================================================
    6. GAUGE — halve ring
    ========================================================= */
 function gauge(o){
@@ -215,10 +242,13 @@ function gauge(o){
     var S = o.size || 150, cx = S/2, cy = S*.62, R = S/2 - 14, th = o.thickness || 11;
     var arc = Math.PI * R;
     var col = o.color || 'var(--accent)';
+    var gid = uid();
     var d = 'M' + (cx - R) + ' ' + cy + ' A' + R + ' ' + R + ' 0 0 1 ' + (cx + R) + ' ' + cy;
     return '<svg class="viz viz-gauge" viewBox="0 0 ' + S + ' ' + (S*.76) + '" width="100%" style="max-width:' + S + 'px;">' +
+        '<defs><linearGradient id="' + gid + '" x1="0" y1="0" x2="1" y2="0">' +
+            '<stop offset="0" stop-color="#c6ff4a"/><stop offset="1" stop-color="#3f5a17"/></linearGradient></defs>' +
         '<path d="' + d + '" fill="none" stroke="var(--line)" stroke-width="' + th + '" stroke-linecap="round"/>' +
-        '<path class="viz-arc" d="' + d + '" fill="none" stroke="' + col + '" stroke-width="' + th + '" stroke-linecap="round" ' +
+        '<path class="viz-arc" d="' + d + '" fill="none" stroke="' + (col === 'var(--accent)' ? 'url(#' + gid + ')' : col) + '" stroke-width="' + th + '" stroke-linecap="round" ' +
             'stroke-dasharray="' + num(arc) + '" stroke-dashoffset="' + num(arc) + '" data-off="' + num(arc * (1 - v)) + '"/>' +
         '<text x="' + cx + '" y="' + (cy - 6) + '" text-anchor="middle" font-family="\'Space Grotesk\', sans-serif" ' +
             'font-size="' + (o.big || 24) + '" font-weight="700" fill="var(--text)">' + esc(o.label || Math.round(v*100) + '%') + '</text>' +
@@ -246,14 +276,22 @@ function spark(o){
 /* =========================================================
    8. RING (voortgang) — compact
    ========================================================= */
-function ring(pct, size, stroke, color){
-    size = size || 54; stroke = stroke || 5;
-    var r = (size - stroke) / 2, c = 2 * Math.PI * r;
-    return '<svg class="viz viz-ring" width="' + size + '" height="' + size + '" viewBox="0 0 ' + size + ' ' + size + '" style="transform:rotate(-90deg)">' +
+function ring(pct, size, stroke, color, label){
+    size = size || 54; stroke = stroke || Math.max(3, size * .085);
+    var r = (size - stroke) / 2, c = 2 * Math.PI * r, id = uid();
+    var col = color || 'var(--accent)';
+    var grad = col.charAt(0) === '#';
+    return '<div class="viz-ringwrap" style="width:' + size + 'px;height:' + size + 'px;position:relative;flex:0 0 auto;">' +
+        '<svg class="viz viz-ring" width="' + size + '" height="' + size + '" viewBox="0 0 ' + size + ' ' + size + '" style="transform:rotate(-90deg)">' +
+        (grad ? '<defs><linearGradient id="' + id + '" x1="0" y1="0" x2="1" y2="1">' +
+            '<stop offset="0" stop-color="' + col + '"/><stop offset="1" stop-color="' + col + '" stop-opacity=".55"/></linearGradient></defs>' : '') +
         '<circle cx="' + size/2 + '" cy="' + size/2 + '" r="' + num(r) + '" fill="none" stroke="var(--line)" stroke-width="' + stroke + '"/>' +
-        '<circle class="viz-arc" cx="' + size/2 + '" cy="' + size/2 + '" r="' + num(r) + '" fill="none" stroke="' + (color || 'var(--accent)') + '" ' +
+        '<circle class="viz-arc" cx="' + size/2 + '" cy="' + size/2 + '" r="' + num(r) + '" fill="none" ' +
+            'stroke="' + (grad ? 'url(#' + id + ')' : col) + '" ' +
             'stroke-width="' + stroke + '" stroke-linecap="round" stroke-dasharray="' + num(c) + '" ' +
-            'stroke-dashoffset="' + num(c) + '" data-off="' + num(c * (1 - pct/100)) + '"/></svg>';
+            'stroke-dashoffset="' + num(c) + '" data-off="' + num(c * (1 - Math.max(0,Math.min(100,pct))/100)) + '"/></svg>' +
+        (label ? '<span class="ring-lbl" style="font-size:' + Math.round(size*.26) + 'px">' + esc(label) + '</span>' : '') +
+    '</div>';
 }
 
 /* =========================================================
@@ -275,6 +313,9 @@ function animate(root){
             });
             [].forEach.call(root.querySelectorAll('.vb-bar[data-h]'), function(el){
                 el.style.height = el.dataset.h + '%';
+            });
+            [].forEach.call(root.querySelectorAll('.viz-stack i[data-w]'), function(el){
+                el.style.width = el.dataset.w + '%';
             });
             [].forEach.call(root.querySelectorAll('.viz'), function(el){ el.classList.add('viz-in'); });
             [].forEach.call(root.querySelectorAll('.viz-heat, .viz-bars'), function(el){ el.classList.add('viz-in'); });
@@ -298,6 +339,7 @@ function count(el, to, dur, suffix){
     })(t0);
 }
 
-global.KMviz = { radar:radar, donut:donut, area:area, bars:bars, heatmap:heatmap, gauge:gauge, spark:spark, ring:ring, animate:animate, count:count, smooth:smooth };
+global.KMviz = { radar:radar, donut:donut, stack:stack, area:area, bars:bars, heatmap:heatmap,
+                 gauge:gauge, spark:spark, ring:ring, animate:animate, count:count, smooth:smooth };
 
 })(window);

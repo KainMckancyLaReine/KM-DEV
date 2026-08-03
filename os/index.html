@@ -90,11 +90,12 @@ html[data-theme="dark"] .greet em{background:linear-gradient(100deg,var(--accent
 .app:hover{transform:translateY(-5px) scale(1.012);box-shadow:0 24px 46px -26px rgba(13,13,13,.65);border-color:var(--tint);}
 .app:hover::after{opacity:1;}
 .app-ico{
-    position:relative;width:42px;height:42px;border-radius:13px;display:grid;place-items:center;
-    font-size:19px;color:var(--tint);border:1px solid var(--line);background:var(--bg);
-    transition:transform .45s var(--ease),background .3s,color .3s,border-color .3s;
+    position:relative;display:block;width:46px;height:46px;
+    filter:drop-shadow(0 6px 14px rgba(13,13,13,.20));
+    transition:transform .55s var(--spring-soft), filter .35s ease;
 }
-.app:hover .app-ico{transform:scale(1.1) rotate(-8deg);background:var(--tint);color:#fff;border-color:var(--tint);}
+.app:hover .app-ico{transform:scale(1.12) translateY(-3px) rotate(-4deg);filter:drop-shadow(0 14px 24px rgba(13,13,13,.30));}
+.app:active .app-ico{transform:scale(1.02);transition-duration:.1s;}
 .app h3{position:relative;font-size:15.5px;font-weight:600;margin:13px 0 4px;letter-spacing:-.02em;}
 .app p{position:relative;font-size:12px;color:var(--text-faint);line-height:1.5;min-height:34px;}
 .app-meta{
@@ -225,6 +226,7 @@ html[data-theme="dark"] .greet em{background:linear-gradient(100deg,var(--accent
     </div>
 </div>
 
+<script src="km-brand.js"></script>
 <script src="km-os.js"></script>
 <script src="km-viz.js"></script>
 <script src="km-live.js"></script>
@@ -526,12 +528,10 @@ if(KM.boot()){
             '</div>' +
 
             '<div class="tile span3">' +
-                '<div class="tile-h"><b>Werkverdeling</b><span class="label">' + open.length + ' open</span></div>' +
-                '<div class="tile-c">' + V.donut({ slices:prios, size:150, thickness:18,
-                    center:{ big:String(open.length), small:'taken' } }) + '</div>' +
-                '<div class="tile-f"><div class="viz-key">' + prios.filter(function(p){ return p.value; }).map(function(p){
-                    return '<div class="k"><i style="background:' + p.color + '"></i>' + p.label + '<b>' + p.value + '</b></div>';
-                }).join('') + '</div></div>' +
+                '<div class="tile-h"><b>Werkverdeling</b><span class="label">naar prioriteit</span></div>' +
+                '<div class="tile-c" style="align-items:stretch;">' +
+                    V.stack({ items:prios, big:open.length, small:'open taken', h:16 }) +
+                '</div>' +
             '</div>';
 
         bindTiles($('#bentoNow'));
@@ -552,7 +552,7 @@ if(KM.boot()){
                 '<div class="tile-h"><span class="dot-live"></span><b>Focusblok loopt</b>' +
                     '<span class="label">' + (T.pausedAt ? 'gepauzeerd' : 'bezig') + '</span></div>' +
                 '<div class="tile-c" style="gap:16px;">' +
-                    V.ring(100 - L.timer.left()/(T.mins*60000)*100, 62, 6, 'var(--accent-ink)') +
+                    V.ring(100 - L.timer.left()/(T.mins*60000)*100, 62, 6, '#3f5a17') +
                     '<div><div class="nv" id="nowV">' + fmtMs(L.timer.left()) + '</div>' +
                     '<div class="label" style="margin-top:4px;">' + KM.esc(T.title) + '</div></div>' +
                 '</div></div>' : '') +
@@ -675,7 +675,7 @@ if(KM.boot()){
             }
             if(a.id === 'stack') count = statusCount() + '/3 verbonden';
             return '<a class="app" href="' + a.file + '" style="--tint:' + a.tint + ';--tint-a:' + a.tint + '26;">' +
-                '<span class="app-ico">' + a.icon + '</span>' +
+                '<span class="app-ico">' + KMbrand.appIcon(a.id, 46, a.tint) + '</span>' +
                 (sp ? '<span class="app-spark">' + sp + '</span>' : '') +
                 '<h3 class="grotesk">' + KM.esc(a.name) + '</h3>' +
                 '<p>' + KM.esc(a.desc) + '</p>' +
@@ -762,6 +762,7 @@ if(KM.boot()){
     window.addEventListener('online',  function(){ status(); loadWeather(true); });
     window.addEventListener('offline', status);
 
+    KM.maybeBoot(function(){ V.animate(document); });
     refresh();
     loadWeather();
 

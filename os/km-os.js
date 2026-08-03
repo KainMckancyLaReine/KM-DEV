@@ -367,15 +367,17 @@ function shell(opt){
     var bar = document.createElement('div');
     bar.className = 'os-bar';
     bar.innerHTML =
-        '<a class="os-home" href="index.html" title="Naar de launcher">' +
-            '<span class="os-mark">K</span>' +
-            '<span class="os-title"><span class="ico">' + app.icon + '</span>' + esc(app.name) + '</span>' +
+        '<a class="os-home" href="index.html" title="Naar het dashboard">' +
+            (global.KMbrand ? KMbrand.mark(30) : '<span class="os-mark">K</span>') +
+            '<span class="os-title">' + esc(app.name) + '</span>' +
         '</a>' +
         (tabs ? '<span class="os-sep"></span><div class="os-tabs" id="osTabs">' + tabs + '</div>' : '<div style="flex:1"></div>') +
         '<div class="os-actions" id="osActions">' +
             (opt.actionsHTML || '') +
-            '<button class="iconbtn" id="osSwitch" title="Wissel van app">' +
-                '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><circle cx="6" cy="6" r="2"/><circle cx="12" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="6" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="18" cy="12" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="12" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg>' +
+            '<button class="iconbtn" id="osSwitch" title="Alle apps — ⌘K">' +
+                '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">' +
+                '<rect x="3" y="3" width="7" height="7" rx="2.4"/><rect x="14" y="3" width="7" height="7" rx="2.4"/>' +
+                '<rect x="3" y="14" width="7" height="7" rx="2.4"/><rect x="14" y="14" width="7" height="7" rx="2.4"/></svg>' +
             '</button>' +
             '<button class="iconbtn" id="osTheme" title="Thema"></button>' +
             '<button class="iconbtn" id="osOut" title="Uitloggen">' +
@@ -388,7 +390,7 @@ function shell(opt){
 
     $('#osOut').onclick = function(){ localStorage.removeItem('kmdev_session'); location.href = '../login.html'; };
     $('#osTheme').onclick = toggleTheme;
-    $('#osSwitch').onclick = appSwitcher;
+    $('#osSwitch').onclick = launchpad;
     if(tabs){
         $('#osTabs').addEventListener('click', function(e){
             var b = e.target.closest('.os-tab'); if(!b) return;
@@ -401,19 +403,78 @@ function shell(opt){
     return bar;
 }
 
-function appSwitcher(){
-    modal({
-        title:'Apps',
-        wide:true,
-        body:'<div class="grid g3">' + APPS.filter(function(a){ return a.id !== 'home'; }).map(function(a){
-            return '<a class="card hover rise" href="' + a.file + '" style="text-decoration:none;color:inherit;display:block;">' +
-                '<div style="font-size:26px;color:' + a.tint + ';margin-bottom:10px;">' + a.icon + '</div>' +
-                '<b class="grotesk" style="display:block;font-size:15.5px;">' + esc(a.name) + '</b>' +
-                '<span style="font-size:12.5px;color:var(--text-faint);">' + esc(a.desc) + '</span>' +
-            '</a>';
-        }).join('') + '</div>',
-        actions:[{ label:'Sluiten', ghost:true }]
+/* ---------------------------------------------------------
+   Launchpad — alle apps, groot en met blur eronder
+   --------------------------------------------------------- */
+var lpEl = null, lpSel = 0, lpList = [];
+function launchpad(){
+    if(lpEl) return closeLaunchpad();
+    var here = document.body.dataset.app;
+    lpList = APPS.filter(function(a){ return a.id !== 'home' || here !== 'home'; });
+
+    lpEl = document.createElement('div');
+    lpEl.className = 'lp';
+    lpEl.innerHTML =
+        '<div class="lp-search">' +
+            '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="var(--text-faint)" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>' +
+            '<input id="lpQ" placeholder="Zoek een app…" autocomplete="off">' +
+            '<span class="label">esc</span>' +
+        '</div>' +
+        '<div class="lp-grid" id="lpGrid"></div>' +
+        '<div class="lp-hint"><kbd>↑↓←→</kbd> kiezen <kbd>↵</kbd> openen <kbd>esc</kbd> sluiten</div>';
+    document.body.appendChild(lpEl);
+    requestAnimationFrame(function(){ lpEl.classList.add('on'); });
+    drawLp('');
+    setTimeout(function(){ var i = $('#lpQ', lpEl); if(i) i.focus(); }, 60);
+
+    $('#lpQ', lpEl).addEventListener('input', function(e){ lpSel = 0; drawLp(e.target.value); });
+    document.addEventListener('keydown', lpKeys, true);
+    lpEl.addEventListener('click', function(e){ if(e.target === lpEl) closeLaunchpad(); });
+    track('launchpad_open', { from:here });
+}
+function drawLp(q){
+    q = (q || '').toLowerCase().trim();
+    var list = lpList.filter(function(a){
+        return !q || a.name.toLowerCase().indexOf(q) >= 0 || a.desc.toLowerCase().indexOf(q) >= 0;
     });
+    lpSel = Math.min(lpSel, Math.max(0, list.length - 1));
+    var grid = $('#lpGrid', lpEl);
+    grid.innerHTML = list.length ? list.map(function(a, i){
+        return '<a class="lp-app' + (i === lpSel ? ' sel' : '') + '" href="' + a.file + '" data-i="' + i + '" ' +
+            'style="animation-delay:' + (.04 + i*.045) + 's">' +
+            (global.KMbrand ? KMbrand.appIcon(a.id, 86, a.tint) : '') +
+            '<b>' + esc(a.name) + '</b><span>' + esc(a.desc.split(',')[0]) + '</span></a>';
+    }).join('') : '<div class="empty" style="grid-column:1/-1">Geen app gevonden</div>';
+    lpEl._list = list;
+    $$('.lp-app', grid).forEach(function(el){
+        el.addEventListener('mouseenter', function(){
+            lpSel = +el.dataset.i;
+            $$('.lp-app', grid).forEach(function(x){ x.classList.toggle('sel', x === el); });
+        });
+    });
+}
+function lpKeys(e){
+    if(!lpEl) return;
+    var list = lpEl._list || [];
+    var cols = Math.max(1, Math.floor((lpEl.clientWidth - 80) / 190));
+    if(e.key === 'Escape'){ e.preventDefault(); e.stopPropagation(); closeLaunchpad(); return; }
+    if(e.key === 'Enter'){
+        e.preventDefault();
+        if(list[lpSel]) location.href = list[lpSel].file;
+        return;
+    }
+    var d = { ArrowRight:1, ArrowLeft:-1, ArrowDown:cols, ArrowUp:-cols }[e.key];
+    if(d == null) return;
+    e.preventDefault();
+    lpSel = Math.max(0, Math.min(list.length - 1, lpSel + d));
+    $$('.lp-app', lpEl).forEach(function(x, i){ x.classList.toggle('sel', i === lpSel); });
+}
+function closeLaunchpad(){
+    if(!lpEl) return;
+    document.removeEventListener('keydown', lpKeys, true);
+    var el = lpEl; lpEl = null;
+    el.classList.add('out');
+    setTimeout(function(){ el.remove(); }, 300);
 }
 
 function toggleTheme(){
@@ -427,6 +488,57 @@ function syncThemeIcon(){
     b.innerHTML = dark
         ? '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.2 5.2l1.4 1.4M17.4 17.4l1.4 1.4M18.8 5.2l-1.4 1.4M6.6 17.4l-1.4 1.4"/></svg>'
         : '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 13.2A8.5 8.5 0 0 1 10.8 3 8.5 8.5 0 1 0 21 13.2Z"/></svg>';
+}
+
+/* ---------------------------------------------------------
+   9b. Boot — de opstartanimatie na het inloggen
+   --------------------------------------------------------- */
+var BOOT_STEPS = [
+    'werkruimte laden', 'doelen koppelen', 'planning lezen',
+    'weer ophalen', 'systeem gereed'
+];
+function bootScreen(done){
+    var el = document.createElement('div');
+    el.className = 'boot';
+    el.innerHTML =
+        '<div class="boot-aur"><i></i><i></i></div>' +
+        '<div class="boot-in">' +
+            '<div class="boot-mark">' + (global.KMbrand ? KMbrand.markAnimated(112) : '') + '</div>' +
+            '<div class="boot-name">KM.OS</div>' +
+            '<div class="boot-sub">persoonlijk besturingssysteem</div>' +
+            '<div class="boot-bar"><i id="bootBar"></i></div>' +
+            '<div class="boot-steps" id="bootStep"></div>' +
+        '</div>' +
+        '<div class="boot-dock">' + APPS.filter(function(a){ return a.id !== 'home'; }).slice(0,6).map(function(a, i){
+            return (global.KMbrand ? KMbrand.appIcon(a.id, 44, a.tint) : '').replace('<svg ',
+                '<svg style="animation-delay:' + (1.5 + i*.09) + 's" ');
+        }).join('') + '</div>';
+    document.body.appendChild(el);
+    document.body.style.overflow = 'hidden';
+
+    var i = 0;
+    var tick = setInterval(function(){
+        var bar = $('#bootBar'), st = $('#bootStep');
+        if(bar) bar.style.width = ((i + 1) / BOOT_STEPS.length * 100) + '%';
+        if(st) st.textContent = BOOT_STEPS[i];
+        i++;
+        if(i >= BOOT_STEPS.length){
+            clearInterval(tick);
+            setTimeout(function(){
+                el.classList.add('done');
+                document.body.style.overflow = '';
+                setTimeout(function(){ el.remove(); done && done(); }, 900);
+            }, 520);
+        }
+    }, 380);
+    return el;
+}
+function maybeBoot(done){
+    var flag = sessionStorage.getItem('kmdev_boot');
+    if(flag !== '1'){ done && done(); return false; }
+    sessionStorage.removeItem('kmdev_boot');
+    bootScreen(done);
+    return true;
 }
 
 /* ---------------------------------------------------------
@@ -495,6 +607,34 @@ function confirmBox(title, text, onYes){
     });
 }
 
+/* segmented control: geeft HTML terug, bind zelf met segBind */
+function seg(items, active){
+    return '<div class="seg" data-seg><span class="thumb"></span>' +
+        items.map(function(it){
+            return '<button data-v="' + esc(it.v) + '"' + (it.v === active ? ' class="on"' : '') + '>' + esc(it.n) + '</button>';
+        }).join('') + '</div>';
+}
+function segBind(root, onPick){
+    $$('[data-seg]', root || document).forEach(function(box){
+        var thumb = $('.thumb', box);
+        function move(){
+            var on = $('button.on', box);
+            if(!on || !thumb) return;
+            thumb.style.width = on.offsetWidth + 'px';
+            thumb.style.transform = 'translateX(' + (on.offsetLeft - 3) + 'px)';
+        }
+        $$('button', box).forEach(function(b){
+            b.onclick = function(){
+                $$('button', box).forEach(function(x){ x.classList.toggle('on', x === b); });
+                move();
+                onPick && onPick(b.dataset.v, b);
+            };
+        });
+        requestAnimationFrame(move);
+        setTimeout(move, 120);
+    });
+}
+
 function ring(pct, size, stroke){
     size = size || 54; stroke = stroke || 5;
     var r = (size - stroke) / 2, c = 2 * Math.PI * r;
@@ -526,12 +666,19 @@ var KM = {
     OS:OS, SET:SET, q:osq,
     sync:sync, track:track, ai:ai,
     shell:shell, toast:toast, modal:modal, confirm:confirmBox, ring:ring,
+    launchpad:launchpad, closeLaunchpad:closeLaunchpad, bootScreen:bootScreen, maybeBoot:maybeBoot,
+    seg:seg, segBind:segBind, mark:function(s,o){ return global.KMbrand ? KMbrand.mark(s,o) : ''; },
     download:download, copy:copy, theme:toggleTheme,
     boot: function(){
         if(!guard()) return false;
         SET.load(); OS.load();
         document.documentElement.dataset.theme = SET.data.theme || 'light';
         initAnalytics();
+        document.addEventListener('keydown', function(e){
+            if((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k' && !document.querySelector('.ov')){
+                e.preventDefault(); launchpad();
+            }
+        });
         return true;
     }
 };

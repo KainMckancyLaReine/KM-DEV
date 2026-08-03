@@ -2,474 +2,310 @@
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<title>Access — KM.dev</title>
+<title>KM.OS — toegang</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 :root{
-    --bg:#f4f3ef;
-    --paper:#ffffff;
     --ink:#0d0d0d;
-    --muted:#b6b4ac;
-    --gray:#6f6d66;
-    --line:#e4e2d9;
     --accent:#c6ff4a;
     --accent-ink:#3f5a17;
-    --radius:28px;
+    --spring:cubic-bezier(.34,1.56,.44,1);
+    --ease:cubic-bezier(.16,1,.3,1);
 }
 html,body{height:100%;}
 body{
-    font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
-    background:var(--ink);
-    color:#fff;
-    overflow:hidden;
-    -webkit-font-smoothing:antialiased;
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    background:#08080a;color:#fff;overflow:hidden;
+    -webkit-font-smoothing:antialiased;letter-spacing:-.011em;
+    display:grid;place-items:center;
 }
-.mono{font-family:'Space Mono',monospace;}
+button,input{font-family:inherit;font-size:inherit;color:inherit;}
+button{cursor:pointer;}
 
-/* ---------- Background layers ---------- */
-.bg-grid{
-    position:fixed;inset:0;
-    background-image:
-        linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),
-        linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
-    background-size:64px 64px;
-    mask-image:radial-gradient(ellipse 90% 70% at 50% 45%,#000 30%,transparent 100%);
-    -webkit-mask-image:radial-gradient(ellipse 90% 70% at 50% 45%,#000 30%,transparent 100%);
-    animation:gridDrift 40s linear infinite;
+/* ---------- achtergrond ---------- */
+.bg{position:fixed;inset:0;overflow:hidden;z-index:0;}
+.bg i{position:absolute;display:block;border-radius:50%;filter:blur(80px);}
+.bg i:nth-child(1){width:58vw;height:58vw;left:-14%;top:-26%;background:#c6ff4a;opacity:.20;animation:f1 22s ease-in-out infinite alternate;}
+.bg i:nth-child(2){width:46vw;height:46vw;right:-12%;bottom:-22%;background:#2383e2;opacity:.16;animation:f2 28s ease-in-out infinite alternate;}
+.bg i:nth-child(3){width:34vw;height:34vw;left:42%;top:32%;background:#8b5cf6;opacity:.11;animation:f3 34s ease-in-out infinite alternate;}
+@keyframes f1{to{transform:translate3d(7vw,5vh,0) scale(1.16);}}
+@keyframes f2{to{transform:translate3d(-6vw,-6vh,0) scale(1.12);}}
+@keyframes f3{to{transform:translate3d(4vw,-5vh,0) scale(1.22);}}
+.grid{
+    position:fixed;inset:0;z-index:1;pointer-events:none;
+    background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),
+                     linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+    background-size:72px 72px;
+    mask-image:radial-gradient(ellipse 80% 70% at 50% 45%,#000 20%,transparent 88%);
+    -webkit-mask-image:radial-gradient(ellipse 80% 70% at 50% 45%,#000 20%,transparent 88%);
 }
-@keyframes gridDrift{to{background-position:64px 64px,64px 64px;}}
-.bg-glow{
-    position:fixed;width:900px;height:900px;border-radius:50%;
-    background:radial-gradient(circle,rgba(198,255,74,.16),transparent 62%);
-    top:50%;left:50%;transform:translate(-50%,-50%);
-    filter:blur(30px);pointer-events:none;
-    animation:glowPulse 8s ease-in-out infinite;
-}
-@keyframes glowPulse{0%,100%{opacity:.55;transform:translate(-50%,-50%) scale(1);}50%{opacity:.9;transform:translate(-50%,-50%) scale(1.12);}}
-.bg-noise{
-    position:fixed;inset:0;opacity:.045;pointer-events:none;z-index:3;
-    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-.scanline{
-    position:fixed;left:0;right:0;height:1px;top:0;z-index:4;pointer-events:none;
-    background:linear-gradient(90deg,transparent,rgba(198,255,74,.5),transparent);
-    animation:scan 7s linear infinite;opacity:.5;
-}
-@keyframes scan{0%{top:-2%;}100%{top:102%;}}
-
-/* ---------- Layout ---------- */
-.wrap{
-    position:relative;z-index:5;height:100%;
-    display:grid;grid-template-columns:1.05fr .95fr;
+.noise{
+    position:fixed;inset:0;z-index:2;pointer-events:none;opacity:.032;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* left: brand panel */
-.panel-left{
-    padding:52px 56px;display:flex;flex-direction:column;justify-content:space-between;
-    border-right:1px solid rgba(255,255,255,.08);position:relative;
+/* ---------- kaart ---------- */
+.wrap{position:relative;z-index:5;width:min(420px,90vw);text-align:center;}
+.mark{
+    display:inline-block;margin-bottom:26px;
+    opacity:0;transform:scale(.72) translateY(14px);
+    animation:pop .95s var(--spring) .1s forwards;
+    filter:drop-shadow(0 18px 40px rgba(0,0,0,.6));
 }
-.brand{display:flex;align-items:center;gap:14px;text-decoration:none;color:#fff;}
-.brand-mark{
-    width:44px;height:44px;border-radius:13px;background:var(--accent);
-    display:grid;place-items:center;color:var(--ink);
-    font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:19px;
-    box-shadow:0 0 0 0 rgba(198,255,74,.5);animation:markPulse 3.4s ease-out infinite;
+@keyframes pop{to{opacity:1;transform:none;}}
+h1{
+    font-family:'Space Grotesk',sans-serif;font-size:31px;font-weight:700;letter-spacing:-.045em;
+    opacity:0;animation:up .8s var(--ease) .34s forwards;
 }
-@keyframes markPulse{0%{box-shadow:0 0 0 0 rgba(198,255,74,.42);}70%,100%{box-shadow:0 0 0 24px rgba(198,255,74,0);}}
-.brand-name{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:600;letter-spacing:-.02em;}
-.brand-name .dot{color:var(--accent);}
+.sub{
+    margin-top:9px;color:rgba(255,255,255,.42);font-size:14.5px;line-height:1.55;
+    opacity:0;animation:up .8s var(--ease) .44s forwards;
+}
+@keyframes up{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:none;}}
 
-.hero-copy h1{
-    font-family:'Space Grotesk',sans-serif;
-    font-size:clamp(46px,5.4vw,86px);line-height:.94;letter-spacing:-.045em;font-weight:600;
-}
-.hero-copy h1 .line{display:block;overflow:hidden;}
-.hero-copy h1 .line span{display:block;transform:translateY(105%);animation:riseUp .95s cubic-bezier(.16,1,.3,1) forwards;}
-.hero-copy h1 .line:nth-child(1) span{animation-delay:.15s;}
-.hero-copy h1 .line:nth-child(2) span{animation-delay:.26s;}
-.hero-copy h1 .line:nth-child(3) span{animation-delay:.37s;}
-@keyframes riseUp{to{transform:translateY(0);}}
-.hero-copy h1 em{font-style:normal;color:var(--accent);}
-.hero-sub{
-    margin-top:26px;max-width:430px;color:rgba(255,255,255,.5);font-size:16.5px;line-height:1.6;
-    opacity:0;animation:fadeUp .8s ease .6s forwards;
-}
-@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
-
-.meta-row{display:flex;gap:34px;flex-wrap:wrap;opacity:0;animation:fadeUp .8s ease .78s forwards;}
-.meta-item{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.32);}
-.meta-item b{display:block;margin-top:7px;color:#fff;font-size:14px;letter-spacing:0;text-transform:none;font-weight:500;}
-.status-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent);margin-right:8px;animation:blink 2s ease-in-out infinite;}
-@keyframes blink{0%,100%{opacity:1;}50%{opacity:.25;}}
-
-/* right: form panel */
-.panel-right{display:grid;place-items:center;padding:40px;}
 .card{
-    width:100%;max-width:452px;
-    background:rgba(255,255,255,.045);
-    border:1px solid rgba(255,255,255,.1);
-    border-radius:var(--radius);
-    padding:44px 42px 38px;
-    backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
-    box-shadow:0 40px 90px rgba(0,0,0,.55);
-    opacity:0;transform:translateY(28px) scale(.97);
-    animation:cardIn 1s cubic-bezier(.16,1,.3,1) .35s forwards;
-    position:relative;overflow:hidden;
+    margin-top:30px;padding:8px;border-radius:26px;
+    background:rgba(255,255,255,.055);
+    border:1px solid rgba(255,255,255,.10);
+    backdrop-filter:saturate(180%) blur(26px);-webkit-backdrop-filter:saturate(180%) blur(26px);
+    box-shadow:0 30px 70px -30px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.10);
+    opacity:0;transform:translateY(18px);
+    animation:up .9s var(--ease) .54s forwards;
 }
-@keyframes cardIn{to{opacity:1;transform:translateY(0) scale(1);}}
-.card::before{
-    content:'';position:absolute;inset:-1px;border-radius:var(--radius);padding:1px;
-    background:linear-gradient(140deg,rgba(198,255,74,.55),transparent 40%,transparent 60%,rgba(198,255,74,.22));
-    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
-    -webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;
-}
-.card.shake{animation:shake .45s cubic-bezier(.36,.07,.19,.97);}
-@keyframes shake{10%,90%{transform:translateX(-3px);}20%,80%{transform:translateX(6px);}30%,50%,70%{transform:translateX(-11px);}40%,60%{transform:translateX(11px);}}
+.card.shake{animation:shake .5s cubic-bezier(.36,.07,.19,.97);}
+@keyframes shake{10%,90%{transform:translateX(-3px);}20%,80%{transform:translateX(5px);}30%,50%,70%{transform:translateX(-10px);}40%,60%{transform:translateX(10px);}}
 
-.lock{
-    width:52px;height:52px;border-radius:16px;display:grid;place-items:center;margin-bottom:24px;
-    background:rgba(198,255,74,.12);border:1px solid rgba(198,255,74,.28);color:var(--accent);
+.field{position:relative;display:flex;align-items:center;}
+.field input{
+    flex:1;background:transparent;border:0;outline:none;
+    padding:17px 54px 17px 20px;font-size:16px;
+    font-family:'Space Mono',monospace;letter-spacing:.22em;
 }
-.card h2{font-family:'Space Grotesk',sans-serif;font-size:31px;letter-spacing:-.03em;font-weight:600;}
-.card .sub{margin-top:9px;color:rgba(255,255,255,.42);font-size:14.5px;line-height:1.55;}
-
-.field{margin-top:30px;position:relative;}
-.field label{display:block;font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:11px;}
-.input-shell{position:relative;display:flex;align-items:center;}
-.input-shell input{
-    width:100%;background:rgba(0,0,0,.32);border:1px solid rgba(255,255,255,.13);
-    border-radius:16px;padding:17px 52px 17px 18px;color:#fff;font-size:16px;
-    font-family:'Space Mono',monospace;letter-spacing:.16em;outline:none;
-    transition:border-color .25s ease,box-shadow .25s ease,background .25s ease;
-}
-.input-shell input::placeholder{letter-spacing:.06em;color:rgba(255,255,255,.22);font-family:'Inter',sans-serif;}
-.input-shell input:focus{border-color:rgba(198,255,74,.65);box-shadow:0 0 0 4px rgba(198,255,74,.12);background:rgba(0,0,0,.45);}
-.card.err .input-shell input{border-color:#ff5f56;box-shadow:0 0 0 4px rgba(255,95,86,.13);}
+.field input::placeholder{letter-spacing:.06em;color:rgba(255,255,255,.24);font-family:'Inter',sans-serif;}
 .eye{
-    position:absolute;right:8px;width:38px;height:38px;border-radius:11px;border:0;background:transparent;
-    color:rgba(255,255,255,.4);display:grid;place-items:center;cursor:pointer;transition:color .2s,background .2s;
+    position:absolute;right:9px;width:38px;height:38px;border-radius:12px;border:0;background:transparent;
+    color:rgba(255,255,255,.38);display:grid;place-items:center;transition:all .25s var(--spring);
 }
-.eye:hover{color:#fff;background:rgba(255,255,255,.08);}
+.eye:hover{color:#fff;background:rgba(255,255,255,.09);}
+.eye:active{transform:scale(.9);}
 
-.caps{margin-top:10px;font-size:12.5px;color:#ffb84a;display:none;align-items:center;gap:7px;}
-.caps.on{display:flex;}
-.msg{margin-top:14px;font-size:13.5px;color:#ff7b73;min-height:19px;display:flex;align-items:center;gap:8px;opacity:0;transition:opacity .2s;}
-.msg.show{opacity:1;}
+.go{
+    width:100%;margin-top:8px;border:0;border-radius:19px;padding:16px;
+    background:var(--accent);color:var(--ink);
+    font-size:15.5px;font-weight:600;letter-spacing:-.015em;
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    transition:transform .4s var(--spring), box-shadow .3s, filter .2s;
+    box-shadow:0 10px 30px -12px rgba(198,255,74,.85);
+}
+.go:hover{transform:translateY(-2px);box-shadow:0 18px 40px -14px rgba(198,255,74,.95);}
+.go:active{transform:scale(.97);transition-duration:.1s;}
+.go[disabled]{opacity:.45;pointer-events:none;box-shadow:none;}
+.go .spin{width:16px;height:16px;border:2px solid rgba(13,13,13,.22);border-top-color:var(--ink);border-radius:50%;animation:spin .7s linear infinite;display:none;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.go.busy .lbl{display:none;} .go.busy .spin{display:block;}
+
+.msg{
+    min-height:20px;margin-top:14px;font-size:13.5px;color:#ff7b73;
+    opacity:0;transition:opacity .25s;
+}
+.msg.on{opacity:1;}
 .msg.ok{color:var(--accent);}
 
-.row{display:flex;align-items:center;justify-content:space-between;margin-top:20px;gap:12px;}
-.check{display:flex;align-items:center;gap:10px;cursor:pointer;color:rgba(255,255,255,.55);font-size:14px;user-select:none;}
+.row{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px;
+    opacity:0;animation:up .8s var(--ease) .66s forwards;
+}
+.check{display:flex;align-items:center;gap:9px;color:rgba(255,255,255,.5);font-size:13.5px;user-select:none;cursor:pointer;}
 .check input{display:none;}
-.box{width:19px;height:19px;border-radius:6px;border:1px solid rgba(255,255,255,.24);display:grid;place-items:center;transition:.2s;}
-.check input:checked + .box{background:var(--accent);border-color:var(--accent);}
-.box svg{opacity:0;transition:.2s;color:var(--ink);}
-.check input:checked + .box svg{opacity:1;}
-.hint-link{background:none;border:0;color:rgba(255,255,255,.4);font-size:13.5px;cursor:pointer;text-decoration:underline;text-underline-offset:3px;font-family:inherit;}
-.hint-link:hover{color:var(--accent);}
-
-.btn{
-    margin-top:26px;width:100%;border:0;border-radius:16px;padding:18px;cursor:pointer;
-    background:var(--accent);color:var(--ink);font-family:'Space Grotesk',sans-serif;
-    font-size:16px;font-weight:600;letter-spacing:-.01em;
-    display:flex;align-items:center;justify-content:center;gap:11px;
-    transition:transform .25s cubic-bezier(.16,1,.3,1),box-shadow .25s,filter .25s;
-    position:relative;overflow:hidden;
+.box{
+    width:19px;height:19px;border-radius:7px;border:1px solid rgba(255,255,255,.22);
+    display:grid;place-items:center;transition:all .3s var(--spring);
 }
-.btn:hover{transform:translateY(-2px);box-shadow:0 16px 34px rgba(198,255,74,.26);}
-.btn:active{transform:translateY(0) scale(.985);}
-.btn[disabled]{opacity:.55;cursor:not-allowed;transform:none;box-shadow:none;}
-.btn .chev{width:26px;height:26px;border-radius:50%;background:var(--ink);color:var(--accent);display:grid;place-items:center;font-size:13px;transition:transform .25s;}
-.btn:hover .chev{transform:translateX(4px);}
-.btn .spin{width:17px;height:17px;border:2px solid rgba(13,13,13,.25);border-top-color:var(--ink);border-radius:50%;animation:spin .7s linear infinite;display:none;}
-@keyframes spin{to{transform:rotate(360deg);}}
-.btn.loading .lbl,.btn.loading .chev{display:none;}
-.btn.loading .spin{display:block;}
+.check input:checked + .box{background:var(--accent);border-color:var(--accent);transform:scale(1.05);}
+.box svg{opacity:0;color:var(--ink);transition:opacity .2s;} .check input:checked + .box svg{opacity:1;}
+.link{background:none;border:0;color:rgba(255,255,255,.38);font-size:13.5px;transition:color .2s;}
+.link:hover{color:var(--accent);}
 
-.card-foot{margin-top:26px;padding-top:22px;border-top:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;align-items:center;gap:14px;}
-.card-foot a{color:rgba(255,255,255,.42);text-decoration:none;font-size:13.5px;display:inline-flex;align-items:center;gap:7px;transition:color .2s;}
-.card-foot a:hover{color:#fff;}
-.enc{font-size:11.5px;color:rgba(255,255,255,.28);display:flex;align-items:center;gap:7px;}
+.foot{
+    margin-top:32px;display:flex;align-items:center;justify-content:center;gap:16px;
+    font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;
+    color:rgba(255,255,255,.24);opacity:0;animation:up .8s var(--ease) .8s forwards;
+}
+.foot a{color:inherit;text-decoration:none;transition:color .2s;}
+.foot a:hover{color:rgba(255,255,255,.6);}
+.foot .sep{width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.2);}
 
-.attempts{margin-top:16px;font-size:12.5px;color:rgba(255,255,255,.3);text-align:center;}
+/* ---------- ontgrendel-overgang ---------- */
+.wrap.unlock{animation:unlockOut .8s var(--ease) forwards;}
+@keyframes unlockOut{
+    30%{transform:scale(.97);}
+    100%{opacity:0;transform:scale(1.5);filter:blur(22px);}
+}
+.flash{
+    position:fixed;inset:0;z-index:20;background:var(--accent);opacity:0;pointer-events:none;
+}
+.flash.on{animation:flash .9s var(--ease) forwards;}
+@keyframes flash{0%{opacity:0;}18%{opacity:.9;}100%{opacity:0;}}
 
-/* success overlay */
-.success{
-    position:fixed;inset:0;z-index:60;background:var(--ink);display:grid;place-items:center;
-    opacity:0;visibility:hidden;transition:opacity .5s ease,visibility .5s;
+@media(max-width:520px){
+    .wrap{width:min(400px,92vw);}
+    h1{font-size:26px;}
+    .field input{padding:15px 50px 15px 17px;font-size:16px;}
 }
-.success.on{opacity:1;visibility:visible;}
-.success-inner{text-align:center;}
-.tick{
-    width:88px;height:88px;border-radius:50%;background:var(--accent);color:var(--ink);
-    display:grid;place-items:center;margin:0 auto 26px;transform:scale(.4);opacity:0;
-}
-.success.on .tick{animation:pop .6s cubic-bezier(.16,1,.3,1) .1s forwards;}
-@keyframes pop{to{transform:scale(1);opacity:1;}}
-.success h3{font-family:'Space Grotesk',sans-serif;font-size:34px;letter-spacing:-.03em;opacity:0;animation:none;}
-.success.on h3{animation:fadeUp .6s ease .35s forwards;}
-.success p{color:rgba(255,255,255,.45);margin-top:10px;opacity:0;}
-.success.on p{animation:fadeUp .6s ease .48s forwards;}
-.loadbar{width:190px;height:3px;border-radius:3px;background:rgba(255,255,255,.12);margin:28px auto 0;overflow:hidden;}
-.loadbar i{display:block;height:100%;width:0;background:var(--accent);border-radius:3px;}
-.success.on .loadbar i{animation:fill 1.05s cubic-bezier(.4,0,.2,1) .4s forwards;}
-@keyframes fill{to{width:100%;}}
-
-@media(max-width:1000px){
-    html,body{height:auto;min-height:100%;overflow:auto;}
-    .wrap{grid-template-columns:1fr;height:auto;min-height:100dvh;}
-    .panel-left{
-        border-right:0;border-bottom:1px solid rgba(255,255,255,.08);
-        padding:calc(28px + env(safe-area-inset-top)) 26px 40px;gap:40px;
-    }
-    .panel-right{padding:34px 22px calc(48px + env(safe-area-inset-bottom));}
-    .hero-copy h1{font-size:clamp(38px,11vw,60px);}
-    .bg-glow{width:min(760px,150vw);height:min(760px,150vw);}
-}
-@media(max-width:620px){
-    .scanline{display:none;}                 /* scheelt een animatielaag op telefoons */
-    .bg-grid{background-size:44px 44px;animation:none;}
-    .bg-glow{animation:none;opacity:.7;}
-    .panel-left{padding:calc(22px + env(safe-area-inset-top)) 20px 34px;gap:32px;}
-    .panel-right{padding:26px 16px calc(40px + env(safe-area-inset-bottom));}
-    .brand-mark{width:38px;height:38px;border-radius:11px;font-size:17px;animation:none;}
-    .brand-name{font-size:18px;}
-    .hero-copy h1{font-size:clamp(34px,12vw,50px);}
-    .hero-sub{margin-top:18px;font-size:15.5px;}
-    .meta-row{gap:18px;}
-    .meta-item{font-size:10px;}
-    .meta-item b{font-size:13px;margin-top:5px;}
-
-    .card{padding:30px 22px 26px;border-radius:24px;}
-    .card h2{font-size:27px;}
-    .card .sub{font-size:14px;}
-    .lock{width:46px;height:46px;border-radius:14px;margin-bottom:20px;}
-    .field{margin-top:24px;}
-    .input-shell input{padding:16px 50px 16px 16px;font-size:16px;border-radius:14px;}
-    .eye{width:40px;height:40px;}
-    .btn{padding:17px;border-radius:14px;}
-    .row{flex-wrap:wrap;gap:10px;}
-    .check,.hint-link{font-size:13.5px;}
-    .card-foot{flex-wrap:wrap;gap:10px;}
-    .success h3{font-size:27px;}
-    .tick{width:74px;height:74px;}
-}
-@media(max-width:360px){
-    .hero-copy h1{font-size:31px;}
-    .card{padding:26px 18px 22px;}
-    .meta-row .meta-item:nth-child(3){display:none;}
-}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms !important;transition-duration:.01ms !important;}}
 </style>
 </head>
 <body>
 
-<div class="bg-glow"></div>
-<div class="bg-grid"></div>
-<div class="bg-noise"></div>
-<div class="scanline"></div>
+<div class="bg"><i></i><i></i><i></i></div>
+<div class="grid"></div>
+<div class="noise"></div>
+<div class="flash" id="flash"></div>
 
-<div class="wrap">
-    <!-- LEFT -->
-    <div class="panel-left">
-        <a href="index.html" class="brand">
-            <div class="brand-mark">K</div>
-            <div class="brand-name">KM<span class="dot">.</span>dev</div>
-        </a>
+<div class="wrap" id="wrap">
+    <div class="mark" id="mark"></div>
+    <h1>KM.OS</h1>
+    <p class="sub">Je persoonlijke besturingssysteem.<br>Alleen jij komt hier binnen.</p>
 
-        <div class="hero-copy">
-            <h1>
-                <span class="line"><span>Private</span></span>
-                <span class="line"><span>workspace</span></span>
-                <span class="line"><span><em>access.</em></span></span>
-            </h1>
-            <p class="hero-sub">Dit is de afgesloten ingang naar mijn eigen workspace — notities, projecten, databases en planning. Geen accounts, geen team, alleen ik.</p>
-        </div>
-
-        <div class="meta-row">
-            <div class="meta-item">Status<b><span class="status-dot"></span>Systeem online</b></div>
-            <div class="meta-item">Toegang<b>1 gebruiker</b></div>
-            <div class="meta-item">Locatie<b id="localTime">—</b></div>
-        </div>
-    </div>
-
-    <!-- RIGHT -->
-    <div class="panel-right">
-        <form class="card" id="card" autocomplete="off">
-            <div class="lock">
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10.5" width="16" height="11" rx="3"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/><circle cx="12" cy="16" r="1.4" fill="currentColor" stroke="none"/></svg>
-            </div>
-
-            <h2>Log in</h2>
-            <p class="sub">Voer je toegangssleutel in om verder te gaan naar het dashboard.</p>
-
-            <div class="field">
-                <label for="pw">Toegangssleutel</label>
-                <div class="input-shell">
-                    <input type="password" id="pw" placeholder="••••••••••" autocomplete="current-password" spellcheck="false">
-                    <button type="button" class="eye" id="eye" aria-label="Toon wachtwoord">
-                        <svg id="eyeIcon" viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12Z"/><circle cx="12" cy="12" r="2.7"/></svg>
-                    </button>
-                </div>
-                <div class="caps" id="caps">
-                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 4 4 12h4v6h8v-6h4L12 4Z"/></svg>
-                    Caps Lock staat aan
-                </div>
-                <div class="msg" id="msg"></div>
-            </div>
-
-            <div class="row">
-                <label class="check">
-                    <input type="checkbox" id="remember" checked>
-                    <span class="box"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7"/></svg></span>
-                    Ingelogd blijven
-                </label>
-                <button type="button" class="hint-link" id="hintBtn">Sleutel vergeten?</button>
-            </div>
-
-            <button class="btn" type="submit" id="submitBtn">
-                <span class="lbl">Ontgrendel workspace</span>
-                <span class="chev">→</span>
-                <span class="spin"></span>
+    <form class="card" id="card" autocomplete="off">
+        <div class="field">
+            <input type="password" id="pw" placeholder="Toegangssleutel" autocomplete="current-password" spellcheck="false">
+            <button type="button" class="eye" id="eye" aria-label="Toon sleutel">
+                <svg id="eyeIcon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12Z"/><circle cx="12" cy="12" r="2.7"/></svg>
             </button>
+        </div>
+        <button class="go" type="submit" id="go">
+            <span class="lbl">Ontgrendel</span>
+            <span class="spin"></span>
+        </button>
+    </form>
 
-            <div class="attempts" id="attempts"></div>
+    <div class="msg" id="msg"></div>
 
-            <div class="card-foot">
-                <a href="index.html">
-                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5m0 0 6-6m-6 6 6 6"/></svg>
-                    Terug naar site
-                </a>
-                <span class="enc">
-                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10.5" width="16" height="10" rx="2.5"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg>
-                    SHA-256
-                </span>
-            </div>
-        </form>
+    <div class="row">
+        <label class="check">
+            <input type="checkbox" id="remember" checked>
+            <span class="box"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7"/></svg></span>
+            Ingelogd blijven
+        </label>
+        <button type="button" class="link" id="hint">Sleutel vergeten?</button>
+    </div>
+
+    <div class="foot">
+        <a href="index.html">← Website</a>
+        <span class="sep"></span>
+        <span id="clock">--:--</span>
+        <span class="sep"></span>
+        <span>SHA-256</span>
     </div>
 </div>
 
-<!-- SUCCESS -->
-<div class="success" id="success">
-    <div class="success-inner">
-        <div class="tick"><svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7"/></svg></div>
-        <h3>Welkom terug</h3>
-        <p>Workspace wordt geladen…</p>
-        <div class="loadbar"><i></i></div>
-    </div>
-</div>
-
+<script src="os/km-brand.js"></script>
 <script>
 /* =========================================================
-   KM.dev — private access
-   Wachtwoord wordt NOOIT platgeslagen opgeslagen; alleen de
-   SHA-256 hash staat hier. Wijzig HASH om je sleutel te wijzigen.
-   Standaard sleutel: kmdev2026
+   Toegang tot KM.OS
+   Alleen de SHA-256 hash staat hier. Standaard: kmdev2026
    ========================================================= */
 const HASH = '0d6a57555dee0ea842d6740e76be795a53e81a60dd4d066762fe76ee22b9f1fd';
-const SESSION_KEY = 'kmdev_session';
-const MAX_ATTEMPTS = 5;
-const LOCK_MS = 30000;
+const SESSION = 'kmdev_session';
+const MAX = 5, LOCK = 30000;
 
 const $ = id => document.getElementById(id);
-const card = $('card'), pw = $('pw'), msg = $('msg'), btn = $('submitBtn');
+const card = $('card'), pw = $('pw'), msg = $('msg'), go = $('go');
+
+$('mark').innerHTML = KMbrand.mark(84);
 
 async function sha256(str){
     const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
     return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2,'0')).join('');
 }
 
-/* already logged in? */
+/* al ingelogd? */
 (function(){
     try{
-        const s = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null');
-        if(s && s.exp > Date.now()){ location.replace('os/index.html'); }
+        const s = JSON.parse(localStorage.getItem(SESSION) || 'null');
+        if(s && s.exp > Date.now()) location.replace('os/index.html');
     }catch(e){}
 })();
 
-/* clock */
 function tick(){
-    $('localTime').textContent = new Date().toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'}) + ' · Amsterdam';
+    const d = new Date();
+    $('clock').textContent = String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
 }
-tick(); setInterval(tick, 10000);
+tick(); setInterval(tick, 20000);
 
-/* caps lock */
-pw.addEventListener('keyup', e => $('caps').classList.toggle('on', e.getModifierState && e.getModifierState('CapsLock')));
-pw.addEventListener('keydown', e => $('caps').classList.toggle('on', e.getModifierState && e.getModifierState('CapsLock')));
-pw.addEventListener('input', () => { card.classList.remove('err'); msg.classList.remove('show'); });
-
-/* show/hide */
-$('eye').addEventListener('click', () => {
+$('eye').onclick = () => {
     const on = pw.type === 'password';
     pw.type = on ? 'text' : 'password';
     $('eyeIcon').innerHTML = on
         ? '<path d="M3 3l18 18M10.6 10.7A2.7 2.7 0 0 0 12 14.7c.7 0 1.4-.3 1.9-.8"/><path d="M6.5 6.8C4 8.4 2 12 2 12s3.6 6.5 10 6.5c1.8 0 3.3-.5 4.6-1.2M19.2 15.4C21 13.8 22 12 22 12s-3.6-6.5-10-6.5c-.9 0-1.7.1-2.4.3"/>'
         : '<path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12Z"/><circle cx="12" cy="12" r="2.7"/>';
     pw.focus();
-});
-
-/* hint */
-$('hintBtn').addEventListener('click', () => {
-    show('De sleutel staat in de broncode van deze pagina (regel met HASH). Standaard: kmdev2026', true);
-});
+};
+$('hint').onclick = () => show('De sleutel staat als hash in de broncode. Standaard: kmdev2026', true);
+pw.addEventListener('input', () => { card.classList.remove('shake'); msg.classList.remove('on'); });
 
 function show(text, ok){
     msg.textContent = text;
     msg.classList.toggle('ok', !!ok);
-    msg.classList.add('show');
+    msg.classList.add('on');
 }
-
-/* lockout state */
-function getFails(){ return JSON.parse(localStorage.getItem('kmdev_fails') || '{"n":0,"until":0}'); }
+function fails(){ return JSON.parse(localStorage.getItem('kmdev_fails') || '{"n":0,"until":0}'); }
 function setFails(v){ localStorage.setItem('kmdev_fails', JSON.stringify(v)); }
-function refreshLock(){
-    const f = getFails();
+function lockUI(){
+    const f = fails();
     if(f.until > Date.now()){
-        const s = Math.ceil((f.until - Date.now())/1000);
-        btn.disabled = true;
-        $('attempts').textContent = 'Te veel pogingen — wacht ' + s + 's';
-        setTimeout(refreshLock, 500);
+        go.disabled = true;
+        show('Te veel pogingen — wacht ' + Math.ceil((f.until - Date.now())/1000) + 's');
+        setTimeout(lockUI, 500);
     }else{
-        btn.disabled = false;
-        $('attempts').textContent = f.n > 0 ? (MAX_ATTEMPTS - f.n) + ' pogingen over' : '';
+        go.disabled = false;
+        if(f.n > 0) show((MAX - f.n) + ' pogingen over');
     }
 }
-refreshLock();
+lockUI();
 
-/* submit */
 card.addEventListener('submit', async e => {
     e.preventDefault();
-    const f = getFails();
+    const f = fails();
     if(f.until > Date.now()) return;
-    if(!pw.value){ card.classList.add('err','shake'); show('Vul je toegangssleutel in.'); setTimeout(()=>card.classList.remove('shake'),480); return; }
+    if(!pw.value){ card.classList.add('shake'); show('Vul je sleutel in'); return; }
 
-    btn.classList.add('loading'); btn.disabled = true;
-    const hash = await sha256(pw.value);
-    await new Promise(r => setTimeout(r, 550));
-    btn.classList.remove('loading'); btn.disabled = false;
+    go.classList.add('busy'); go.disabled = true;
+    const h = await sha256(pw.value);
+    await new Promise(r => setTimeout(r, 480));
+    go.classList.remove('busy'); go.disabled = false;
 
-    if(hash === HASH){
-        setFails({n:0,until:0});
-        const days = $('remember').checked ? 30 : 0.5;
-        localStorage.setItem(SESSION_KEY, JSON.stringify({ exp: Date.now() + days*864e5, at: Date.now() }));
-        $('success').classList.add('on');
-        setTimeout(() => location.href = 'os/index.html', 1500);
+    if(h === HASH){
+        setFails({ n:0, until:0 });
+        const days = $('remember').checked ? 30 : .5;
+        localStorage.setItem(SESSION, JSON.stringify({ exp: Date.now() + days*864e5, at: Date.now() }));
+        sessionStorage.setItem('kmdev_boot', '1');       // laat KM.OS de opstartanimatie spelen
+        unlock();
     }else{
         f.n++;
-        if(f.n >= MAX_ATTEMPTS){ f.until = Date.now() + LOCK_MS; f.n = 0; }
+        if(f.n >= MAX){ f.until = Date.now() + LOCK; f.n = 0; }
         setFails(f);
-        card.classList.add('err','shake');
-        show('Onjuiste toegangssleutel.');
+        card.classList.remove('shake'); void card.offsetWidth; card.classList.add('shake');
+        show('Onjuiste sleutel');
         pw.select();
-        setTimeout(()=>card.classList.remove('shake'),480);
-        refreshLock();
+        lockUI();
     }
 });
 
-window.addEventListener('load', () => setTimeout(()=>pw.focus(), 900));
+function unlock(){
+    show('Welkom terug', true);
+    $('flash').classList.add('on');
+    $('wrap').classList.add('unlock');
+    setTimeout(() => location.href = 'os/index.html', 760);
+}
+
+window.addEventListener('load', () => setTimeout(() => pw.focus(), 800));
 </script>
 </body>
 </html>
