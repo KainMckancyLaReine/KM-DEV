@@ -10,27 +10,80 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="km-os.css">
 <style>
-.ds{display:grid;grid-template-columns:320px 1fr;gap:0;flex:1;min-height:0;}
-.ds-side{border-right:1px solid var(--line);overflow-y:auto;padding:22px 20px 60px;background:var(--paper);}
+.ds{display:grid;grid-template-columns:248px 1fr 268px;gap:0;flex:1;min-height:0;}
+.ds-side{
+    border-right:1px solid var(--mat-line);overflow-y:auto;padding:16px 14px 60px;
+    background:var(--paper);
+}
+.ds-insp{
+    border-left:1px solid var(--mat-line);overflow-y:auto;padding:16px 14px 60px;
+    background:var(--paper);
+}
 .ds-stage{
-    position:relative;overflow:auto;display:grid;place-items:center;padding:34px;
+    position:relative;overflow:hidden;
     background:var(--bg);
     background-image:radial-gradient(var(--line) 1px,transparent 1px);
-    background-size:22px 22px;
+    background-size:20px 20px;
+    display:grid;place-items:center;
+    cursor:grab;touch-action:none;
 }
+.ds-stage.grabbing{cursor:grabbing;}
 .canvas-wrap{
-    box-shadow:0 20px 60px rgba(13,13,13,.18);border-radius:6px;overflow:hidden;
-    transition:transform .35s var(--ease);background:#fff;
-    max-width:100%;
+    position:relative;
+    box-shadow:0 30px 80px -30px rgba(13,13,13,.55), 0 0 0 1px var(--mat-line);
+    border-radius:4px;overflow:hidden;background:#fff;
+    transform-origin:center center;
+    transition:box-shadow .3s;
+    will-change:transform;
 }
+.canvas-wrap.sel{box-shadow:0 30px 80px -30px rgba(13,13,13,.55), 0 0 0 2px var(--accent);}
 .canvas-wrap svg{display:block;width:100%;height:auto;}
-
-.tpl-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.tpl{
-    border:1px solid var(--line);border-radius:12px;padding:10px;cursor:pointer;background:var(--bg);
-    transition:all .22s var(--ease);text-align:left;
+.frame-lbl{
+    position:absolute;left:0;top:-24px;font-family:'Space Mono',monospace;font-size:10px;
+    letter-spacing:.1em;color:var(--text-faint);white-space:nowrap;
 }
-.tpl:hover{border-color:var(--text-faint);transform:translateY(-2px);}
+
+/* zoombalk */
+.ds-zoom{
+    position:absolute;left:50%;bottom:16px;transform:translateX(-50%);z-index:6;
+    display:flex;align-items:center;gap:3px;padding:6px;
+    background:var(--mat-thick);border:1px solid var(--mat-line);border-radius:14px;
+    box-shadow:var(--sh-3);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
+}
+.ds-zoom .zv{
+    font-family:'Space Mono',monospace;font-size:10.5px;color:var(--text-soft);
+    padding:0 10px;min-width:52px;text-align:center;
+}
+
+/* paneelkop */
+.pnl{margin-bottom:20px;}
+.pnl-h{
+    display:flex;align-items:center;gap:8px;margin-bottom:10px;
+    font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--text-faint);
+}
+.pnl-h .n{margin-left:auto;opacity:.7;}
+
+/* lagenlijst */
+.layer{
+    display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;
+    font-size:13px;cursor:pointer;transition:background .18s,transform .3s var(--spring-soft);
+}
+.layer:hover{background:var(--hover);transform:translateX(2px);}
+.layer.on{background:var(--accent-soft);color:var(--accent-ink);}
+html[data-theme="dark"] .layer.on{color:var(--accent);}
+.layer .li{width:18px;text-align:center;opacity:.6;font-size:11px;}
+.layer .lt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.layer .lv{opacity:0;font-size:11px;transition:opacity .18s;}
+.layer:hover .lv{opacity:.5;}
+
+.tpl-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.tpl{
+    border:1px solid var(--mat-line);border-radius:13px;padding:9px;cursor:pointer;background:var(--hover);
+    transition:transform .42s var(--spring-soft),border-color .25s,background .25s;text-align:left;
+}
+.tpl:hover{border-color:var(--text-faint);transform:translateY(-3px);}
+.tpl:active{transform:scale(.96);transition-duration:.1s;}
 .tpl.on{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 2px var(--accent-soft);}
 .tpl .shape{
     background:var(--ink);border-radius:4px;margin-bottom:8px;width:100%;
@@ -53,10 +106,11 @@
 .acc.on{box-shadow:0 0 0 3px var(--accent-soft);border-color:var(--accent);}
 
 .ds-bar{
-    position:absolute;top:16px;right:16px;display:flex;gap:6px;z-index:5;
-    background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:6px;
-    box-shadow:var(--shadow-soft);
+    position:absolute;top:16px;right:16px;display:flex;gap:4px;z-index:6;
+    background:var(--mat-thick);border:1px solid var(--mat-line);border-radius:14px;padding:6px;
+    box-shadow:var(--sh-3);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
 }
+.ds-bar .iconbtn{width:34px;height:34px;font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.06em;}
 .saved{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 .saved-item{
     border:1px solid var(--line);border-radius:10px;overflow:hidden;cursor:pointer;position:relative;
@@ -70,11 +124,13 @@
 }
 .saved-item:hover .x{opacity:1;}
 
+@media(max-width:1180px){ .ds{grid-template-columns:222px 1fr;} .ds-insp{display:none;} }
 @media(max-width:900px){
     .ds{grid-template-columns:1fr;grid-template-rows:auto 1fr;}
-    .ds-side{border-right:0;border-bottom:1px solid var(--line);max-height:46vh;padding:16px;}
-    .ds-stage{padding:16px;}
-    .ds-bar{top:auto;bottom:12px;right:12px;}
+    .ds-side{border-right:0;border-bottom:1px solid var(--mat-line);max-height:42vh;padding:14px;}
+    .ds-stage{padding:12px;}
+    .ds-bar{top:8px;right:8px;}
+    .ds-zoom{bottom:10px;}
 }
 </style>
 </head>
@@ -84,14 +140,22 @@
     <div class="os-body">
         <div class="ds">
             <aside class="ds-side" id="side"></aside>
-            <div class="ds-stage">
+            <div class="ds-stage" id="stageWrap">
                 <div class="ds-bar">
                     <button class="iconbtn" id="dlPng" title="Download PNG">PNG</button>
                     <button class="iconbtn" id="dlSvg" title="Download SVG">SVG</button>
                     <button class="iconbtn" id="saveD" title="Bewaren">★</button>
                 </div>
-                <div class="canvas-wrap" id="stage"></div>
+                <div class="canvas-wrap" id="stage"><span class="frame-lbl" id="frameLbl"></span></div>
+                <div class="ds-zoom">
+                    <button class="iconbtn" id="zOut">−</button>
+                    <span class="zv" id="zv">100%</span>
+                    <button class="iconbtn" id="zIn">+</button>
+                    <button class="iconbtn" id="zFit" title="Passend">⤢</button>
+                    <button class="iconbtn" id="z100" title="100%">1:1</button>
+                </div>
             </div>
+            <aside class="ds-insp" id="insp"></aside>
         </div>
     </div>
 </div>
@@ -370,13 +434,53 @@ function roundRect(c, x, y, w, h, r){
 }
 
 /* =========================================================
-   5. UI
+   5. Canvas — zoom, pan, lagen
    ========================================================= */
+var cam = { k:1, x:0, y:0, fitK:1 };
+var curLayer = 'all';
+
+var LAYERS = {
+    post:  ['bg','eyebrow','headline','sub','badge','logo','image'],
+    thumb: ['bg','eyebrow','headline','sub','badge','logo','image'],
+    story: ['bg','eyebrow','headline','sub','badge','logo','image'],
+    cover: ['bg','eyebrow','headline','logo','image'],
+    quote: ['bg','headline','author','logo','image'],
+    stat:  ['bg','eyebrow','stat','headline','logo','image']
+};
+var LAYER_META = {
+    bg:      { n:'Achtergrond', i:'▦' },
+    eyebrow: { n:'Eyebrow',     i:'T' },
+    headline:{ n:'Kop',         i:'H' },
+    sub:     { n:'Subtekst',    i:'T' },
+    author:  { n:'Auteur',      i:'T' },
+    stat:    { n:'Cijfer',      i:'#' },
+    badge:   { n:'Badge',       i:'◗' },
+    logo:    { n:'Logo',        i:'◈' },
+    image:   { n:'Afbeelding',  i:'▣' }
+};
+
+function applyCam(){
+    var el = $('#stage'); if(!el) return;
+    el.style.transform = 'translate(' + cam.x + 'px,' + cam.y + 'px) scale(' + cam.k + ')';
+    var z = $('#zv'); if(z) z.textContent = Math.round(cam.k * 100 / cam.fitK * 100) / 100 + '%';
+}
+function fitCanvas(){
+    var wrap = $('#stageWrap'), el = $('#stage'); if(!wrap || !el) return;
+    var t = tplOf(S.tpl);
+    var r = wrap.getBoundingClientRect();
+    var availW = Math.max(120, r.width - 120), availH = Math.max(120, r.height - 130);
+    var base = Math.min(availW / t.w, availH / t.h);
+    el.style.width = t.w + 'px';
+    el.style.height = 'auto';
+    cam.fitK = base; cam.k = base; cam.x = 0; cam.y = 0;
+    applyCam();
+}
 function draw(){
     var spec = layout();
     var t = tplOf(S.tpl);
-    $('#stage').innerHTML = renderSVG(spec);
-    $('#stage').style.width = Math.min(t.w, t.w / t.h > 1.4 ? 900 : 520) + 'px';
+    var el = $('#stage');
+    el.innerHTML = '<span class="frame-lbl">' + t.name + ' — ' + t.w + ' × ' + t.h + '</span>' + renderSVG(spec);
+    if(!cam.fitK || Math.abs(el.offsetWidth - t.w) > 2) fitCanvas(); else applyCam();
     return spec;
 }
 function field(label, id, val, ta){
@@ -386,62 +490,115 @@ function field(label, id, val, ta){
 }
 function sideUI(){
     var t = tplOf(S.tpl);
+    var layers = LAYERS[S.tpl] || LAYERS.post;
     $('#side').innerHTML =
-        '<div class="label" style="margin-bottom:10px;">Sjabloon</div>' +
+        '<div class="pnl"><div class="pnl-h">Sjabloon<span class="n">' + t.w + '×' + t.h + '</span></div>' +
         '<div class="tpl-grid">' + TEMPLATES.map(function(x){
-            var h = Math.round(46 * (x.h / x.w)); h = Math.max(16, Math.min(72, h));
+            var h = Math.round(42 * (x.h / x.w)); h = Math.max(14, Math.min(64, h));
             return '<button class="tpl' + (x.id === S.tpl ? ' on' : '') + '" data-tpl="' + x.id + '">' +
                 '<div class="shape" style="height:' + h + 'px;background:' + (x.id === S.tpl ? S.accent : 'var(--ink)') + '"></div>' +
-                '<b>' + x.name + '</b><span>' + x.w + '×' + x.h + ' · ' + x.note + '</span></button>';
-        }).join('') + '</div>' +
+                '<b>' + x.name + '</b><span>' + x.note + '</span></button>';
+        }).join('') + '</div></div>' +
 
-        '<div class="label" style="margin:22px 0 10px;">Achtergrond</div>' +
+        '<div class="pnl"><div class="pnl-h">Lagen<span class="n">' + layers.length + '</span></div>' +
+        '<div class="layers">' +
+            '<div class="layer' + (curLayer === 'all' ? ' on' : '') + '" data-layer="all">' +
+                '<span class="li">◎</span><span class="lt">Alles</span></div>' +
+            layers.map(function(k){
+                var m = LAYER_META[k] || { n:k, i:'·' };
+                var empty = (k === 'image' && !S.image) || (k === 'logo' && !S.logo);
+                return '<div class="layer' + (curLayer === k ? ' on' : '') + '" data-layer="' + k + '">' +
+                    '<span class="li">' + m.i + '</span><span class="lt">' + m.n + '</span>' +
+                    '<span class="lv">' + (empty ? 'leeg' : '') + '</span></div>';
+            }).join('') +
+        '</div></div>' +
+
+        '<div class="pnl"><div class="pnl-h">Achtergrond</div>' +
         '<div class="sw-grid">' + BGS.map(function(b){
             return '<button class="sw' + (b.id === S.bg ? ' on' : '') + '" data-bg="' + b.id + '" title="' + b.name + '">' +
                 renderSVG({ w:160, h:100, bg:b, ops:[] }) + '</button>';
-        }).join('') + '</div>' +
+        }).join('') + '</div></div>' +
 
-        '<div class="label" style="margin:22px 0 10px;">Accentkleur</div>' +
-        '<div class="acc-grid">' + ACCENTS.map(function(c){
-            return '<button class="acc' + (c === S.accent ? ' on' : '') + '" data-acc="' + c + '" style="background:' + c + '"></button>';
-        }).join('') + '</div>' +
-
-        '<div class="label" style="margin:22px 0 10px;">Tekst</div>' +
-        field('Eyebrow', 'fE', S.eyebrow) +
-        field(t.id === 'quote' ? 'Quote' : 'Kop', 'fH', S.headline, true) +
-        (t.id === 'quote' ? field('Auteur', 'fA', S.author) : field('Subtekst', 'fS', S.sub, true)) +
-        (t.id === 'stat' ? field('Cijfer', 'fN', S.stat) + field('Label bij cijfer', 'fL', S.statLabel) : '') +
-        (t.id === 'post' || t.id === 'story' || t.id === 'thumb' ? field('Badge', 'fB', S.badge) : '') +
-
-        '<div class="label" style="margin:22px 0 10px;">Opmaak</div>' +
-        '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">' +
-            '<button class="chip' + (S.align === 'left' ? ' on' : '') + '" data-al="left">Links</button>' +
-            '<button class="chip' + (S.align === 'center' ? ' on' : '') + '" data-al="center">Gecentreerd</button>' +
-        '</div>' +
-        '<label class="switch" style="margin-bottom:14px;"><input type="checkbox" id="fLogo"' + (S.logo ? ' checked' : '') + '><span class="track"></span>Logo tonen</label>' +
-
-        '<div class="label" style="margin:18px 0 10px;">Afbeelding</div>' +
-        '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
-            '<button class="chip" id="imgUp">Upload</button>' +
-            (KM.ai.on() ? '<button class="chip" id="imgAi">AI-beeld</button>' : '') +
-            (S.image ? '<button class="chip" id="imgClr">Verwijderen</button>' : '') +
-        '</div>' +
-        (KM.ai.on() ? '' : '<p style="margin-top:10px;font-size:12px;color:var(--text-faint);line-height:1.6;">Wil je hier ook AI-beelden? Koppel de proxy bij <a href="integrations.html" style="color:var(--accent-ink)">Integraties</a>.</p>') +
-
-        (D.designs.length ? '<div class="label" style="margin:24px 0 10px;">Bewaard — ' + D.designs.length + '</div><div class="saved" id="saved">' +
-            D.designs.map(function(x, i){
+        (D.designs.length ? '<div class="pnl"><div class="pnl-h">Bewaard<span class="n">' + D.designs.length + '</span></div>' +
+            '<div class="saved" id="saved">' + D.designs.map(function(x, i){
                 return '<div class="saved-item" data-load="' + i + '">' + renderSVG(specOf(x.state)) + '<button class="x" data-rm="' + i + '">✕</button></div>';
-            }).join('') + '</div>' : '');
+            }).join('') + '</div></div>' : '');
 
-    $$('[data-tpl]').forEach(function(b){ b.onclick = function(){ S.tpl = b.dataset.tpl; save(); }; });
+    $$('[data-tpl]').forEach(function(b){ b.onclick = function(){ S.tpl = b.dataset.tpl; curLayer = 'all'; cam.fitK = 0; save(); }; });
     $$('[data-bg]').forEach(function(b){ b.onclick = function(){ S.bg = b.dataset.bg; save(); }; });
-    $$('[data-acc]').forEach(function(b){ b.onclick = function(){ S.accent = b.dataset.acc; save(); }; });
-    $$('[data-al]').forEach(function(b){ b.onclick = function(){ S.align = b.dataset.al; save(); }; });
+    $$('[data-layer]').forEach(function(el){
+        el.onclick = function(){ curLayer = el.dataset.layer; sideUI(); inspUI(); };
+    });
+    $$('[data-load]').forEach(function(el){
+        el.onclick = function(e){
+            if(e.target.dataset.rm !== undefined){ D.designs.splice(+e.target.dataset.rm, 1); OS.save(); sideUI(); return; }
+            S = D.design = Object.assign({}, D.designs[+el.dataset.load].state);
+            OS.save(); cam.fitK = 0; sideUI(); inspUI(); draw();
+        };
+    });
+    inspUI();
+    draw();
+}
+
+/* ---------- inspector rechts ---------- */
+function inspUI(){
+    var t = tplOf(S.tpl);
+    var L = curLayer;
+    var show = function(k){ return L === 'all' || L === k; };
+    var html = '<div class="pnl"><div class="pnl-h">Inspector<span class="n">' +
+        (L === 'all' ? 'alles' : (LAYER_META[L] || {}).n || L) + '</span></div>';
+
+    if(show('eyebrow') && (LAYERS[S.tpl]||[]).indexOf('eyebrow') >= 0) html += field('Eyebrow', 'fE', S.eyebrow);
+    if(show('headline')) html += field(t.id === 'quote' ? 'Quote' : 'Kop', 'fH', S.headline, true);
+    if(show('sub') && t.id !== 'quote' && (LAYERS[S.tpl]||[]).indexOf('sub') >= 0) html += field('Subtekst', 'fS', S.sub, true);
+    if(show('author') && t.id === 'quote') html += field('Auteur', 'fA', S.author);
+    if(show('stat') && t.id === 'stat') html += field('Cijfer', 'fN', S.stat) + field('Label', 'fL', S.statLabel);
+    if(show('badge') && (LAYERS[S.tpl]||[]).indexOf('badge') >= 0) html += field('Badge', 'fB', S.badge);
+    html += '</div>';
+
+    if(show('bg') || L === 'all'){
+        html += '<div class="pnl"><div class="pnl-h">Accent</div>' +
+            '<div class="acc-grid">' + ACCENTS.map(function(c){
+                return '<button class="acc' + (c === S.accent ? ' on' : '') + '" data-acc="' + c + '" style="background:' + c + '"></button>';
+            }).join('') + '</div></div>';
+    }
+
+    html += '<div class="pnl"><div class="pnl-h">Uitlijning</div>' +
+        KM.seg([{ v:'left', n:'Links' }, { v:'center', n:'Midden' }], S.align) + '</div>';
+
+    if(show('logo')) html += '<div class="pnl"><label class="switch"><input type="checkbox" id="fLogo"' +
+        (S.logo ? ' checked' : '') + '><span class="track"></span>Logo tonen</label></div>';
+
+    if(show('image')){
+        html += '<div class="pnl"><div class="pnl-h">Afbeelding</div>' +
+            '<div style="display:flex;gap:7px;flex-wrap:wrap;">' +
+                '<button class="chip" id="imgUp">Upload</button>' +
+                (KM.ai.on() ? '<button class="chip" id="imgAi">AI-beeld</button>' : '') +
+                (S.image ? '<button class="chip" id="imgClr">Wissen</button>' : '') +
+            '</div>' +
+            (KM.ai.on() ? '' : '<p style="margin-top:9px;font-size:11.5px;color:var(--text-faint);line-height:1.6;">' +
+                'AI-beelden? Koppel de proxy bij <a href="integrations.html" style="color:var(--accent-ink)">Integraties</a>.</p>') +
+            '</div>';
+    }
+
+    html += '<div class="pnl"><div class="pnl-h">Export</div>' +
+        '<div style="display:flex;gap:7px;flex-wrap:wrap;">' +
+            '<button class="chip" data-exp="1">1×</button>' +
+            '<button class="chip" data-exp="2">2×</button>' +
+            '<button class="chip" data-exp="3">3×</button>' +
+        '</div><p style="margin-top:9px;font-size:11.5px;color:var(--text-faint);">' +
+        t.w + ' × ' + t.h + ' px op 1×</p></div>';
+
+    $('#insp').innerHTML = html;
+
     bind('#fE','eyebrow'); bind('#fH','headline'); bind('#fS','sub'); bind('#fA','author');
     bind('#fN','stat'); bind('#fL','statLabel'); bind('#fB','badge');
-    $('#fLogo').onchange = function(){ S.logo = this.checked; save(); };
+    $$('[data-acc]').forEach(function(b){ b.onclick = function(){ S.accent = b.dataset.acc; OS.save(); sideUI(); }; });
+    KM.segBind($('#insp'), function(v){ S.align = v; OS.save(); draw(); });
+    if($('#fLogo')) $('#fLogo').onchange = function(){ S.logo = this.checked; OS.save(); sideUI(); };
+    $$('[data-exp]').forEach(function(b){ b.onclick = function(){ exportPng(+b.dataset.exp); }; });
 
-    $('#imgUp').onclick = function(){
+    if($('#imgUp')) $('#imgUp').onclick = function(){
         var inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*';
         inp.onchange = function(){
             var f = inp.files[0]; if(!f) return;
@@ -458,14 +615,6 @@ function sideUI(){
             .then(function(r){ S.image = r.url || r.image || ''; save(); })
             .catch(function(e){ KM.toast(e.message, 'err'); });
     };
-    $$('[data-load]').forEach(function(el){
-        el.onclick = function(e){
-            if(e.target.dataset.rm !== undefined){ D.designs.splice(+e.target.dataset.rm, 1); OS.save(); sideUI(); return; }
-            S = D.design = Object.assign({}, D.designs[+el.dataset.load].state);
-            OS.save(); sideUI(); draw();
-        };
-    });
-    draw();
 }
 function specOf(state){
     var keep = S; S = state; var sp = layout(); S = keep; return sp;
@@ -476,21 +625,57 @@ function bind(sel_, key){
 }
 function save(){ OS.save(); sideUI(); }
 
+/* ---------- export ---------- */
+function exportPng(scale){
+    var cvs = renderCanvas(layout(), scale || 2);
+    var a = document.createElement('a');
+    a.download = 'km-' + S.tpl + '-' + (scale||2) + 'x-' + KM.iso() + '.png';
+    a.href = cvs.toDataURL('image/png');
+    a.click();
+    KM.toast('PNG op ' + cvs.width + ' px gedownload');
+    KM.track('design_export', { tpl:S.tpl, scale:scale||2 });
+    KMlive.log('design', 'PNG geëxporteerd: ' + tplOf(S.tpl).name);
+}
+
+/* ---------- canvas: zoom en pan ---------- */
+(function(){
+    var wrap = $('#stageWrap'); if(!wrap) return;
+    var pan = null;
+    wrap.addEventListener('wheel', function(e){
+        e.preventDefault();
+        if(e.ctrlKey || e.metaKey || Math.abs(e.deltaY) > Math.abs(e.deltaX)){
+            var f = Math.exp(-e.deltaY * .0018);
+            cam.k = KM.clamp(cam.k * f, cam.fitK * .25, cam.fitK * 6);
+        }else{
+            cam.x -= e.deltaX; cam.y -= e.deltaY;
+        }
+        applyCam();
+    }, { passive:false });
+    wrap.addEventListener('mousedown', function(e){
+        if(e.target.closest('.ds-bar') || e.target.closest('.ds-zoom')) return;
+        pan = { x:e.clientX, y:e.clientY, cx:cam.x, cy:cam.y };
+        wrap.classList.add('grabbing');
+    });
+    window.addEventListener('mousemove', function(e){
+        if(!pan) return;
+        cam.x = pan.cx + (e.clientX - pan.x);
+        cam.y = pan.cy + (e.clientY - pan.y);
+        applyCam();
+    });
+    window.addEventListener('mouseup', function(){ pan = null; wrap.classList.remove('grabbing'); });
+    window.addEventListener('resize', function(){ cam.fitK = 0; fitCanvas(); });
+})();
+$('#zIn').onclick  = function(){ cam.k = KM.clamp(cam.k * 1.25, cam.fitK*.25, cam.fitK*6); applyCam(); };
+$('#zOut').onclick = function(){ cam.k = KM.clamp(cam.k / 1.25, cam.fitK*.25, cam.fitK*6); applyCam(); };
+$('#zFit').onclick = function(){ cam.fitK = 0; fitCanvas(); };
+$('#z100').onclick = function(){ cam.k = cam.fitK; cam.x = cam.y = 0; applyCam(); };
+
 /* export */
 $('#dlSvg').onclick = function(){
     KM.download('km-' + S.tpl + '-' + KM.iso() + '.svg', renderSVG(layout()), 'image/svg+xml');
     KM.toast('SVG gedownload');
 };
-$('#dlPng').onclick = function(){
-    var cv = renderCanvas(layout(), 2);
-    var a = document.createElement('a');
-    a.download = 'km-' + S.tpl + '-' + KM.iso() + '.png';
-    a.href = cv.toDataURL('image/png');
-    a.click();
-    KM.toast('PNG op ' + (tplOf(S.tpl).w * 2) + 'px gedownload');
-    KM.track('design_export', { tpl:S.tpl });
-    KMlive.log('design', 'PNG geëxporteerd: ' + tplOf(S.tpl).name);
-};
+$('#dlPng').onclick = function(){ exportPng(2); };
 $('#saveD').onclick = function(){
     D.designs.unshift({ id:KM.uid(), at:Date.now(), state:Object.assign({}, S) });
     if(D.designs.length > 12) D.designs.length = 12;
@@ -504,7 +689,10 @@ KM.shell({ app:'design' });
 if(document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ draw(); });
 sideUI();
 
-window.DES = { layout:layout, renderSVG:renderSVG, renderCanvas:renderCanvas, TEMPLATES:TEMPLATES, BGS:BGS, wrap:wrap, state:function(){ return S; }, draw:draw, sideUI:sideUI };
+window.DES = { layout:layout, renderSVG:renderSVG, renderCanvas:renderCanvas, TEMPLATES:TEMPLATES, BGS:BGS,
+               wrap:wrap, state:function(){ return S; }, draw:draw, sideUI:sideUI, inspUI:inspUI,
+               cam:cam, fitCanvas:fitCanvas, applyCam:applyCam, LAYERS:LAYERS,
+               layer:function(v){ if(v!==undefined){ curLayer=v; sideUI(); } return curLayer; } };
 }
 </script>
 </body>

@@ -43,6 +43,20 @@ De Mind Matrix leest al deze verbanden — inclusief je Notion-pagina's — en t
 als één netwerk. De Scheduler leest dezelfde taken en plant ze in. Vink je iets af in
 de launcher, dan zie je dat terug in de voortgangsring van het doel.
 
+## Vormgeving
+
+Het hele systeem draait op één materiaal-laag in `km-os.css`:
+
+- **Echt logo** — `km-brand.js` bouwt het KM.dev-mark (squircle, KM, lime balk) als inline SVG,
+  plus een **app-icoon per app**: squircle met verloop, glansrand en een eigen getekende glyph
+- **Vibrancy** — panelen zijn matglas met `backdrop-filter`, vierlaagse schaduwen zoals macOS
+- **Springs** — knoppen veren in bij hover, drukken in bij klik; panelen komen met een spring binnen
+- **Segmented controls** met een thumb die meeglijdt, in plaats van losse knoppen
+- **Launchpad** — `⌘K` of de rasterknop opent alle apps groot over een blur, met zoeken,
+  pijltjesnavigatie en een spring-stagger
+- **Boot-sequence** — na het inloggen bouwt het logo zich op, trekt een lime lijn zich rond de
+  squircle, en vliegen de app-iconen van onderen in
+
 ## Visuals
 
 `km-viz.js` levert acht SVG-visuals die overal hetzelfde werken en meebewegen met je thema:
@@ -50,7 +64,7 @@ de launcher, dan zie je dat terug in de voortgangsring van het doel.
 | Functie | Waar je hem ziet |
 |---|---|
 | `radar` | Levensbalans over zes gebieden — launcher en Life OS |
-| `donut` | Werkverdeling naar prioriteit en soort werk |
+| `stack` | Werkverdeling als gestapelde capsule — verving de donut |
 | `area` | 30 dagen momentum, verloop in de weekreview |
 | `bars` | Uren per dag in de Scheduler, aandacht per gebied |
 | `heatmap` | 17 weken activiteit; per gewoonte klikbaar om een dag terug te zetten |

@@ -10,51 +10,97 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="km-os.css">
 <style>
+/* ---------- v2: alles op materiaal ---------- */
+.grid-cards{display:grid;gap:14px;}
+.gc2{grid-template-columns:repeat(auto-fill,minmax(320px,1fr));}
+.gc3{grid-template-columns:repeat(auto-fill,minmax(232px,1fr));}
+.gc4{grid-template-columns:repeat(auto-fill,minmax(180px,1fr));}
+
+.pane{
+    position:relative;overflow:hidden;border-radius:var(--r-lg);padding:20px;
+    background:var(--paper);border:1px solid var(--mat-line);
+    box-shadow:var(--sh-2), inset 0 1px 0 var(--mat-hi);
+    transition:transform .5s var(--ease-out), box-shadow .5s var(--ease-out), border-color .3s;
+    opacity:0;transform:translateY(16px) scale(.985);
+    animation:paneIn .7s var(--spring-soft) forwards;
+}
+@keyframes paneIn{to{opacity:1;transform:none;}}
+.pane:hover{transform:translateY(-3px);box-shadow:var(--sh-4), inset 0 1px 0 var(--mat-hi);}
+.pane.flat:hover{transform:none;box-shadow:var(--sh-2), inset 0 1px 0 var(--mat-hi);}
+.pane .ph{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.pane .ph b{font-family:'Space Grotesk',sans-serif;font-size:13.5px;font-weight:600;letter-spacing:-.02em;}
+.pane .ph .label{margin-left:auto;}
+.stagger > *{animation-delay:calc(var(--i,0) * .05s);}
+
 /* ---------- levensgebieden ---------- */
+.area-card{
+    position:relative;border-radius:var(--r-lg);border:1px solid var(--mat-line);background:var(--paper);
+    padding:18px;overflow:hidden;cursor:pointer;
+    box-shadow:var(--sh-1), inset 0 1px 0 var(--mat-hi);
+    transition:transform .45s var(--spring-soft),box-shadow .4s,border-color .3s;
+    opacity:0;transform:translateY(14px);animation:paneIn .65s var(--spring-soft) forwards;
+}
+.area-card::before{
+    content:'';position:absolute;inset:0 0 auto 0;height:3px;background:var(--c);
+}
+.area-card::after{
+    content:'';position:absolute;right:-30px;top:-30px;width:110px;height:110px;border-radius:50%;
+    background:var(--c);opacity:.09;transition:transform .6s var(--ease-out),opacity .4s;
+}
+.area-card:hover{transform:translateY(-4px);box-shadow:var(--sh-3);border-color:var(--c);}
+.area-card:hover::after{transform:scale(1.5);opacity:.16;}
+.area-card .ai{font-size:23px;position:relative;}
+.area-card h4{font-size:14.5px;font-weight:600;margin:12px 0 4px;letter-spacing:-.02em;position:relative;}
 .area-card{
     position:relative;border-radius:var(--r-md);border:1px solid var(--line);background:var(--paper);
     padding:20px;overflow:hidden;cursor:pointer;
     transition:transform .3s var(--ease),box-shadow .3s,border-color .3s;
 }
-.area-card::after{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--c);}
-.area-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-soft);border-color:var(--c);}
-.area-card .ai{font-size:24px;}
-.area-card h4{font-size:15.5px;font-weight:600;margin:11px 0 4px;}
 .area-card .an{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--text-faint);}
 .area-card .bar{margin-top:14px;}
 .area-card .bar i{background:var(--c);}
 
 /* ---------- doelkaart ---------- */
 .goal{
-    position:relative;background:var(--paper);border:1px solid var(--line);border-radius:var(--r-md);
-    padding:22px;overflow:hidden;transition:transform .3s var(--ease),box-shadow .3s,border-color .3s;
+    position:relative;background:var(--paper);border:1px solid var(--mat-line);border-radius:var(--r-lg);
+    padding:0;overflow:hidden;cursor:pointer;
+    box-shadow:var(--sh-2), inset 0 1px 0 var(--mat-hi);
+    transition:transform .5s var(--spring-soft),box-shadow .4s,border-color .3s;
+    opacity:0;transform:translateY(16px);animation:paneIn .7s var(--spring-soft) forwards;
 }
-.goal:hover{transform:translateY(-4px);box-shadow:var(--shadow-soft);border-color:var(--c);}
-.goal::before{content:'';position:absolute;inset:0;opacity:.05;background:var(--c);pointer-events:none;}
+.goal:hover{transform:translateY(-5px);box-shadow:var(--sh-4);border-color:var(--c);}
+.goal-band{
+    position:relative;height:74px;overflow:hidden;
+    background:linear-gradient(120deg, var(--c), color-mix(in srgb, var(--c) 45%, #0d0d0d));
+}
+.goal-band::after{
+    content:'';position:absolute;inset:0;
+    background:radial-gradient(160px 90px at 82% -20%, rgba(255,255,255,.4), transparent 70%);
+}
+.goal-band .gb-ico{
+    position:absolute;left:20px;bottom:-22px;width:52px;height:52px;border-radius:17px;
+    display:grid;place-items:center;font-size:23px;background:var(--paper);
+    border:1px solid var(--mat-line);box-shadow:var(--sh-2);z-index:2;
+}
+.goal-band .gb-ring{position:absolute;right:16px;top:11px;z-index:2;}
+.goal-in{padding:32px 20px 18px;position:relative;}
 .goal-top{display:flex;align-items:flex-start;gap:14px;position:relative;}
-.goal-ico{
-    width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-size:21px;
-    background:var(--bg);border:1px solid var(--line);flex:0 0 46px;
-}
-.goal h3{font-size:18px;font-weight:600;line-height:1.25;}
-.goal .why{font-size:13px;color:var(--text-soft);margin-top:6px;line-height:1.55;}
-.goal-ring{margin-left:auto;position:relative;flex:0 0 auto;}
-.goal-ring .pct{
-    position:absolute;inset:0;display:grid;place-items:center;
-    font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;
-}
-.goal .ring .val{stroke:var(--c);}
-.goal-foot{display:flex;align-items:center;gap:8px;margin-top:18px;padding-top:14px;border-top:1px solid var(--line-soft);flex-wrap:wrap;position:relative;}
+.goal h3{font-size:17px;font-weight:600;line-height:1.3;letter-spacing:-.028em;}
+.goal .why{font-size:13px;color:var(--text-soft);margin-top:7px;line-height:1.6;}
+.goal-foot{display:flex;align-items:center;gap:7px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line-soft);flex-wrap:wrap;position:relative;}
 .mini{font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--text-faint);}
 
 /* ---------- projecten / taken ---------- */
 .plist{display:flex;flex-direction:column;gap:9px;}
 .prow{
-    display:flex;align-items:center;gap:13px;padding:14px 17px;border-radius:14px;
-    border:1px solid var(--line);background:var(--paper);cursor:pointer;
-    transition:all .24s var(--ease);
+    display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:16px;
+    border:1px solid var(--mat-line);background:var(--paper);cursor:pointer;
+    box-shadow:var(--sh-1);
+    transition:transform .42s var(--spring-soft),box-shadow .3s,border-color .3s;
+    opacity:0;animation:paneIn .6s var(--spring-soft) forwards;
 }
-.prow:hover{border-color:var(--text-faint);transform:translateX(4px);box-shadow:var(--shadow-soft);}
+.prow:hover{border-color:var(--text-faint);transform:translateX(5px);box-shadow:var(--sh-3);}
+.prow .pring{flex:0 0 auto;}
 .prow .pi{font-size:19px;flex:0 0 auto;}
 .prow .pt{flex:1;min-width:0;}
 .prow .pt b{display:block;font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:600;letter-spacing:-.015em;}
@@ -62,10 +108,12 @@
 .prow .pbar{width:92px;flex:0 0 92px;}
 
 .trow{
-    display:flex;align-items:center;gap:12px;padding:12px 15px;border-radius:13px;
-    border:1px solid var(--line);background:var(--paper);transition:all .22s var(--ease);
+    display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:14px;
+    border:1px solid transparent;background:var(--paper);
+    box-shadow:var(--sh-1);
+    transition:transform .38s var(--spring-soft),box-shadow .28s,border-color .25s,opacity .3s;
 }
-.trow:hover{border-color:var(--text-faint);transform:translateX(3px);}
+.trow:hover{border-color:var(--mat-line);transform:translateX(4px);box-shadow:var(--sh-2);}
 .trow.done{opacity:.55;}
 .trow.done .tt{text-decoration:line-through;color:var(--text-faint);}
 .cbx{
@@ -86,14 +134,21 @@ html[data-theme="dark"] .due.now{color:var(--accent);}
 /* ---------- eisenhower ---------- */
 .eis{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 .quad{
-    border:1px solid var(--line);border-radius:var(--r-md);padding:16px;min-height:210px;
-    background:var(--paper);transition:box-shadow .25s,border-color .25s;
+    position:relative;border:1px solid var(--mat-line);border-radius:var(--r-lg);padding:0 16px 16px;
+    min-height:220px;background:var(--paper);overflow:hidden;
+    box-shadow:var(--sh-2), inset 0 1px 0 var(--mat-hi);
+    transition:box-shadow .3s,border-color .25s,transform .4s var(--ease-out);
+    opacity:0;transform:translateY(14px);animation:paneIn .65s var(--spring-soft) forwards;
 }
-.quad.over{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
-.quad-h{display:flex;align-items:center;gap:9px;margin-bottom:13px;}
-.quad-h b{font-family:'Space Grotesk',sans-serif;font-size:14.5px;font-weight:600;}
-.quad-h .q-n{margin-left:auto;font-family:'Space Mono',monospace;font-size:10px;color:var(--text-faint);}
-.quad-h .q-d{width:9px;height:9px;border-radius:50%;flex:0 0 9px;}
+.quad::before{content:'';position:absolute;inset:0 0 auto 0;height:3px;background:var(--qc);}
+.quad.over{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft),var(--sh-3);transform:translateY(-2px);}
+.quad-h{display:flex;align-items:center;gap:10px;padding:16px 0 4px;}
+.quad-h b{font-family:'Space Grotesk',sans-serif;font-size:14.5px;font-weight:600;letter-spacing:-.025em;}
+.quad-h .q-n{
+    margin-left:auto;font-family:'Space Mono',monospace;font-size:10px;color:var(--qc);
+    background:color-mix(in srgb, var(--qc) 14%, transparent);padding:3px 9px;border-radius:999px;
+}
+.quad-h .q-d{width:9px;height:9px;border-radius:3px;flex:0 0 9px;background:var(--qc);}
 .quad .plist{gap:7px;}
 .quad .trow{padding:10px 13px;cursor:grab;font-size:13.5px;}
 .quad .trow:active{cursor:grabbing;}
@@ -103,13 +158,15 @@ html[data-theme="dark"] .due.now{color:var(--accent);}
 
 /* ---------- gewoontes ---------- */
 .habit{
-    display:flex;align-items:center;gap:15px;padding:16px 18px;border-radius:var(--r-md);
-    border:1px solid var(--line);background:var(--paper);transition:all .24s var(--ease);
+    display:flex;align-items:center;gap:15px;padding:15px 17px;border-radius:var(--r-lg);
+    border:1px solid var(--mat-line);background:var(--paper);box-shadow:var(--sh-1);
+    transition:transform .42s var(--spring-soft),box-shadow .3s,border-color .3s;
 }
-.habit:hover{border-color:var(--hc);box-shadow:var(--shadow-soft);}
+.habit:hover{border-color:var(--hc);box-shadow:var(--sh-3);transform:translateY(-2px);}
 .habit-ico{
-    width:42px;height:42px;border-radius:13px;display:grid;place-items:center;font-size:19px;
-    background:var(--bg);border:1px solid var(--line);flex:0 0 42px;
+    width:44px;height:44px;border-radius:15px;display:grid;place-items:center;font-size:19px;
+    background:color-mix(in srgb, var(--hc) 13%, var(--paper));
+    border:1px solid color-mix(in srgb, var(--hc) 30%, transparent);flex:0 0 44px;
 }
 .habit-t{flex:1;min-width:0;}
 .habit-t b{display:block;font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:600;}
@@ -119,11 +176,13 @@ html[data-theme="dark"] .due.now{color:var(--accent);}
 .heat i.on{background:var(--hc);}
 .heat i:hover{transform:scaleY(1.2);}
 .hcheck{
-    width:38px;height:38px;border-radius:12px;border:1.6px solid var(--line);flex:0 0 38px;
-    display:grid;place-items:center;transition:all .24s var(--ease);cursor:pointer;font-size:16px;color:var(--text-faint);
+    width:40px;height:40px;border-radius:14px;border:1.5px solid var(--mat-line);flex:0 0 40px;
+    display:grid;place-items:center;transition:all .4s var(--spring-soft);cursor:pointer;
+    font-size:16px;color:var(--text-faint);background:var(--hover);
 }
-.hcheck:hover{border-color:var(--hc);transform:scale(1.06);}
-.hcheck.on{background:var(--hc);border-color:var(--hc);color:#fff;}
+.hcheck:hover{border-color:var(--hc);transform:scale(1.08);color:var(--hc);}
+.hcheck:active{transform:scale(.94);transition-duration:.1s;}
+.hcheck.on{background:var(--hc);border-color:var(--hc);color:#fff;box-shadow:0 4px 14px -4px var(--hc);}
 
 /* ---------- review ---------- */
 .rev-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;}
@@ -152,7 +211,7 @@ html[data-theme="dark"] .due.now{color:var(--accent);}
 <script>
 if(KM.boot()){
 
-var $ = KM.$, $$ = KM.$$, OS = KM.OS, D = OS.data, esc = KM.esc, V = KMviz, L = KMlive;
+var $ = KM.$, $$ = KM.$$, OS = KM.OS, D = OS.data, esc = KM.esc, V = KMviz, L = KMlive, B = KMbrand;
 var tab = location.hash.slice(1) || 'today';
 
 KM.shell({
@@ -240,7 +299,7 @@ function vToday(v){
     var td = KM.iso();
 
     v.innerHTML =
-        '<div class="grid g2" style="margin-bottom:26px;">' +
+        '<div class="grid-cards gc4" style="margin-bottom:26px;">' +
             card('Momentum', KM.q.momentum() + '%', 'laatste 7 dagen actief', spark(14)) +
             card('Vandaag af', D.tasks.filter(function(t){ return t.doneAt && KM.iso(new Date(t.doneAt)) === td; }).length, 'taken afgerond') +
             card('Open', KM.q.open().length, 'taken in het systeem') +
@@ -258,19 +317,21 @@ function vToday(v){
 
         '<div class="sec-head"><h2 class="grotesk">Gewoontes vandaag</h2>' +
             '<span class="label">' + D.habits.filter(function(h){ return h.log[td]; }).length + ' van ' + D.habits.length + ' af</span></div>' +
-        '<div class="grid g2" id="hq">' + D.habits.map(habitMini).join('') + '</div>' +
+        '<div class="grid-cards gc2" id="hq">' + D.habits.map(habitMini).join('') + '</div>' +
 
         '<div class="sec-head"><h2 class="grotesk">Ritme</h2><span class="label">laatste 17 weken</span></div>' +
-        '<div class="card">' + V.heatmap({ days:heatDays(), weeks:17 }) + '</div>';
+        '<div class="pane flat">' + V.heatmap({ days:heatDays(), weeks:17 }) + '</div>';
 
     bindTasks(v);
     bindHabitMini(v);
     V.animate(v);
 }
+var _ci = 0;
 function card(label, big, sub, extra){
-    return '<div class="card rise"><div class="stat"><span>' + label + '</span>' +
-        '<b>' + big + '</b><span style="letter-spacing:0;text-transform:none;font-family:Inter,sans-serif;font-size:12.5px;">' + sub + '</span></div>' +
-        (extra || '') + '</div>';
+    return '<div class="pane" style="animation-delay:' + ((_ci++ % 8)*.06) + 's">' +
+        '<div class="metric"><span>' + label + '</span><b>' + big + '</b>' +
+        '<span style="letter-spacing:0;text-transform:none;font-family:Inter,sans-serif;font-size:12.5px;color:var(--text-soft);">' + sub + '</span></div>' +
+        (extra ? '<div style="margin-top:14px;">' + extra + '</div>' : '') + '</div>';
 }
 function dayScore(dayISO){
     return D.tasks.filter(function(t){ return t.doneAt && KM.iso(new Date(t.doneAt)) === dayISO; }).length
@@ -340,11 +401,11 @@ function vGoals(v){
             }).join('') + '</div>' +
         '</div>' +
         '<div class="sec-head"><h2 class="grotesk">Levensgebieden</h2><span class="mini">klik om te filteren</span></div>' +
-        '<div class="grid g3">' + KM.AREAS.map(function(a){
+        '<div class="grid-cards gc3">' + KM.AREAS.map(function(a, i){
             var gs = D.goals.filter(function(g){ return g.area === a.id; });
             var ts = D.tasks.filter(function(t){ return t.area === a.id; });
             var pct = ts.length ? Math.round(ts.filter(function(t){ return t.status === 'done'; }).length / ts.length * 100) : 0;
-            return '<div class="area-card rise" style="--c:' + a.hex + '" data-area="' + a.id + '">' +
+            return '<div class="area-card" style="--c:' + a.hex + ';animation-delay:' + (i*.05) + 's" data-area="' + a.id + '">' +
                 '<div class="ai">' + a.icon + '</div><h4 class="grotesk">' + esc(a.name) + '</h4>' +
                 '<div class="an">' + gs.length + ' doelen · ' + ts.length + ' taken</div>' +
                 '<div class="bar"><i style="width:' + pct + '%"></i></div>' +
@@ -353,7 +414,7 @@ function vGoals(v){
 
         '<div class="sec-head"><h2 class="grotesk">Doelen</h2>' +
             '<button class="btn sm" id="newGoal">＋ Doel</button></div>' +
-        '<div class="grid g2" id="goalGrid">' + (D.goals.length ? D.goals.map(goalCard).join('') : '<div class="empty">Nog geen doelen</div>') + '</div>';
+        '<div class="grid-cards gc2" id="goalGrid">' + (D.goals.length ? D.goals.map(goalCard).join('') : '<div class="empty">Nog geen doelen</div>') + '</div>';
 
     V.animate(v);
     $('#newGoal').onclick = function(){ editGoal(); };
@@ -367,24 +428,32 @@ function vGoals(v){
         el.onclick = function(){ tab = 'projects'; location.hash = 'projects'; areaFilter = el.dataset.area; render(); };
     });
 }
-function goalCard(g){
+function goalCard(g, i){
     var a = KM.areaOf(g.area);
     var pct = KM.q.progress(g.id);
     var pj = KM.q.projectsOfGoal(g.id);
+    var ts = KM.q.tasksOfGoal(g.id);
     var hz = KM.HORIZONS.filter(function(h){ return h.id === g.horizon; })[0] || KM.HORIZONS[1];
     var dd = KM.dayDiff(g.due);
-    return '<div class="goal rise" style="--c:' + a.hex + '" data-goal="' + g.id + '">' +
-        '<div class="goal-top">' +
-            '<span class="goal-ico">' + (g.icon || '🎯') + '</span>' +
-            '<div style="flex:1;min-width:0;"><h3 class="grotesk">' + esc(g.title) + '</h3>' +
-                '<div class="why">' + esc(g.why || '') + '</div></div>' +
-            '<div class="goal-ring">' + V.ring(pct, 58, 5, a.hex) + '<span class="pct">' + pct + '%</span></div>' +
+    return '<div class="goal" style="--c:' + a.hex + ';animation-delay:' + ((i||0)*.07) + 's" data-goal="' + g.id + '">' +
+        '<div class="goal-band">' +
+            '<span class="gb-ico">' + (g.icon || '🎯') + '</span>' +
+            '<span class="gb-ring">' + V.ring(pct, 52, 5, '#ffffff', pct + '%') + '</span>' +
         '</div>' +
-        '<div class="goal-foot">' +
-            tagPill(a.icon + ' ' + a.name, a.hex) +
-            '<span class="mini">' + hz.name + '</span>' +
-            '<span class="mini">' + pj.length + ' projecten</span>' +
-            (g.due ? '<span class="due ' + dueClass(g.due) + '" style="margin-left:auto;">' + (dd !== null && dd > 0 ? 'nog ' + dd + ' dagen' : KM.fmtDate(g.due)) + '</span>' : '') +
+        '<div class="goal-in">' +
+            '<h3 class="grotesk">' + esc(g.title) + '</h3>' +
+            (g.why ? '<div class="why">' + esc(g.why) + '</div>' : '') +
+            '<div style="margin-top:14px;">' + V.stack({
+                items:[{ label:'Af', value:ts.filter(function(t){ return t.status === 'done'; }).length, color:a.hex },
+                       { label:'Open', value:ts.filter(function(t){ return t.status !== 'done'; }).length, color:'#dcdad2' }],
+                head:false, key:false, h:8
+            }) + '</div>' +
+            '<div class="goal-foot">' +
+                tagPill(a.icon + ' ' + a.name.split(' ')[0], a.hex) +
+                '<span class="mini">' + hz.name + '</span>' +
+                '<span class="mini">' + pj.length + ' proj · ' + ts.length + ' taken</span>' +
+                (g.due ? '<span class="due ' + dueClass(g.due) + '" style="margin-left:auto;">' + (dd !== null && dd > 0 ? 'nog ' + dd + 'd' : KM.fmtDate(g.due)) + '</span>' : '') +
+            '</div>' +
         '</div>' +
     '</div>';
 }
@@ -414,15 +483,15 @@ function vProjects(v){
     });
     bindTasks(v);
 }
-function projectRow(p){
+function projectRow(p, i){
     var a = KM.areaOf(p.area), pct = KM.q.projectProgress(p.id), g = p.goalId ? KM.q.goal(p.goalId) : null;
-    return '<div class="prow rise" data-p="' + p.id + '">' +
-        '<span class="pi">' + (p.icon || '📦') + '</span>' +
-        '<span class="pt"><b>' + esc(p.title) + '</b><span>' + (g ? '↳ ' + esc(g.title) : 'geen doel gekoppeld') + '</span></span>' +
+    var ts = KM.q.tasksOfProject(p.id);
+    return '<div class="prow" style="animation-delay:' + ((i||0)*.05) + 's" data-p="' + p.id + '">' +
+        '<span class="pring">' + V.ring(pct, 42, 4, a.hex, pct + '') + '</span>' +
+        '<span class="pt"><b>' + (p.icon || '📦') + ' ' + esc(p.title) + '</b>' +
+            '<span>' + (g ? '↳ ' + esc(g.title) : 'geen doel gekoppeld') + ' · ' + ts.length + ' taken</span></span>' +
         (p.due ? '<span class="due ' + dueClass(p.due) + '">' + KM.fmtDate(p.due) + '</span>' : '') +
         tagPill(a.icon, a.hex) +
-        '<span class="pbar"><span class="bar"><i style="width:' + pct + '%;background:' + a.hex + '"></i></span></span>' +
-        '<span class="mini">' + pct + '%</span>' +
     '</div>';
 }
 function projectBlock(p){
@@ -447,8 +516,8 @@ function vMatrix(v){
             '<span class="mini">sleep taken tussen de vakken om ze te herprioriteren</span></div>' +
         '<div class="eis">' + QUADS.map(function(q){
             var ts = open.filter(function(t){ return (t.prio || 'p3') === q.prio; });
-            return '<div class="quad rise" data-q="' + q.prio + '">' +
-                '<div class="quad-h"><span class="q-d" style="background:' + q.color + '"></span>' +
+            return '<div class="quad" style="--qc:' + q.color + ';animation-delay:' + (QUADS.indexOf(q)*.06) + 's" data-q="' + q.prio + '">' +
+                '<div class="quad-h"><span class="q-d"></span>' +
                     '<b>' + q.name + '</b><span class="q-n">' + ts.length + '</span></div>' +
                 '<div class="quad-note">' + q.note + '</div>' +
                 '<div class="plist" style="margin-top:12px;">' + ts.map(function(t){ return taskRow(t, { slim:true, drag:true }); }).join('') + '</div>' +
@@ -458,7 +527,7 @@ function vMatrix(v){
         '<div class="grid g4">' + KM.ENERGY.map(function(e){
             var n = open.filter(function(t){ return t.energy === e.id; }).length;
             var mins = n * e.mins;
-            return '<div class="card rise"><div class="stat"><span>' + e.icon + ' ' + e.name + '</span><b>' + n + '</b>' +
+            return '<div class="pane"><div class="metric"><span>' + e.icon + ' ' + e.name + '</span><b>' + n + '</b>' +
                 '<span style="text-transform:none;letter-spacing:0;font-family:Inter,sans-serif;font-size:12.5px;">≈ ' + Math.round(mins/60*10)/10 + ' uur werk</span></div></div>';
         }).join('') + '</div>';
 
@@ -519,7 +588,7 @@ function habitRow(h){
             '<span class="habit-ico">' + h.icon + '</span>' +
             '<span class="habit-t"><b>' + esc(h.title) + '</b>' +
                 '<span>' + KM.q.streak(h) + ' op rij · ' + Math.round(done30/30*100) + '% deze maand · ' + done90 + ' in 90 dagen</span></span>' +
-            V.ring(Math.round(done30/30*100), 44, 4, h.color) +
+            V.ring(Math.round(done30/30*100), 46, 4, h.color, KM.q.streak(h) + '') +
             '<button class="iconbtn" data-hedit><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M4 20h4L20 8l-4-4L4 16v4Z"/></svg></button>' +
             '<span class="hcheck' + (h.log[KM.iso()] ? ' on' : '') + '" data-hc>✓</span>' +
         '</div>' +
@@ -540,16 +609,16 @@ function vReview(v){
     v.innerHTML =
         '<div class="sec-head"><h2 class="grotesk">Weekreview</h2><span class="mini">week van ' + wkStart.getDate() + ' ' + KM.MONTHS[wkStart.getMonth()] + '</span></div>' +
         '<div class="rev-grid">' +
-            '<div class="card rise"><div class="stat"><span>Afgerond</span><b>' + done.length + '</b><span style="text-transform:none;letter-spacing:0;font-family:Inter,sans-serif;font-size:12.5px;">taken deze week</span></div>' + spark() + '</div>' +
-            '<div class="card rise"><div class="stat"><span>Te laat</span><b>' + late.length + '</b><span style="text-transform:none;letter-spacing:0;font-family:Inter,sans-serif;font-size:12.5px;">taken over datum</span></div></div>' +
-            '<div class="card rise"><div class="stat"><span>Momentum</span><b>' + KM.q.momentum() + '%</b><span style="text-transform:none;letter-spacing:0;font-family:Inter,sans-serif;font-size:12.5px;">dagen actief</span></div></div>' +
+            '<div class="pane"><div class="metric"><span>Afgerond</span><b>' + done.length + '</b><span style="text-transform:none;letter-spacing:0;font-family:Inter,sans-serif;font-size:12.5px;">taken deze week</span></div>' + spark() + '</div>' +
+            '<div class="pane"><div class="metric"><span>Te laat</span><b>' + late.length + '</b><span style="text-transform:none;letter-spacing:0;font-family:Inter,sans-serif;font-size:12.5px;">taken over datum</span></div></div>' +
+            '<div class="pane"><div class="metric"><span>Momentum</span><b>' + KM.q.momentum() + '%</b><span style="text-transform:none;letter-spacing:0;font-family:Inter,sans-serif;font-size:12.5px;">dagen actief</span></div></div>' +
         '</div>' +
 
         '<div class="sec-head"><h2 class="grotesk">Verloop</h2><span class="mini">taken en gewoontes per dag</span></div>' +
-        '<div class="card">' + V.area({ points:seriesOf(30).values, labels:seriesOf(30).labels, w:900, h:170 }) + '</div>' +
+        '<div class="pane flat">' + V.area({ points:seriesOf(30).values, labels:seriesOf(30).labels, w:900, h:170 }) + '</div>' +
 
         '<div class="sec-head"><h2 class="grotesk">Waar ging je aandacht heen?</h2></div>' +
-        '<div class="card" style="margin-bottom:14px;">' + V.bars({
+        '<div class="pane flat" style="margin-bottom:14px;">' + V.bars({
             items: byArea.map(function(x){ return { label:x.a.name.split(' ')[0], value:x.n, color:x.a.hex }; }), h:150
         }) + '</div>' +
         '<div class="grid g3">' + byArea.map(function(x){

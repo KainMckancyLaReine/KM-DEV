@@ -11,28 +11,69 @@
 <link rel="stylesheet" href="km-os.css">
 <style>
 .brief{
-    border:1px solid var(--line);border-radius:var(--r-md);padding:22px;background:var(--bg);
+    border:1px solid var(--mat-line);border-radius:var(--r-lg);padding:22px;background:var(--paper);
+    box-shadow:var(--sh-2), inset 0 1px 0 var(--mat-hi);
 }
+/* ---------- speler ---------- */
+.player{
+    position:relative;border-radius:var(--r-lg);overflow:hidden;background:#0d0d0d;
+    box-shadow:var(--sh-3);aspect-ratio:16/9;display:grid;place-items:center;color:#fff;
+}
+.player.v916{aspect-ratio:9/16;max-width:340px;margin:0 auto;}
+.player.v11{aspect-ratio:1/1;max-width:480px;margin:0 auto;}
+.player img,.player video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.player .pl-in{position:relative;text-align:center;padding:30px;max-width:78%;z-index:2;}
+.player .pl-beat{
+    font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--accent);margin-bottom:12px;
+}
+.player .pl-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(20px,3.4vw,34px);font-weight:700;letter-spacing:-.04em;}
+.player .pl-vo{margin-top:14px;font-size:14.5px;color:rgba(255,255,255,.72);line-height:1.6;}
+.player .pl-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(13,13,13,.35),rgba(13,13,13,.78));z-index:1;}
+.player .pl-bar{position:absolute;left:0;bottom:0;height:3px;background:var(--accent);z-index:3;transition:width .12s linear;}
+.player .pl-meta{
+    position:absolute;top:14px;left:16px;z-index:3;display:flex;gap:8px;align-items:center;
+    font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.14em;color:rgba(255,255,255,.6);
+}
+.pl-ctrl{display:flex;align-items:center;gap:9px;margin-top:14px;flex-wrap:wrap;}
+.pl-ctrl .time{font-family:'Space Mono',monospace;font-size:11px;color:var(--text-faint);margin-left:auto;}
+
+/* ---------- tijdlijn ---------- */
+.tl-wrap{position:relative;margin:16px 0 6px;}
 .tl{
-    display:flex;gap:3px;height:56px;border-radius:12px;overflow:hidden;
-    border:1px solid var(--line);background:var(--paper);margin:16px 0 6px;
+    display:flex;gap:3px;height:62px;border-radius:15px;overflow:hidden;
+    border:1px solid var(--mat-line);background:var(--paper);box-shadow:var(--sh-1);
 }
 .tl-seg{
     position:relative;display:flex;align-items:center;justify-content:center;cursor:pointer;
-    color:#fff;font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.1em;
-    transition:filter .2s,transform .2s var(--ease);overflow:hidden;min-width:14px;
+    color:#fff;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;
+    transition:filter .25s,transform .4s var(--spring-soft);overflow:hidden;min-width:14px;
+    opacity:0;transform:scaleY(.5);animation:segIn .5s var(--spring-soft) forwards;
 }
-.tl-seg:hover{filter:brightness(1.12);}
-.tl-seg.on{box-shadow:inset 0 0 0 3px var(--accent);}
-.tl-marks{display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:9.5px;color:var(--text-faint);}
+@keyframes segIn{to{opacity:1;transform:none;}}
+.tl-seg::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.24),transparent 55%);}
+.tl-seg:hover{filter:brightness(1.14);}
+.tl-seg.on{box-shadow:inset 0 0 0 2.5px var(--accent);}
+.tl-head{
+    position:absolute;top:-6px;bottom:-6px;width:2px;background:var(--danger);z-index:4;
+    pointer-events:none;transition:left .12s linear;display:none;
+}
+.tl-head::before{
+    content:'';position:absolute;top:-4px;left:-4px;width:10px;height:10px;border-radius:50%;
+    background:var(--danger);box-shadow:0 0 0 3px rgba(209,80,63,.22);
+}
+.tl-wrap.playing .tl-head{display:block;}
+.tl-marks{display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:9.5px;color:var(--text-faint);margin-top:7px;}
 
 .scene{
-    display:grid;grid-template-columns:150px 1fr;gap:18px;padding:18px;
-    border:1px solid var(--line);border-radius:var(--r-md);background:var(--paper);
-    transition:border-color .22s,box-shadow .22s,transform .22s var(--ease);
+    display:grid;grid-template-columns:158px 1fr;gap:18px;padding:18px;
+    border:1px solid var(--mat-line);border-radius:var(--r-lg);background:var(--paper);
+    box-shadow:var(--sh-1), inset 0 1px 0 var(--mat-hi);
+    transition:border-color .25s,box-shadow .35s,transform .45s var(--spring-soft);
+    opacity:0;transform:translateY(14px);animation:segIn .6s var(--spring-soft) forwards;
 }
-.scene:hover{border-color:var(--text-faint);box-shadow:var(--shadow-soft);}
-.scene.on{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+.scene:hover{border-color:var(--text-faint);box-shadow:var(--sh-3);transform:translateY(-2px);}
+.scene.on{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft),var(--sh-3);}
 .scene.dragging{opacity:.4;}
 .sc-thumb{
     border-radius:12px;overflow:hidden;position:relative;background:var(--bg);
@@ -60,18 +101,21 @@
 .sc-foot .label{margin-right:auto;}
 
 .tool{
-    display:flex;align-items:center;gap:13px;padding:14px 16px;border-radius:14px;
-    border:1px solid var(--line);background:var(--paper);text-decoration:none;color:inherit;
-    transition:all .22s var(--ease);
+    display:flex;align-items:center;gap:14px;padding:15px 17px;border-radius:16px;
+    border:1px solid var(--mat-line);background:var(--paper);text-decoration:none;color:inherit;
+    box-shadow:var(--sh-1);
+    transition:transform .42s var(--spring-soft),box-shadow .3s,border-color .3s;
 }
-.tool:hover{border-color:var(--text-faint);transform:translateX(4px);box-shadow:var(--shadow-soft);}
+.tool:hover{border-color:var(--text-faint);transform:translateX(5px);box-shadow:var(--sh-3);}
 .tool .ti{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-size:17px;background:var(--bg);border:1px solid var(--line);flex:0 0 38px;}
 .tool b{display:block;font-family:'Space Grotesk',sans-serif;font-size:14.5px;font-weight:600;}
 .tool span{font-size:12.5px;color:var(--text-faint);}
 
 .script{
-    font-family:'Space Mono',monospace;font-size:13px;line-height:1.9;white-space:pre-wrap;
-    background:var(--ink);color:#e8e6df;border-radius:var(--r-md);padding:22px;overflow-x:auto;
+    font-family:'Space Mono',monospace;font-size:12.5px;line-height:1.95;white-space:pre-wrap;
+    background:linear-gradient(180deg,#161618,#0d0d0d);color:#e8e6df;
+    border-radius:var(--r-lg);padding:24px;overflow-x:auto;
+    box-shadow:var(--sh-3), inset 0 1px 0 rgba(255,255,255,.07);
 }
 @media(max-width:820px){
     .scene{grid-template-columns:1fr;}
@@ -212,6 +256,10 @@ function renderBoard(){
             '</div>' +
         '</div>' +
 
+        (D.scenes.length ? '<div class="sec-head"><h2 class="grotesk">Voorvertoning</h2>' +
+            '<span class="label">' + total + ' seconden</span></div>' +
+            '<div id="playerSlot"></div>' : '') +
+
         '<div class="sec-head"><h2 class="grotesk">Tijdlijn</h2>' +
             '<span class="label">' + D.scenes.length + ' scenes · ' + total + ' sec' +
             (Math.abs(total - v.total) > 2 ? ' (doel ' + v.total + ')' : '') + '</span></div>' +
@@ -247,19 +295,109 @@ function renderBoard(){
         KM.confirm('Storyboard wissen?', 'Alle scenes worden verwijderd.', function(){ D.scenes = []; OS.save(); render(); });
     };
     bindScenes();
+    renderPlayer();
 }
+
+/* =========================================================
+   2b. Voorvertoning — loopt door de scenes heen
+   ========================================================= */
+var play = { on:false, i:0, t:0, raf:0, last:0 };
+function totalSecs(){ return D.scenes.reduce(function(a,s){ return a + (+s.secs||0); }, 0); }
+function renderPlayer(){
+    var host = $('#playerSlot'); if(!host) return;
+    if(!D.scenes.length){ host.innerHTML = ''; return; }
+    var f = FORMATS[D.video.format] || FORMATS['16:9'];
+    var sc = D.scenes[Math.min(play.i, D.scenes.length - 1)];
+    var beat = (BEATS.filter(function(b){ return b.key === sc.beat; })[0] || {}).name || ('Scene ' + (play.i + 1));
+    var elapsed = D.scenes.slice(0, play.i).reduce(function(a,x){ return a + (+x.secs||0); }, 0) + play.t;
+
+    host.innerHTML =
+        '<div class="player ' + f.cls + '" id="player">' +
+            (sc.media ? (/^data:video|\.mp4/.test(sc.media)
+                ? '<video src="' + sc.media + '" muted playsinline></video>'
+                : '<img src="' + sc.media + '" alt="">') : '') +
+            '<div class="pl-shade"></div>' +
+            '<div class="pl-meta"><span>' + String(play.i + 1).padStart(2,'0') + ' / ' + String(D.scenes.length).padStart(2,'0') + '</span>' +
+                '<span>·</span><span>' + esc(sc.shot) + '</span><span>·</span><span>' + esc(sc.move) + '</span></div>' +
+            '<div class="pl-in">' +
+                '<div class="pl-beat">' + esc(beat) + '</div>' +
+                '<div class="pl-title">' + esc(sc.title) + '</div>' +
+                (sc.voice ? '<div class="pl-vo">“' + esc(sc.voice) + '”</div>' : '') +
+            '</div>' +
+            '<div class="pl-bar" id="plBar" style="width:' + (play.t / Math.max(1, sc.secs) * 100) + '%"></div>' +
+        '</div>' +
+        '<div class="pl-ctrl">' +
+            '<button class="btn accent sm" id="plGo">' + (play.on ? '❚❚ Pauze' : '▶ Afspelen') + '</button>' +
+            '<button class="btn ghost sm" id="plPrev">‹ Vorige</button>' +
+            '<button class="btn ghost sm" id="plNext">Volgende ›</button>' +
+            '<span class="time">' + fmt(Math.round(elapsed)) + ' / ' + fmt(totalSecs()) + '</span>' +
+        '</div>';
+
+    $('#plGo').onclick = function(){ play.on ? stopPlay() : startPlay(); };
+    $('#plPrev').onclick = function(){ jump(play.i - 1); };
+    $('#plNext').onclick = function(){ jump(play.i + 1); };
+}
+function jump(i){
+    play.i = (i + D.scenes.length) % D.scenes.length;
+    play.t = 0;
+    sel = D.scenes[play.i].id;
+    renderPlayer(); markTimeline();
+}
+function startPlay(){
+    if(!D.scenes.length) return;
+    play.on = true; play.last = performance.now();
+    $('.tl-wrap') && $('.tl-wrap').classList.add('playing');
+    renderPlayer();
+    (function loop(now){
+        if(!play.on) return;
+        var dt = (now - play.last) / 1000; play.last = now;
+        play.t += dt;
+        var sc = D.scenes[play.i];
+        if(!sc){ stopPlay(); return; }
+        if(play.t >= sc.secs){
+            play.t = 0;
+            play.i++;
+            if(play.i >= D.scenes.length){ play.i = 0; stopPlay(); renderPlayer(); markTimeline(); return; }
+            sel = D.scenes[play.i].id;
+            renderPlayer();
+        }
+        var bar = $('#plBar');
+        if(bar) bar.style.width = (play.t / Math.max(.1, D.scenes[play.i].secs) * 100) + '%';
+        markTimeline();
+        play.raf = requestAnimationFrame(loop);
+    })(performance.now());
+}
+function stopPlay(){
+    play.on = false;
+    cancelAnimationFrame(play.raf);
+    var w2 = $('.tl-wrap'); if(w2) w2.classList.remove('playing');
+    var g = $('#plGo'); if(g) g.textContent = '▶ Afspelen';
+}
+function markTimeline(){
+    var head = $('#tlHead'); if(!head) return;
+    var total = totalSecs() || 1;
+    var elapsed = D.scenes.slice(0, play.i).reduce(function(a,x){ return a + (+x.secs||0); }, 0) + play.t;
+    head.style.left = (elapsed / total * 100) + '%';
+    $$('.tl-seg').forEach(function(el, i){ el.classList.toggle('on', i === play.i); });
+}
+
 function bindVal(sel_, fn){
     var el = $(sel_); if(!el) return;
     el.addEventListener('input', function(){ fn(el.value); OS.save(); });
 }
 function timeline(total){
     if(!D.scenes.length) return '<div class="empty">Tijdlijn verschijnt zodra er scenes zijn</div>';
-    return '<div class="tl" id="tl">' + D.scenes.map(function(s, i){
-        var pct = total ? (s.secs / total * 100) : 0;
-        return '<div class="tl-seg' + (sel === s.id ? ' on' : '') + '" data-seg="' + s.id + '" ' +
-            'style="flex:' + Math.max(1, pct) + ' 1 0;background:' + SEG_COLORS[i % SEG_COLORS.length] + ';">' +
-            (pct > 7 ? esc(s.title.slice(0,14)) : '') + '</div>';
-    }).join('') + '</div>' +
+    return '<div class="tl-wrap' + (play.on ? ' playing' : '') + '">' +
+        '<div class="tl" id="tl">' + D.scenes.map(function(s, i){
+            var pct = total ? (s.secs / total * 100) : 0;
+            var c = SEG_COLORS[i % SEG_COLORS.length];
+            return '<div class="tl-seg' + (sel === s.id ? ' on' : '') + '" data-seg="' + s.id + '" ' +
+                'style="flex:' + Math.max(1, pct) + ' 1 0;animation-delay:' + (i*.05) + 's;' +
+                'background:linear-gradient(160deg,' + c + ',' + KMbrand.darken(c, 20) + ');">' +
+                (pct > 7 ? esc(s.title.slice(0,14)) : '') + '</div>';
+        }).join('') + '</div>' +
+        '<div class="tl-head" id="tlHead" style="left:0"></div>' +
+    '</div>' +
     '<div class="tl-marks"><span>0s</span><span>' + Math.round(total/2) + 's</span><span>' + total + 's</span></div>';
 }
 function sceneCard(s, i){
@@ -298,6 +436,8 @@ function bindScenes(){
     $$('[data-seg]').forEach(function(el){
         el.onclick = function(){
             sel = el.dataset.seg;
+            var i = D.scenes.findIndex(function(x){ return x.id === sel; });
+            if(i >= 0){ play.i = i; play.t = 0; }
             render();
             var card = $('.scene[data-s="' + sel + '"]');
             if(card && card.scrollIntoView) card.scrollIntoView({ behavior:'smooth', block:'center' });
@@ -346,7 +486,7 @@ function bindScenes(){
 }
 function refreshTimeline(){
     var total = D.scenes.reduce(function(a,s){ return a + (+s.secs || 0); }, 0);
-    var host = $('#tl'); if(!host) return;
+    var host = $('.tl-wrap'); if(!host) return;
     host.outerHTML = timeline(total).split('<div class="tl-marks">')[0];
     bindScenes();
 }
@@ -468,7 +608,8 @@ function step(n, title, txt){
 }
 
 render();
-window.VID = { generateBoard:generateBoard, BEATS:BEATS, fullPrompt:fullPrompt, render:render, newScene:newScene };
+window.VID = { generateBoard:generateBoard, BEATS:BEATS, fullPrompt:fullPrompt, render:render, newScene:newScene,
+               play:play, startPlay:startPlay, stopPlay:stopPlay, jump:jump, renderPlayer:renderPlayer, totalSecs:totalSecs };
 }
 </script>
 </body>
