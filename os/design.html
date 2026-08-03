@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="nl" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Design Studio — KM.OS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="km-os.css">
+<style>
+.ds{display:grid;grid-template-columns:320px 1fr;gap:0;flex:1;min-height:0;}
+.ds-side{border-right:1px solid var(--line);overflow-y:auto;padding:22px 20px 60px;background:var(--paper);}
+.ds-stage{
+    position:relative;overflow:auto;display:grid;place-items:center;padding:34px;
+    background:var(--bg);
+    background-image:radial-gradient(var(--line) 1px,transparent 1px);
+    background-size:22px 22px;
+}
+.canvas-wrap{
+    box-shadow:0 20px 60px rgba(13,13,13,.18);border-radius:6px;overflow:hidden;
+    transition:transform .35s var(--ease);background:#fff;
+    max-width:100%;
+}
+.canvas-wrap svg{display:block;width:100%;height:auto;}
+
+.tpl-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.tpl{
+    border:1px solid var(--line);border-radius:12px;padding:10px;cursor:pointer;background:var(--bg);
+    transition:all .22s var(--ease);text-align:left;
+}
+.tpl:hover{border-color:var(--text-faint);transform:translateY(-2px);}
+.tpl.on{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 2px var(--accent-soft);}
+.tpl .shape{
+    background:var(--ink);border-radius:4px;margin-bottom:8px;width:100%;
+}
+.tpl b{display:block;font-family:'Space Grotesk',sans-serif;font-size:12.5px;font-weight:600;}
+.tpl span{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;color:var(--text-faint);}
+
+.sw-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;}
+.sw{
+    aspect-ratio:16/10;border-radius:9px;border:1px solid var(--line);cursor:pointer;padding:0;
+    transition:transform .2s var(--ease),box-shadow .2s;overflow:hidden;
+}
+.sw:hover{transform:scale(1.06);}
+.sw.on{box-shadow:0 0 0 2px var(--accent);border-color:var(--accent);}
+.sw svg{display:block;width:100%;height:100%;}
+
+.acc-grid{display:flex;gap:7px;flex-wrap:wrap;}
+.acc{width:30px;height:30px;border-radius:50%;border:1px solid var(--line);cursor:pointer;padding:0;transition:transform .2s var(--ease);}
+.acc:hover{transform:scale(1.12);}
+.acc.on{box-shadow:0 0 0 3px var(--accent-soft);border-color:var(--accent);}
+
+.ds-bar{
+    position:absolute;top:16px;right:16px;display:flex;gap:6px;z-index:5;
+    background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:6px;
+    box-shadow:var(--shadow-soft);
+}
+.saved{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.saved-item{
+    border:1px solid var(--line);border-radius:10px;overflow:hidden;cursor:pointer;position:relative;
+    transition:all .2s var(--ease);
+}
+.saved-item:hover{border-color:var(--text-faint);transform:translateY(-2px);}
+.saved-item svg{display:block;width:100%;height:auto;}
+.saved-item .x{
+    position:absolute;top:4px;right:4px;width:20px;height:20px;border-radius:50%;border:0;
+    background:rgba(13,13,13,.7);color:#fff;font-size:10px;opacity:0;transition:opacity .16s;
+}
+.saved-item:hover .x{opacity:1;}
+
+@media(max-width:900px){
+    .ds{grid-template-columns:1fr;grid-template-rows:auto 1fr;}
+    .ds-side{border-right:0;border-bottom:1px solid var(--line);max-height:46vh;padding:16px;}
+    .ds-stage{padding:16px;}
+    .ds-bar{top:auto;bottom:12px;right:12px;}
+}
+</style>
+</head>
+<body>
+
+<div class="os">
+    <div class="os-body">
+        <div class="ds">
+            <aside class="ds-side" id="side"></aside>
+            <div class="ds-stage">
+                <div class="ds-bar">
+                    <button class="iconbtn" id="dlPng" title="Download PNG">PNG</button>
+                    <button class="iconbtn" id="dlSvg" title="Download SVG">SVG</button>
+                    <button class="iconbtn" id="saveD" title="Bewaren">★</button>
+                </div>
+                <div class="canvas-wrap" id="stage"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="km-os.js"></script>
+<script>
+if(KM.boot()){
+
+var $ = KM.$, $$ = KM.$$, OS = KM.OS, D = OS.data, esc = KM.esc;
+
+/* =========================================================
+   1. Sjablonen en achtergronden
+   ========================================================= */
+var TEMPLATES = [
+    { id:'post',   name:'Social post', w:1080, h:1080, note:'1:1' },
+    { id:'story',  name:'Story',       w:1080, h:1920, note:'9:16' },
+    { id:'cover',  name:'Cover',       w:1600, h:500,  note:'banner' },
+    { id:'quote',  name:'Quote',       w:1080, h:1080, note:'1:1' },
+    { id:'stat',   name:'Cijfer',      w:1080, h:1350, note:'4:5' },
+    { id:'thumb',  name:'Thumbnail',   w:1280, h:720,  note:'16:9' }
+];
+
+var BGS = [
+    { id:'ink',      name:'Ink',      kind:'solid',  colors:['#0d0d0d'],                 fg:'#ffffff', muted:'rgba(255,255,255,.55)' },
+    { id:'paper',    name:'Paper',    kind:'solid',  colors:['#f4f3ef'],                 fg:'#0d0d0d', muted:'rgba(13,13,13,.5)' },
+    { id:'lime',     name:'Lime',     kind:'solid',  colors:['#c6ff4a'],                 fg:'#0d0d0d', muted:'rgba(13,13,13,.55)' },
+    { id:'fade',     name:'Fade',     kind:'linear', colors:['#c6ff4a','#3f5a17'],       fg:'#0d0d0d', muted:'rgba(13,13,13,.6)' },
+    { id:'night',    name:'Night',    kind:'linear', colors:['#0d0d0d','#25341a'],       fg:'#ffffff', muted:'rgba(255,255,255,.55)' },
+    { id:'mesh',     name:'Mesh',     kind:'mesh',   colors:['#c6ff4a','#2383e2','#8f4463','#0d0d0d'], fg:'#ffffff', muted:'rgba(255,255,255,.6)' },
+    { id:'grid',     name:'Grid',     kind:'grid',   colors:['#0d0d0d','#c6ff4a'],       fg:'#ffffff', muted:'rgba(255,255,255,.5)' },
+    { id:'dots',     name:'Dots',     kind:'dots',   colors:['#f4f3ef','#0d0d0d'],       fg:'#0d0d0d', muted:'rgba(13,13,13,.5)' }
+];
+var ACCENTS = ['#c6ff4a','#2383e2','#8b5cf6','#e0568a','#e8a33d','#3f8f5c','#e8632d','#0d0d0d','#ffffff'];
+
+D.design = Object.assign({
+    tpl:'post', bg:'ink', accent:'#c6ff4a',
+    eyebrow:'KM.dev / brand system',
+    headline:'Het merk dat je bedrijf naar het volgende niveau tilt.',
+    sub:'Strategie, identiteit en website in één systeem.',
+    badge:'1 plek vrij — Q3',
+    author:'Kain — KM.dev',
+    stat:'95%', statLabel:'klanttevredenheid',
+    logo:true, align:'left', image:''
+}, D.design || {});
+D.designs = D.designs || [];
+
+var S = D.design;
+var tplOf = function(id){ return TEMPLATES.filter(function(t){ return t.id === id; })[0] || TEMPLATES[0]; };
+var bgOf  = function(id){ return BGS.filter(function(b){ return b.id === id; })[0] || BGS[0]; };
+
+/* =========================================================
+   2. Tekstmeting + regelafbreking
+   ========================================================= */
+var mc = document.createElement('canvas').getContext('2d');
+function fontStr(o){ return (o.weight || 600) + ' ' + o.size + 'px ' + (o.family || '"Space Grotesk", sans-serif'); }
+function measure(text, o){ mc.font = fontStr(o); return mc.measureText(text).width || text.length * o.size * .5; }
+function wrap(text, o, maxW){
+    var words = String(text || '').split(/\s+/).filter(Boolean), lines = [], cur = '';
+    words.forEach(function(wd){
+        var test = cur ? cur + ' ' + wd : wd;
+        if(measure(test, o) > maxW && cur){ lines.push(cur); cur = wd; }
+        else cur = test;
+    });
+    if(cur) lines.push(cur);
+    return lines.length ? lines : [''];
+}
+
+/* =========================================================
+   3. Layout — één spec, twee renderers
+   ========================================================= */
+function layout(){
+    var t = tplOf(S.tpl), bg = bgOf(S.bg);
+    var W = t.w, H = t.h;
+    var pad = Math.round(Math.min(W, H) * (t.id === 'cover' ? .09 : .1));
+    var ops = [];
+    var left = S.align === 'center' ? W/2 : pad;
+    var anchor = S.align === 'center' ? 'middle' : 'start';
+    var maxW = W - pad * 2;
+
+    function text(str, o){
+        var lines = wrap(str, o, o.maxW || maxW);
+        var lh = o.size * (o.lh || 1.06);
+        lines.forEach(function(ln, i){
+            ops.push({ t:'text', x:o.x, y:o.y + i * lh, text:ln, size:o.size, weight:o.weight || 700,
+                family:o.family, fill:o.fill, anchor:o.anchor || anchor, letter:o.letter || 0 });
+        });
+        return o.y + lines.length * lh;
+    }
+    function eyebrow(y){
+        if(!S.eyebrow) return y;
+        return text(S.eyebrow.toUpperCase(), { x:left, y:y, size:Math.round(W*.021), weight:400,
+            family:'"Space Mono", monospace', fill:S.accent, letter:Math.round(W*.004) }) + W*.03;
+    }
+    function badge(y){
+        if(!S.badge) return;
+        var size = Math.round(W*.021);
+        var w = measure(S.badge, { size:size, weight:500, family:'"Space Mono", monospace' }) + W*.07;
+        var h = W*.052;
+        var x = S.align === 'center' ? (W - w)/2 : pad;
+        ops.push({ t:'rect', x:x, y:y, w:w, h:h, rx:h/2, fill:'none', stroke:bg.muted, sw:Math.max(1, W*.0016) });
+        ops.push({ t:'circle', cx:x + W*.028, cy:y + h/2, r:W*.008, fill:S.accent });
+        ops.push({ t:'text', x:x + W*.048, y:y + h/2 + size*.36, text:S.badge, size:size, weight:500,
+            family:'"Space Mono", monospace', fill:bg.muted, anchor:'start' });
+    }
+    function logo(x, y, size, fill){
+        if(!S.logo) return;
+        ops.push({ t:'text', x:x, y:y, text:'KM', size:size, weight:700, family:'"Space Grotesk", sans-serif', fill:fill, anchor:S.align === 'center' ? 'middle' : 'start' });
+        var wdt = measure('KM', { size:size, weight:700 });
+        ops.push({ t:'circle', cx:(S.align === 'center' ? W/2 + wdt/2 + size*.18 : x + wdt + size*.16), cy:y - size*.06, r:size*.11, fill:S.accent });
+    }
+
+    if(t.id === 'post' || t.id === 'thumb'){
+        var y = eyebrow(pad + W*.045);
+        y = text(S.headline, { x:left, y:y, size:Math.round(W * (t.id === 'thumb' ? .085 : .078)), lh:1.06, fill:bg.fg }) + W*.03;
+        if(S.sub) y = text(S.sub, { x:left, y:y, size:Math.round(W*.032), weight:400, family:'Inter, sans-serif', lh:1.4, fill:bg.muted });
+        badge(H - pad - W*.052);
+        logo(S.align === 'center' ? W/2 : W - pad, H - pad - W*.012, Math.round(W*.042), bg.fg);
+    }
+    else if(t.id === 'story'){
+        var y2 = eyebrow(H*.16);
+        y2 = text(S.headline, { x:left, y:y2, size:Math.round(W*.105), lh:1.05, fill:bg.fg }) + W*.05;
+        if(S.sub) text(S.sub, { x:left, y:y2, size:Math.round(W*.04), weight:400, family:'Inter, sans-serif', lh:1.45, fill:bg.muted });
+        badge(H - H*.14);
+        logo(left, H - H*.06, Math.round(W*.055), bg.fg);
+    }
+    else if(t.id === 'cover'){
+        var cy = H*.42;
+        ops.push({ t:'text', x:pad, y:cy - H*.13, text:(S.eyebrow||'').toUpperCase(), size:Math.round(H*.052), weight:400,
+            family:'"Space Mono", monospace', fill:S.accent, anchor:'start', letter:H*.01 });
+        text(S.headline, { x:pad, y:cy, size:Math.round(H*.17), lh:1.02, fill:bg.fg, anchor:'start', maxW:W - pad*2 - W*.14 });
+        logo(W - pad - W*.05, H - pad*.7, Math.round(H*.1), bg.fg);
+    }
+    else if(t.id === 'quote'){
+        ops.push({ t:'text', x:left, y:H*.3, text:'“', size:Math.round(W*.3), weight:700,
+            family:'"Space Grotesk", sans-serif', fill:S.accent, anchor:anchor });
+        var qy = text(S.headline, { x:left, y:H*.4, size:Math.round(W*.062), weight:600, lh:1.28, fill:bg.fg }) + W*.05;
+        text(S.author, { x:left, y:qy, size:Math.round(W*.026), weight:400, family:'"Space Mono", monospace',
+            fill:bg.muted, letter:W*.003 });
+        logo(S.align === 'center' ? W/2 : pad, H - pad, Math.round(W*.04), bg.fg);
+    }
+    else if(t.id === 'stat'){
+        eyebrow(pad + W*.04);
+        ops.push({ t:'text', x:left, y:H*.5, text:S.stat, size:Math.round(W*.30), weight:700,
+            family:'"Space Grotesk", sans-serif', fill:S.accent, anchor:anchor });
+        text((S.statLabel||'').toUpperCase(), { x:left, y:H*.585, size:Math.round(W*.03), weight:400,
+            family:'"Space Mono", monospace', fill:bg.muted, letter:W*.005 });
+        text(S.headline, { x:left, y:H*.7, size:Math.round(W*.05), lh:1.15, fill:bg.fg });
+        logo(S.align === 'center' ? W/2 : pad, H - pad, Math.round(W*.042), bg.fg);
+    }
+
+    return { w:W, h:H, bg:bg, ops:ops, image:S.image };
+}
+
+/* =========================================================
+   4. Renderers
+   ========================================================= */
+function bgDefs(bg, W, H, uid){
+    if(bg.kind === 'linear'){
+        return '<linearGradient id="g' + uid + '" x1="0" y1="0" x2="1" y2="1">' +
+            '<stop offset="0" stop-color="' + bg.colors[0] + '"/><stop offset="1" stop-color="' + bg.colors[1] + '"/></linearGradient>';
+    }
+    if(bg.kind === 'mesh'){
+        return bg.colors.slice(0,3).map(function(c, i){
+            return '<radialGradient id="m' + uid + i + '"><stop offset="0" stop-color="' + c + '" stop-opacity=".95"/>' +
+                   '<stop offset="1" stop-color="' + c + '" stop-opacity="0"/></radialGradient>';
+        }).join('');
+    }
+    if(bg.kind === 'grid'){
+        return '<pattern id="p' + uid + '" width="' + W/16 + '" height="' + W/16 + '" patternUnits="userSpaceOnUse">' +
+            '<path d="M0 0H' + W/16 + 'M0 0V' + W/16 + '" stroke="' + bg.colors[1] + '" stroke-opacity=".22" stroke-width="1.5"/></pattern>';
+    }
+    if(bg.kind === 'dots'){
+        return '<pattern id="p' + uid + '" width="' + W/22 + '" height="' + W/22 + '" patternUnits="userSpaceOnUse">' +
+            '<circle cx="3" cy="3" r="2.6" fill="' + bg.colors[1] + '" fill-opacity=".18"/></pattern>';
+    }
+    return '';
+}
+function renderSVG(spec){
+    var W = spec.w, H = spec.h, bg = spec.bg, uid = Math.random().toString(36).slice(2,6);
+    var base = bg.kind === 'linear' ? 'url(#g' + uid + ')' : bg.colors[0];
+    var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '">' +
+        '<defs>' + bgDefs(bg, W, H, uid) + '</defs>' +
+        '<rect width="' + W + '" height="' + H + '" fill="' + base + '"/>';
+
+    if(bg.kind === 'mesh'){
+        var pts = [[.18,.22,.7],[.82,.18,.65],[.55,.86,.7]];
+        pts.forEach(function(p, i){
+            svg += '<ellipse cx="' + W*p[0] + '" cy="' + H*p[1] + '" rx="' + W*p[2] + '" ry="' + H*p[2] + '" fill="url(#m' + uid + i + ')"/>';
+        });
+    }
+    if(bg.kind === 'grid' || bg.kind === 'dots'){
+        svg += '<rect width="' + W + '" height="' + H + '" fill="url(#p' + uid + ')"/>';
+    }
+    if(spec.image){
+        svg += '<image href="' + spec.image + '" x="0" y="0" width="' + W + '" height="' + H + '" preserveAspectRatio="xMidYMid slice" opacity=".55"/>';
+        svg += '<rect width="' + W + '" height="' + H + '" fill="' + bg.colors[0] + '" opacity=".35"/>';
+    }
+
+    spec.ops.forEach(function(o){
+        if(o.t === 'rect'){
+            svg += '<rect x="' + o.x + '" y="' + o.y + '" width="' + o.w + '" height="' + o.h + '" rx="' + (o.rx||0) + '" fill="' + (o.fill||'none') + '"' +
+                (o.stroke ? ' stroke="' + o.stroke + '" stroke-width="' + (o.sw||1) + '"' : '') + '/>';
+        }else if(o.t === 'circle'){
+            svg += '<circle cx="' + o.cx + '" cy="' + o.cy + '" r="' + o.r + '" fill="' + o.fill + '"/>';
+        }else if(o.t === 'text'){
+            svg += '<text x="' + o.x + '" y="' + o.y + '" fill="' + o.fill + '" font-size="' + o.size + '" font-weight="' + o.weight + '"' +
+                ' font-family=\'' + (o.family || '"Space Grotesk", sans-serif').replace(/"/g,'&quot;') + '\'' +
+                ' text-anchor="' + (o.anchor === 'middle' ? 'middle' : 'start') + '"' +
+                (o.letter ? ' letter-spacing="' + o.letter + '"' : '') + '>' + esc(o.text) + '</text>';
+        }
+    });
+    return svg + '</svg>';
+}
+function renderCanvas(spec, scale){
+    scale = scale || 2;
+    var cv = document.createElement('canvas');
+    cv.width = spec.w * scale; cv.height = spec.h * scale;
+    var c = cv.getContext('2d');
+    c.scale(scale, scale);
+    var W = spec.w, H = spec.h, bg = spec.bg;
+
+    if(bg.kind === 'linear'){
+        var g = c.createLinearGradient(0, 0, W, H);
+        g.addColorStop(0, bg.colors[0]); g.addColorStop(1, bg.colors[1]);
+        c.fillStyle = g;
+    } else c.fillStyle = bg.colors[0];
+    c.fillRect(0, 0, W, H);
+
+    if(bg.kind === 'mesh'){
+        [[.18,.22,.7],[.82,.18,.65],[.55,.86,.7]].forEach(function(p, i){
+            var rg = c.createRadialGradient(W*p[0], H*p[1], 0, W*p[0], H*p[1], W*p[2]);
+            rg.addColorStop(0, bg.colors[i]); rg.addColorStop(1, 'rgba(0,0,0,0)');
+            c.fillStyle = rg; c.fillRect(0, 0, W, H);
+        });
+    }
+    if(bg.kind === 'grid'){
+        c.strokeStyle = bg.colors[1]; c.globalAlpha = .22; c.lineWidth = 1.5;
+        for(var x = 0; x < W; x += W/16){ c.beginPath(); c.moveTo(x, 0); c.lineTo(x, H); c.stroke(); }
+        for(var y = 0; y < H; y += W/16){ c.beginPath(); c.moveTo(0, y); c.lineTo(W, y); c.stroke(); }
+        c.globalAlpha = 1;
+    }
+    if(bg.kind === 'dots'){
+        c.fillStyle = bg.colors[1]; c.globalAlpha = .18;
+        for(var dx = 0; dx < W; dx += W/22) for(var dy = 0; dy < H; dy += W/22){
+            c.beginPath(); c.arc(dx+3, dy+3, 2.6, 0, 6.2832); c.fill();
+        }
+        c.globalAlpha = 1;
+    }
+
+    spec.ops.forEach(function(o){
+        if(o.t === 'rect'){
+            if(o.fill && o.fill !== 'none'){ c.fillStyle = o.fill; roundRect(c, o.x, o.y, o.w, o.h, o.rx||0); c.fill(); }
+            if(o.stroke){ c.strokeStyle = o.stroke; c.lineWidth = o.sw||1; roundRect(c, o.x, o.y, o.w, o.h, o.rx||0); c.stroke(); }
+        }else if(o.t === 'circle'){
+            c.fillStyle = o.fill; c.beginPath(); c.arc(o.cx, o.cy, o.r, 0, 6.2832); c.fill();
+        }else if(o.t === 'text'){
+            c.fillStyle = o.fill;
+            c.font = o.weight + ' ' + o.size + 'px ' + (o.family || '"Space Grotesk", sans-serif');
+            c.textAlign = o.anchor === 'middle' ? 'center' : 'left';
+            c.textBaseline = 'alphabetic';
+            if(o.letter && c.letterSpacing !== undefined) c.letterSpacing = o.letter + 'px';
+            c.fillText(o.text, o.x, o.y);
+            if(c.letterSpacing !== undefined) c.letterSpacing = '0px';
+        }
+    });
+    return cv;
+}
+function roundRect(c, x, y, w, h, r){
+    r = Math.min(r, w/2, h/2);
+    c.beginPath();
+    c.moveTo(x+r, y); c.arcTo(x+w, y, x+w, y+h, r); c.arcTo(x+w, y+h, x, y+h, r);
+    c.arcTo(x, y+h, x, y, r); c.arcTo(x, y, x+w, y, r); c.closePath();
+}
+
+/* =========================================================
+   5. UI
+   ========================================================= */
+function draw(){
+    var spec = layout();
+    var t = tplOf(S.tpl);
+    $('#stage').innerHTML = renderSVG(spec);
+    $('#stage').style.width = Math.min(t.w, t.w / t.h > 1.4 ? 900 : 520) + 'px';
+    return spec;
+}
+function field(label, id, val, ta){
+    return '<div class="field"><label>' + label + '</label>' +
+        (ta ? '<textarea class="inp" id="' + id + '" style="min-height:74px;">' + esc(val) + '</textarea>'
+            : '<input class="inp" id="' + id + '" value="' + esc(val) + '">') + '</div>';
+}
+function sideUI(){
+    var t = tplOf(S.tpl);
+    $('#side').innerHTML =
+        '<div class="label" style="margin-bottom:10px;">Sjabloon</div>' +
+        '<div class="tpl-grid">' + TEMPLATES.map(function(x){
+            var h = Math.round(46 * (x.h / x.w)); h = Math.max(16, Math.min(72, h));
+            return '<button class="tpl' + (x.id === S.tpl ? ' on' : '') + '" data-tpl="' + x.id + '">' +
+                '<div class="shape" style="height:' + h + 'px;background:' + (x.id === S.tpl ? S.accent : 'var(--ink)') + '"></div>' +
+                '<b>' + x.name + '</b><span>' + x.w + '×' + x.h + ' · ' + x.note + '</span></button>';
+        }).join('') + '</div>' +
+
+        '<div class="label" style="margin:22px 0 10px;">Achtergrond</div>' +
+        '<div class="sw-grid">' + BGS.map(function(b){
+            return '<button class="sw' + (b.id === S.bg ? ' on' : '') + '" data-bg="' + b.id + '" title="' + b.name + '">' +
+                renderSVG({ w:160, h:100, bg:b, ops:[] }) + '</button>';
+        }).join('') + '</div>' +
+
+        '<div class="label" style="margin:22px 0 10px;">Accentkleur</div>' +
+        '<div class="acc-grid">' + ACCENTS.map(function(c){
+            return '<button class="acc' + (c === S.accent ? ' on' : '') + '" data-acc="' + c + '" style="background:' + c + '"></button>';
+        }).join('') + '</div>' +
+
+        '<div class="label" style="margin:22px 0 10px;">Tekst</div>' +
+        field('Eyebrow', 'fE', S.eyebrow) +
+        field(t.id === 'quote' ? 'Quote' : 'Kop', 'fH', S.headline, true) +
+        (t.id === 'quote' ? field('Auteur', 'fA', S.author) : field('Subtekst', 'fS', S.sub, true)) +
+        (t.id === 'stat' ? field('Cijfer', 'fN', S.stat) + field('Label bij cijfer', 'fL', S.statLabel) : '') +
+        (t.id === 'post' || t.id === 'story' || t.id === 'thumb' ? field('Badge', 'fB', S.badge) : '') +
+
+        '<div class="label" style="margin:22px 0 10px;">Opmaak</div>' +
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">' +
+            '<button class="chip' + (S.align === 'left' ? ' on' : '') + '" data-al="left">Links</button>' +
+            '<button class="chip' + (S.align === 'center' ? ' on' : '') + '" data-al="center">Gecentreerd</button>' +
+        '</div>' +
+        '<label class="switch" style="margin-bottom:14px;"><input type="checkbox" id="fLogo"' + (S.logo ? ' checked' : '') + '><span class="track"></span>Logo tonen</label>' +
+
+        '<div class="label" style="margin:18px 0 10px;">Afbeelding</div>' +
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
+            '<button class="chip" id="imgUp">Upload</button>' +
+            (KM.ai.on() ? '<button class="chip" id="imgAi">AI-beeld</button>' : '') +
+            (S.image ? '<button class="chip" id="imgClr">Verwijderen</button>' : '') +
+        '</div>' +
+        (KM.ai.on() ? '' : '<p style="margin-top:10px;font-size:12px;color:var(--text-faint);line-height:1.6;">Wil je hier ook AI-beelden? Koppel de proxy bij <a href="integrations.html" style="color:var(--accent-ink)">Integraties</a>.</p>') +
+
+        (D.designs.length ? '<div class="label" style="margin:24px 0 10px;">Bewaard — ' + D.designs.length + '</div><div class="saved" id="saved">' +
+            D.designs.map(function(x, i){
+                return '<div class="saved-item" data-load="' + i + '">' + renderSVG(specOf(x.state)) + '<button class="x" data-rm="' + i + '">✕</button></div>';
+            }).join('') + '</div>' : '');
+
+    $$('[data-tpl]').forEach(function(b){ b.onclick = function(){ S.tpl = b.dataset.tpl; save(); }; });
+    $$('[data-bg]').forEach(function(b){ b.onclick = function(){ S.bg = b.dataset.bg; save(); }; });
+    $$('[data-acc]').forEach(function(b){ b.onclick = function(){ S.accent = b.dataset.acc; save(); }; });
+    $$('[data-al]').forEach(function(b){ b.onclick = function(){ S.align = b.dataset.al; save(); }; });
+    bind('#fE','eyebrow'); bind('#fH','headline'); bind('#fS','sub'); bind('#fA','author');
+    bind('#fN','stat'); bind('#fL','statLabel'); bind('#fB','badge');
+    $('#fLogo').onchange = function(){ S.logo = this.checked; save(); };
+
+    $('#imgUp').onclick = function(){
+        var inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*';
+        inp.onchange = function(){
+            var f = inp.files[0]; if(!f) return;
+            if(f.size > 1.4e6){ KM.toast('Te groot (max ~1,4 MB)', 'err'); return; }
+            var r = new FileReader(); r.onload = function(){ S.image = r.result; save(); }; r.readAsDataURL(f);
+        };
+        inp.click();
+    };
+    if($('#imgClr')) $('#imgClr').onclick = function(){ S.image = ''; save(); };
+    if($('#imgAi')) $('#imgAi').onclick = function(){
+        KM.toast('Beeld wordt gegenereerd…');
+        KM.ai.image(S.headline + ' — ' + S.eyebrow + '. Stijl: minimal, premium, veel negatieve ruimte, lime accent.',
+            { width:tplOf(S.tpl).w, height:tplOf(S.tpl).h })
+            .then(function(r){ S.image = r.url || r.image || ''; save(); })
+            .catch(function(e){ KM.toast(e.message, 'err'); });
+    };
+    $$('[data-load]').forEach(function(el){
+        el.onclick = function(e){
+            if(e.target.dataset.rm !== undefined){ D.designs.splice(+e.target.dataset.rm, 1); OS.save(); sideUI(); return; }
+            S = D.design = Object.assign({}, D.designs[+el.dataset.load].state);
+            OS.save(); sideUI(); draw();
+        };
+    });
+    draw();
+}
+function specOf(state){
+    var keep = S; S = state; var sp = layout(); S = keep; return sp;
+}
+function bind(sel_, key){
+    var el = $(sel_); if(!el) return;
+    el.addEventListener('input', function(){ S[key] = el.value; OS.save(); draw(); });
+}
+function save(){ OS.save(); sideUI(); }
+
+/* export */
+$('#dlSvg').onclick = function(){
+    KM.download('km-' + S.tpl + '-' + KM.iso() + '.svg', renderSVG(layout()), 'image/svg+xml');
+    KM.toast('SVG gedownload');
+};
+$('#dlPng').onclick = function(){
+    var cv = renderCanvas(layout(), 2);
+    var a = document.createElement('a');
+    a.download = 'km-' + S.tpl + '-' + KM.iso() + '.png';
+    a.href = cv.toDataURL('image/png');
+    a.click();
+    KM.toast('PNG op ' + (tplOf(S.tpl).w * 2) + 'px gedownload');
+    KM.track('design_export', { tpl:S.tpl });
+};
+$('#saveD').onclick = function(){
+    D.designs.unshift({ id:KM.uid(), at:Date.now(), state:Object.assign({}, S) });
+    if(D.designs.length > 12) D.designs.length = 12;
+    OS.save(); sideUI(); KM.toast('Ontwerp bewaard');
+};
+
+KM.shell({ app:'design' });
+
+/* wachten op de fonts zodat de meting klopt */
+if(document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ draw(); });
+sideUI();
+
+window.DES = { layout:layout, renderSVG:renderSVG, renderCanvas:renderCanvas, TEMPLATES:TEMPLATES, BGS:BGS, wrap:wrap, state:function(){ return S; }, draw:draw, sideUI:sideUI };
+}
+</script>
+</body>
+</html>

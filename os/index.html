@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="nl" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>KM.OS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="km-os.css">
+<style>
+/* ---------- hero ---------- */
+.hero{
+    position:relative;padding:44px 34px 34px;overflow:hidden;
+    border-bottom:1px solid var(--line);
+}
+.hero-bg{
+    position:absolute;inset:0;pointer-events:none;
+    background:
+        radial-gradient(700px 320px at 12% -10%, rgba(198,255,74,.28), transparent 70%),
+        radial-gradient(600px 300px at 88% 0%, rgba(35,131,226,.14), transparent 70%);
+}
+.hero-grid{
+    position:absolute;inset:0;pointer-events:none;opacity:.5;
+    background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+    background-size:52px 52px;
+    mask-image:radial-gradient(ellipse 80% 100% at 50% 0%,#000 10%,transparent 80%);
+    -webkit-mask-image:radial-gradient(ellipse 80% 100% at 50% 0%,#000 10%,transparent 80%);
+}
+.hero-in{position:relative;max-width:1240px;margin:0 auto;}
+.greet{
+    font-family:'Space Grotesk',sans-serif;font-size:clamp(30px,4.4vw,50px);
+    font-weight:700;letter-spacing:-.04em;line-height:1.05;
+}
+.greet em{font-style:normal;color:var(--accent-ink);}
+html[data-theme="dark"] .greet em{color:var(--accent);}
+.greet-sub{margin-top:12px;color:var(--text-soft);font-size:16px;max-width:560px;}
+
+.capture{
+    display:flex;gap:10px;margin-top:26px;max-width:640px;
+}
+.capture input{
+    flex:1;border:1px solid var(--line);background:var(--paper);border-radius:999px;
+    padding:14px 22px;outline:none;font-size:15.5px;transition:all .22s var(--ease);
+    box-shadow:var(--shadow-soft);
+}
+.capture input:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft),var(--shadow-soft);}
+
+.stats{display:flex;gap:34px;margin-top:30px;flex-wrap:wrap;}
+.stats .stat b{font-size:clamp(26px,3.2vw,36px);}
+.stats .stat i{font-style:normal;font-size:14px;color:var(--text-faint);margin-left:5px;font-family:'Inter',sans-serif;letter-spacing:0;}
+
+/* ---------- apps ---------- */
+.apps{display:grid;grid-template-columns:repeat(auto-fill,minmax(252px,1fr));gap:16px;}
+.app{
+    position:relative;display:block;text-decoration:none;color:inherit;
+    background:var(--paper);border:1px solid var(--line);border-radius:var(--r-md);
+    padding:24px 22px 20px;overflow:hidden;
+    transition:transform .34s var(--ease),box-shadow .34s var(--ease),border-color .3s;
+}
+.app::before{
+    content:'';position:absolute;inset:0;opacity:0;transition:opacity .34s ease;
+    background:radial-gradient(420px 200px at var(--mx,50%) var(--my,0%), var(--tint-a), transparent 70%);
+}
+.app:hover{transform:translateY(-6px);box-shadow:var(--shadow);border-color:var(--tint);}
+.app:hover::before{opacity:1;}
+.app-ico{
+    position:relative;width:46px;height:46px;border-radius:14px;display:grid;place-items:center;
+    font-size:21px;color:var(--tint);border:1px solid var(--line);background:var(--bg);
+    transition:transform .4s var(--ease),background .3s,color .3s,border-color .3s;
+}
+.app:hover .app-ico{transform:scale(1.08) rotate(-6deg);background:var(--tint);color:#fff;border-color:var(--tint);}
+.app h3{position:relative;font-size:17.5px;font-weight:600;margin:16px 0 5px;}
+.app p{position:relative;font-size:13px;color:var(--text-faint);line-height:1.55;min-height:38px;}
+.app-meta{
+    position:relative;display:flex;align-items:center;gap:8px;margin-top:14px;
+    padding-top:13px;border-top:1px solid var(--line-soft);
+    font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--text-faint);
+}
+.app-meta .go{margin-left:auto;transition:transform .3s var(--ease);font-size:14px;}
+.app:hover .app-meta .go{transform:translateX(5px);}
+
+/* ---------- status ---------- */
+.status{display:flex;gap:10px;flex-wrap:wrap;}
+.st{
+    display:flex;align-items:center;gap:9px;padding:11px 16px;border-radius:999px;
+    border:1px solid var(--line);font-size:13px;color:var(--text-soft);background:var(--paper);
+}
+.st .led{width:8px;height:8px;border-radius:50%;background:var(--text-faint);flex:0 0 8px;}
+.st.on .led{background:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+.st.on{color:var(--text);border-color:var(--accent);}
+
+/* ---------- focus lijst ---------- */
+.focus-list{display:flex;flex-direction:column;gap:8px;}
+.fitem{
+    display:flex;align-items:center;gap:12px;padding:13px 16px;border-radius:14px;
+    border:1px solid var(--line);background:var(--paper);transition:all .22s var(--ease);
+}
+.fitem:hover{border-color:var(--text-faint);transform:translateX(3px);}
+.fbox{
+    width:19px;height:19px;border-radius:6px;border:1.6px solid var(--text-faint);flex:0 0 19px;
+    display:grid;place-items:center;transition:all .2s var(--ease);cursor:pointer;
+}
+.fbox:hover{border-color:var(--accent-ink);transform:scale(1.12);}
+.fbox.on{background:var(--accent);border-color:var(--accent);}
+.fbox svg{opacity:0;color:var(--accent-ink);} .fbox.on svg{opacity:1;}
+.fitem.done .ftxt{text-decoration:line-through;color:var(--text-faint);}
+.ftxt{flex:1;font-size:14.5px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+@media(max-width:820px){
+    .hero{padding:26px 16px 24px;}
+    .stats{gap:20px;}
+    .apps{grid-template-columns:1fr 1fr;gap:10px;}
+    .app{padding:16px 14px 14px;border-radius:18px;}
+    .app-ico{width:38px;height:38px;font-size:17px;border-radius:12px;}
+    .app h3{font-size:14.5px;margin:12px 0 4px;}
+    .app p{font-size:11.5px;min-height:0;}
+    .app-meta{display:none;}
+    .capture{flex-direction:column;}
+}
+</style>
+</head>
+<body>
+
+<div class="os">
+    <div class="os-body">
+        <div class="os-scroll" id="scroll">
+
+            <div class="hero">
+                <div class="hero-bg"></div>
+                <div class="hero-grid"></div>
+                <div class="hero-in">
+                    <div class="label" id="dateLine">—</div>
+                    <h1 class="greet" id="greet" style="margin-top:10px;">Goedemorgen, <em>Kain</em>.</h1>
+                    <p class="greet-sub" id="sub">Je systeem draait. Alles wat je wilt, doet en denkt op één plek.</p>
+
+                    <div class="capture">
+                        <input id="capture" placeholder="Snel iets vastleggen — taak, idee, notitie…" autocomplete="off">
+                        <button class="btn accent" id="captureBtn">Vastleggen ⏎</button>
+                    </div>
+
+                    <div class="stats" id="stats"></div>
+                </div>
+            </div>
+
+            <div class="pad">
+                <div class="wrap">
+                    <div class="sec-head"><h2 class="grotesk">Vandaag</h2>
+                        <a class="chip" href="life-os.html">Open Life OS →</a></div>
+                    <div class="focus-list" id="focus"></div>
+
+                    <div class="sec-head"><h2 class="grotesk">Apps</h2></div>
+                    <div class="apps" id="apps"></div>
+
+                    <div class="sec-head"><h2 class="grotesk">Systeem</h2>
+                        <a class="chip" href="integrations.html">Instellen →</a></div>
+                    <div class="status" id="status"></div>
+
+                    <div style="margin-top:34px;display:flex;gap:10px;flex-wrap:wrap;">
+                        <a class="chip" href="../index.html">← Terug naar de website</a>
+                        <button class="chip" id="exportAll">Backup downloaden</button>
+                        <button class="chip" id="syncNow">Nu synchroniseren</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="km-os.js"></script>
+<script>
+if(KM.boot()){
+    KM.shell({ app:'home' });
+
+    var $ = KM.$, $$ = KM.$$, OS = KM.OS, D = OS.data;
+
+    /* ---------- begroeting ---------- */
+    function greet(){
+        var h = new Date().getHours();
+        var g = h < 6 ? 'Nog wakker' : h < 12 ? 'Goedemorgen' : h < 18 ? 'Goedemiddag' : 'Goedenavond';
+        $('#greet').innerHTML = g + ', <em>Kain</em>.';
+        var d = new Date();
+        $('#dateLine').textContent = KM.DOW_LONG[(d.getDay()+6)%7] + ' ' + d.getDate() + ' ' + KM.MONTHS[d.getMonth()] + ' ' + d.getFullYear();
+        var open = KM.q.today().length;
+        $('#sub').textContent = open
+            ? open + (open === 1 ? ' taak vraagt vandaag om aandacht.' : ' taken vragen vandaag om aandacht.')
+            : 'Niets staat vandaag open. Mooi moment om vooruit te werken.';
+    }
+
+    /* ---------- stats ---------- */
+    function stats(){
+        var doneWeek = D.tasks.filter(function(t){
+            return t.doneAt && t.doneAt > Date.now() - 7*864e5;
+        }).length;
+        var items = [
+            { n: D.goals.filter(function(g){ return g.status === 'active'; }).length, l:'Actieve doelen' },
+            { n: D.projects.filter(function(p){ return p.status !== 'done'; }).length, l:'Lopende projecten' },
+            { n: KM.q.open().length, l:'Open taken' },
+            { n: doneWeek, l:'Afgerond deze week' },
+            { n: KM.q.momentum(), l:'Momentum', suffix:'%' }
+        ];
+        $('#stats').innerHTML = items.map(function(s, i){
+            return '<div class="stat rise"><b data-count="' + s.n + '">0</b><span>' + s.l + '</span></div>';
+        }).join('');
+        // teller animeren
+        $$('#stats [data-count]').forEach(function(el){
+            var target = +el.dataset.count, t0 = performance.now(), dur = 900;
+            (function step(now){
+                var p = Math.min(1, (now - t0)/dur);
+                var e = 1 - Math.pow(1 - p, 3);
+                el.textContent = Math.round(target * e);
+                if(p < 1) requestAnimationFrame(step);
+            })(t0);
+        });
+    }
+
+    /* ---------- focus ---------- */
+    function focus(){
+        var list = KM.q.today().sort(function(a,b){ return a.prio.localeCompare(b.prio); }).slice(0,6);
+        var host = $('#focus');
+        if(!list.length){
+            host.innerHTML = '<div class="empty">Geen taken voor vandaag — plan iets in via AI Scheduling</div>';
+            return;
+        }
+        host.innerHTML = list.map(function(t){
+            var a = KM.areaOf(t.area);
+            var pr = KM.PRIOS.filter(function(p){ return p.id === t.prio; })[0] || KM.PRIOS[2];
+            return '<div class="fitem rise" data-id="' + t.id + '">' +
+                '<span class="fbox"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round"><path d="m5 12.5 4.5 4.5L19 7"/></svg></span>' +
+                '<span class="ftxt">' + KM.esc(t.title) + '</span>' +
+                '<span class="tag" style="background:' + pr.color + '22;color:' + pr.color + ';">' + pr.name + '</span>' +
+                '<span class="tag" style="background:' + a.hex + '1e;color:' + a.hex + ';">' + a.icon + ' ' + a.name.split(' ')[0] + '</span>' +
+            '</div>';
+        }).join('');
+        $$('#focus .fbox').forEach(function(b){
+            b.onclick = function(){
+                var row = b.closest('.fitem');
+                var t = KM.q.task(row.dataset.id);
+                t.status = 'done'; t.doneAt = Date.now();
+                b.classList.add('on'); row.classList.add('done');
+                OS.save(); KM.track('task_done', { from:'launcher' });
+                setTimeout(function(){ focus(); stats(); }, 550);
+                KM.toast('Afgevinkt — ' + t.title, null, 'Ongedaan maken', function(){
+                    t.status = 'todo'; t.doneAt = null; OS.save(); focus(); stats();
+                });
+            };
+        });
+    }
+
+    /* ---------- apps ---------- */
+    function apps(){
+        $('#apps').innerHTML = KM.APPS.filter(function(a){ return a.id !== 'home'; }).map(function(a){
+            var count = '';
+            if(a.id === 'life')   count = KM.q.open().length + ' open';
+            if(a.id === 'matrix') count = (D.goals.length + D.projects.length + D.tasks.length) + ' knopen';
+            if(a.id === 'plan')   count = Object.keys(D.plan||{}).length + ' dagen gepland';
+            if(a.id === 'video')  count = (D.scenes||[]).length + ' scenes';
+            if(a.id === 'design') count = (D.designs||[]).length + ' ontwerpen';
+            if(a.id === 'notes'){
+                var ws = null; try{ ws = JSON.parse(localStorage.getItem('kmdev_workspace_v1')||'null'); }catch(e){}
+                count = ws ? Object.keys(ws.pages||{}).length + ' pagina\'s' : 'leeg';
+            }
+            if(a.id === 'stack')  count = statusCount() + '/3 verbonden';
+            return '<a class="app rise" href="' + a.file + '" style="--tint:' + a.tint + ';--tint-a:' + a.tint + '22;">' +
+                '<span class="app-ico">' + a.icon + '</span>' +
+                '<h3 class="grotesk">' + KM.esc(a.name) + '</h3>' +
+                '<p>' + KM.esc(a.desc) + '</p>' +
+                '<div class="app-meta"><span>' + count + '</span><span class="go">→</span></div>' +
+            '</a>';
+        }).join('');
+        $$('.app').forEach(function(el){
+            el.addEventListener('mousemove', function(e){
+                var r = el.getBoundingClientRect();
+                el.style.setProperty('--mx', ((e.clientX - r.left)/r.width*100) + '%');
+                el.style.setProperty('--my', ((e.clientY - r.top)/r.height*100) + '%');
+            });
+        });
+    }
+
+    /* ---------- status ---------- */
+    function statusCount(){
+        var s = KM.SET.data, n = 0;
+        if(s.supabase.url && s.supabase.key) n++;
+        if(s.posthog.on && s.posthog.key) n++;
+        if(s.ai.on) n++;
+        return n;
+    }
+    function status(){
+        var s = KM.SET.data;
+        var items = [
+            { on: !!(s.supabase.url && s.supabase.key), name:'Supabase', off:'niet gekoppeld', onTxt: s.supabase.auto ? 'auto-sync aan' : 'gekoppeld' },
+            { on: !!(s.posthog.on && s.posthog.key),    name:'PostHog',  off:'uit',            onTxt:'events actief' },
+            { on: !!s.ai.on,                            name:'AI-proxy', off:'uit',            onTxt: s.ai.endpoint },
+            { on: true, name:'Lokale opslag', off:'', onTxt: Math.round(JSON.stringify(D).length/1024) + ' kB' }
+        ];
+        $('#status').innerHTML = items.map(function(i){
+            return '<div class="st' + (i.on ? ' on' : '') + '"><span class="led"></span><b style="font-weight:600;">' + i.name + '</b>' +
+                   '<span style="color:var(--text-faint);font-size:12px;">' + KM.esc(i.on ? i.onTxt : i.off) + '</span></div>';
+        }).join('');
+    }
+
+    /* ---------- snelle vastlegging ---------- */
+    function capture(){
+        var v = $('#capture').value.trim();
+        if(!v) return;
+        // "!" = hoge prioriteit, "vandaag"/"morgen" = deadline, "#tag" = tag
+        var prio = /!/.test(v) ? 'p1' : 'p3';
+        var due  = /vandaag|today/i.test(v) ? KM.iso() : /morgen|tomorrow/i.test(v) ? KM.iso(KM.addDays(new Date(),1)) : '';
+        var tags = (v.match(/#[\wàéèêëïöü-]+/gi) || []).map(function(x){ return x.slice(1); });
+        var title = v.replace(/#[\wàéèêëïöü-]+/gi,'').replace(/!/g,'').replace(/\b(vandaag|morgen|today|tomorrow)\b/gi,'').replace(/\s{2,}/g,' ').trim();
+        D.tasks.unshift({
+            id:KM.uid(), title:title || v, projectId:null, goalId:null, area:'work',
+            status:'todo', due:due, prio:prio, energy:'focus', tags:tags,
+            created:Date.now(), doneAt:null
+        });
+        OS.save();
+        $('#capture').value = '';
+        KM.toast('Vastgelegd in je inbox');
+        KM.track('capture', { app:'launcher' });
+        focus(); stats(); apps();
+    }
+    $('#captureBtn').onclick = capture;
+    $('#capture').addEventListener('keydown', function(e){ if(e.key === 'Enter') capture(); });
+
+    $('#exportAll').onclick = function(){
+        KM.download('km-os-backup-' + KM.iso() + '.json', JSON.stringify({ os:D, settings:KM.SET.data }, null, 2));
+        KM.toast('Backup gedownload');
+    };
+    $('#syncNow').onclick = function(){ KM.sync.push(); };
+
+    greet(); stats(); focus(); apps(); status();
+
+    // sneltoets: / focust de capture-balk
+    document.addEventListener('keydown', function(e){
+        if(e.key === '/' && document.activeElement.tagName !== 'INPUT'){ e.preventDefault(); $('#capture').focus(); }
+    });
+}
+</script>
+</body>
+</html>

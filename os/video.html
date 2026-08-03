@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="nl" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Video Studio — KM.OS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="km-os.css">
+<style>
+.brief{
+    border:1px solid var(--line);border-radius:var(--r-md);padding:22px;background:var(--bg);
+}
+.tl{
+    display:flex;gap:3px;height:56px;border-radius:12px;overflow:hidden;
+    border:1px solid var(--line);background:var(--paper);margin:16px 0 6px;
+}
+.tl-seg{
+    position:relative;display:flex;align-items:center;justify-content:center;cursor:pointer;
+    color:#fff;font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.1em;
+    transition:filter .2s,transform .2s var(--ease);overflow:hidden;min-width:14px;
+}
+.tl-seg:hover{filter:brightness(1.12);}
+.tl-seg.on{box-shadow:inset 0 0 0 3px var(--accent);}
+.tl-marks{display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:9.5px;color:var(--text-faint);}
+
+.scene{
+    display:grid;grid-template-columns:150px 1fr;gap:18px;padding:18px;
+    border:1px solid var(--line);border-radius:var(--r-md);background:var(--paper);
+    transition:border-color .22s,box-shadow .22s,transform .22s var(--ease);
+}
+.scene:hover{border-color:var(--text-faint);box-shadow:var(--shadow-soft);}
+.scene.on{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+.scene.dragging{opacity:.4;}
+.sc-thumb{
+    border-radius:12px;overflow:hidden;position:relative;background:var(--bg);
+    border:1px solid var(--line);display:grid;place-items:center;aspect-ratio:16/9;
+}
+.sc-thumb.v916{aspect-ratio:9/16;}
+.sc-thumb.v11{aspect-ratio:1/1;}
+.sc-thumb img,.sc-thumb video{width:100%;height:100%;object-fit:cover;display:block;}
+.sc-thumb .ph{font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.12em;color:var(--text-faint);text-align:center;padding:8px;}
+.sc-num{
+    position:absolute;top:6px;left:6px;background:rgba(13,13,13,.72);color:#fff;
+    font-family:'Space Mono',monospace;font-size:9px;padding:3px 7px;border-radius:99px;letter-spacing:.1em;
+}
+.sc-main{min-width:0;}
+.sc-head{display:flex;align-items:center;gap:9px;margin-bottom:12px;flex-wrap:wrap;}
+.sc-head input.title{
+    flex:1;min-width:130px;border:0;background:transparent;outline:none;
+    font-family:'Space Grotesk',sans-serif;font-size:16.5px;font-weight:600;letter-spacing:-.02em;
+    border-bottom:1px solid transparent;padding:2px 0;
+}
+.sc-head input.title:focus{border-bottom-color:var(--accent);}
+.sc-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.sc-grid .field{margin:0;}
+.sc-foot{display:flex;gap:7px;align-items:center;margin-top:13px;flex-wrap:wrap;}
+.sc-foot .label{margin-right:auto;}
+
+.tool{
+    display:flex;align-items:center;gap:13px;padding:14px 16px;border-radius:14px;
+    border:1px solid var(--line);background:var(--paper);text-decoration:none;color:inherit;
+    transition:all .22s var(--ease);
+}
+.tool:hover{border-color:var(--text-faint);transform:translateX(4px);box-shadow:var(--shadow-soft);}
+.tool .ti{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-size:17px;background:var(--bg);border:1px solid var(--line);flex:0 0 38px;}
+.tool b{display:block;font-family:'Space Grotesk',sans-serif;font-size:14.5px;font-weight:600;}
+.tool span{font-size:12.5px;color:var(--text-faint);}
+
+.script{
+    font-family:'Space Mono',monospace;font-size:13px;line-height:1.9;white-space:pre-wrap;
+    background:var(--ink);color:#e8e6df;border-radius:var(--r-md);padding:22px;overflow-x:auto;
+}
+@media(max-width:820px){
+    .scene{grid-template-columns:1fr;}
+    .sc-thumb{max-width:190px;}
+    .sc-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div class="os">
+    <div class="os-body">
+        <div class="os-scroll"><div class="pad"><div class="wrap" id="view"></div></div></div>
+    </div>
+</div>
+
+<script src="km-os.js"></script>
+<script>
+if(KM.boot()){
+
+var $ = KM.$, $$ = KM.$$, OS = KM.OS, D = OS.data, esc = KM.esc;
+
+D.video = Object.assign({
+    title:'KM.dev — brand system in 30 seconden',
+    brief:'Laat zien hoe een merk in één systeem samenkomt: strategie, identiteit en website. Rustig, premium, veel wit, lime accent.',
+    format:'16:9', style:'cinematic, minimal, veel negatieve ruimte, natuurlijk licht, lime accentkleur',
+    voice:'nl', total:30
+}, D.video || {});
+D.scenes = D.scenes || [];
+
+var SHOTS  = ['Wide','Medium','Close-up','Macro','Over-the-shoulder','Top-down','Detail'];
+var MOVES  = ['Static','Slow push in','Pull out','Pan links','Pan rechts','Tilt up','Handheld','Orbit'];
+var FORMATS = { '16:9':{ w:1920, h:1080, cls:'' }, '9:16':{ w:1080, h:1920, cls:'v916' }, '1:1':{ w:1080, h:1080, cls:'v11' } };
+var SEG_COLORS = ['#c6ff4a','#2383e2','#8b5cf6','#e0568a','#e8a33d','#3f8f5c','#e8632d','#6f6d66'];
+
+var tab = 'board', sel = null;
+
+KM.shell({
+    app:'video',
+    tabs:[{ id:'board', name:'Storyboard', on:true }, { id:'script', name:'Script' }, { id:'tools', name:'Werkwijze' }],
+    actionsHTML:'<button class="btn accent sm" id="gen">✨ Genereer storyboard</button>',
+    onTab:function(t){ tab = t; render(); }
+});
+$('#gen').onclick = generateBoard;
+
+/* =========================================================
+   1. Storyboard opbouwen
+   ========================================================= */
+/* Een beproefde structuur voor korte video: haak → probleem → belofte → bewijs → hoe → CTA */
+var BEATS = [
+    { key:'hook',    name:'De haak',      shot:'Close-up',  move:'Slow push in', secs:.13, hint:'Eerste 2 seconden. Eén beeld dat verwart of verrast.' },
+    { key:'problem', name:'Het probleem', shot:'Medium',    move:'Handheld',     secs:.15, hint:'Benoem de frustratie die de kijker herkent.' },
+    { key:'promise', name:'De belofte',   shot:'Wide',      move:'Pull out',     secs:.14, hint:'Waar het naartoe kan. Groter beeld.' },
+    { key:'proof',   name:'Het bewijs',   shot:'Detail',    move:'Pan rechts',   secs:.18, hint:'Concreet werk, cijfers of resultaat.' },
+    { key:'how',     name:'Hoe het werkt',shot:'Top-down',  move:'Static',       secs:.22, hint:'Het systeem in stappen. Rustig tempo.' },
+    { key:'cta',     name:'De uitnodiging',shot:'Medium',   move:'Slow push in', secs:.18, hint:'Eén heldere volgende stap.' }
+];
+function newScene(o){
+    return Object.assign({
+        id:KM.uid(), title:'Nieuwe scene', beat:'', prompt:'', voice:'',
+        shot:'Medium', move:'Static', secs:4, media:'', status:'idle'
+    }, o || {});
+}
+function generateBoard(){
+    if(D.scenes.length && !confirmReplace()) return;
+    var total = +D.video.total || 30;
+    D.scenes = BEATS.map(function(b){
+        return newScene({
+            title: b.name,
+            beat: b.key,
+            shot: b.shot,
+            move: b.move,
+            secs: Math.max(2, Math.round(total * b.secs)),
+            prompt: promptFor(b),
+            voice: ''
+        });
+    });
+    OS.save(); render();
+    KM.toast('Storyboard van ' + D.scenes.length + ' scenes klaar');
+    KM.track('video_board_generated');
+
+    if(KM.ai.on()) enrichWithAI();
+}
+function confirmReplace(){ return window.confirm('Bestaand storyboard vervangen?'); }
+function promptFor(b){
+    return b.name + ' — ' + b.hint + '\n' +
+        'Beeld: ' + b.shot.toLowerCase() + ', camera ' + b.move.toLowerCase() + '. ' +
+        'Stijl: ' + D.video.style + '.';
+}
+function enrichWithAI(){
+    KM.ai.text(
+        'Onderwerp: ' + D.video.title + '\nBrief: ' + D.video.brief +
+        '\n\nSchrijf voor deze zes beats een korte Nederlandse voice-over (max 14 woorden per beat) en een Engelse beeldprompt (max 25 woorden). ' +
+        'Beats: ' + BEATS.map(function(b){ return b.name; }).join(', ') + '.\n' +
+        'Antwoord als JSON-array: [{"voice":"…","prompt":"…"}] — niets anders.',
+        'Je bent een scriptschrijver voor korte merkvideo\'s. Concreet, zonder clichés.'
+    ).then(function(r){
+        var txt = r.text || r.output || '';
+        var m = txt.match(/\[[\s\S]*\]/);
+        if(!m) throw new Error('geen bruikbaar antwoord');
+        var arr = JSON.parse(m[0]);
+        arr.forEach(function(x, i){
+            if(!D.scenes[i]) return;
+            if(x.voice) D.scenes[i].voice = x.voice;
+            if(x.prompt) D.scenes[i].prompt = x.prompt;
+        });
+        OS.save(); render(); KM.toast('AI heeft de teksten ingevuld');
+    }).catch(function(e){ KM.toast('AI-verrijking mislukt: ' + e.message, 'err'); });
+}
+
+/* =========================================================
+   2. Weergave
+   ========================================================= */
+function render(){
+    if(tab === 'script') return renderScript();
+    if(tab === 'tools')  return renderTools();
+    renderBoard();
+}
+
+function renderBoard(){
+    var v = D.video;
+    var total = D.scenes.reduce(function(a,s){ return a + (+s.secs || 0); }, 0);
+
+    $('#view').innerHTML =
+        '<div class="brief rise">' +
+            '<div class="field"><label>Titel van de video</label><input class="inp" id="vT" value="' + esc(v.title) + '"></div>' +
+            '<div class="field"><label>Brief — wat moet de kijker voelen of doen?</label><textarea class="inp" id="vB">' + esc(v.brief) + '</textarea></div>' +
+            '<div class="row">' +
+                '<div class="field"><label>Formaat</label><select class="inp" id="vF">' +
+                    Object.keys(FORMATS).map(function(k){ return '<option' + (k === v.format ? ' selected' : '') + '>' + k + '</option>'; }).join('') +
+                '</select></div>' +
+                '<div class="field"><label>Doelduur (sec)</label><input class="inp" type="number" id="vD" min="6" max="180" value="' + v.total + '"></div>' +
+                '<div class="field"><label>Beeldstijl</label><input class="inp" id="vS" value="' + esc(v.style) + '"></div>' +
+            '</div>' +
+        '</div>' +
+
+        '<div class="sec-head"><h2 class="grotesk">Tijdlijn</h2>' +
+            '<span class="label">' + D.scenes.length + ' scenes · ' + total + ' sec' +
+            (Math.abs(total - v.total) > 2 ? ' (doel ' + v.total + ')' : '') + '</span></div>' +
+        timeline(total) +
+
+        '<div class="sec-head"><h2 class="grotesk">Scenes</h2>' +
+            '<div style="margin-left:auto;display:flex;gap:8px;">' +
+                '<button class="btn ghost sm" id="addScene">＋ Scene</button>' +
+                (KM.ai.on() ? '<button class="btn sm" id="genAll">Genereer alle beelden</button>' : '') +
+            '</div></div>' +
+        '<div class="grid" style="gap:12px;" id="scenes">' +
+            (D.scenes.length ? D.scenes.map(sceneCard).join('') : '<div class="empty">Nog geen scenes — klik op “Genereer storyboard”</div>') +
+        '</div>' +
+
+        '<div style="display:flex;gap:10px;margin-top:22px;flex-wrap:wrap;">' +
+            '<button class="btn ghost" id="expMd">Shotlist als Markdown</button>' +
+            '<button class="btn ghost" id="expJson">Exporteer JSON</button>' +
+            '<button class="btn ghost" id="clearB">Storyboard wissen</button>' +
+        '</div>';
+
+    // brief-velden
+    bindVal('#vT', function(x){ v.title = x; });
+    bindVal('#vB', function(x){ v.brief = x; });
+    bindVal('#vS', function(x){ v.style = x; });
+    $('#vF').onchange = function(){ v.format = this.value; OS.save(); render(); };
+    $('#vD').onchange = function(){ v.total = +this.value; OS.save(); render(); };
+
+    $('#addScene').onclick = function(){ D.scenes.push(newScene()); OS.save(); render(); };
+    if($('#genAll')) $('#genAll').onclick = genAll;
+    $('#expMd').onclick = exportMd;
+    $('#expJson').onclick = function(){ KM.download('storyboard-' + KM.iso() + '.json', JSON.stringify({ video:v, scenes:D.scenes }, null, 2)); };
+    $('#clearB').onclick = function(){
+        KM.confirm('Storyboard wissen?', 'Alle scenes worden verwijderd.', function(){ D.scenes = []; OS.save(); render(); });
+    };
+    bindScenes();
+}
+function bindVal(sel_, fn){
+    var el = $(sel_); if(!el) return;
+    el.addEventListener('input', function(){ fn(el.value); OS.save(); });
+}
+function timeline(total){
+    if(!D.scenes.length) return '<div class="empty">Tijdlijn verschijnt zodra er scenes zijn</div>';
+    return '<div class="tl" id="tl">' + D.scenes.map(function(s, i){
+        var pct = total ? (s.secs / total * 100) : 0;
+        return '<div class="tl-seg' + (sel === s.id ? ' on' : '') + '" data-seg="' + s.id + '" ' +
+            'style="flex:' + Math.max(1, pct) + ' 1 0;background:' + SEG_COLORS[i % SEG_COLORS.length] + ';">' +
+            (pct > 7 ? esc(s.title.slice(0,14)) : '') + '</div>';
+    }).join('') + '</div>' +
+    '<div class="tl-marks"><span>0s</span><span>' + Math.round(total/2) + 's</span><span>' + total + 's</span></div>';
+}
+function sceneCard(s, i){
+    var f = FORMATS[D.video.format] || FORMATS['16:9'];
+    var media = s.media
+        ? (/^data:video|\.mp4/.test(s.media) ? '<video src="' + s.media + '" muted loop playsinline></video>' : '<img src="' + s.media + '" alt="">')
+        : '<div class="ph">' + (s.status === 'busy' ? '<span class="spin" style="margin:0 auto;"></span>' : 'geen beeld') + '</div>';
+    return '<div class="scene' + (sel === s.id ? ' on' : '') + '" data-s="' + s.id + '" draggable="true">' +
+        '<div class="sc-thumb ' + f.cls + '">' + media + '<span class="sc-num">' + String(i+1).padStart(2,'0') + '</span></div>' +
+        '<div class="sc-main">' +
+            '<div class="sc-head">' +
+                '<input class="title" data-f="title" value="' + esc(s.title) + '">' +
+                '<span class="label">' + s.secs + 's</span>' +
+                '<button class="iconbtn" data-up title="Omhoog">↑</button>' +
+                '<button class="iconbtn" data-down title="Omlaag">↓</button>' +
+                '<button class="iconbtn" data-del title="Verwijderen">✕</button>' +
+            '</div>' +
+            '<div class="sc-grid">' +
+                '<div class="field"><label>Shot</label><select class="inp" data-f="shot">' + opts(SHOTS, s.shot) + '</select></div>' +
+                '<div class="field"><label>Camerabeweging</label><select class="inp" data-f="move">' + opts(MOVES, s.move) + '</select></div>' +
+            '</div>' +
+            '<div class="field" style="margin-top:12px;"><label>Beeldprompt</label><textarea class="inp" data-f="prompt" style="min-height:70px;">' + esc(s.prompt) + '</textarea></div>' +
+            '<div class="field"><label>Voice-over</label><textarea class="inp" data-f="voice" style="min-height:54px;">' + esc(s.voice) + '</textarea></div>' +
+            '<div class="sc-foot">' +
+                '<span class="label">duur</span>' +
+                '<input class="inp" type="number" data-f="secs" value="' + s.secs + '" min="1" max="60" style="width:78px;padding:6px 10px;">' +
+                (KM.ai.on() ? '<button class="btn sm" data-gen>Genereer beeld</button>' : '') +
+                '<button class="btn ghost sm" data-copy>Kopieer prompt</button>' +
+                '<button class="btn ghost sm" data-upload>Eigen beeld</button>' +
+            '</div>' +
+        '</div></div>';
+}
+function opts(list, v){ return list.map(function(x){ return '<option' + (x === v ? ' selected' : '') + '>' + x + '</option>'; }).join(''); }
+
+function bindScenes(){
+    $$('[data-seg]').forEach(function(el){
+        el.onclick = function(){
+            sel = el.dataset.seg;
+            render();
+            var card = $('.scene[data-s="' + sel + '"]');
+            if(card && card.scrollIntoView) card.scrollIntoView({ behavior:'smooth', block:'center' });
+        };
+    });
+    $$('.scene').forEach(function(card){
+        var s = D.scenes.filter(function(x){ return x.id === card.dataset.s; })[0];
+        if(!s) return;
+        var i = D.scenes.indexOf(s);
+
+        $$('[data-f]', card).forEach(function(inp){
+            inp.addEventListener('input', function(){
+                var k = inp.dataset.f;
+                s[k] = k === 'secs' ? +inp.value : inp.value;
+                OS.save();
+                if(k === 'secs' || k === 'title') refreshTimeline();
+            });
+            inp.addEventListener('change', function(){ OS.save(); });
+        });
+        $('[data-up]', card).onclick = function(){ if(i > 0){ D.scenes.splice(i-1,0,D.scenes.splice(i,1)[0]); OS.save(); render(); } };
+        $('[data-down]', card).onclick = function(){ if(i < D.scenes.length-1){ D.scenes.splice(i+1,0,D.scenes.splice(i,1)[0]); OS.save(); render(); } };
+        $('[data-del]', card).onclick = function(){
+            D.scenes.splice(i,1); OS.save(); render();
+            KM.toast('Scene verwijderd', null, 'Terug', function(){ D.scenes.splice(i,0,s); OS.save(); render(); });
+        };
+        $('[data-copy]', card).onclick = function(){
+            KM.copy(fullPrompt(s));
+        };
+        $('[data-upload]', card).onclick = function(){ uploadFor(s); };
+        var g = $('[data-gen]', card);
+        if(g) g.onclick = function(){ genScene(s); };
+
+        card.addEventListener('dragstart', function(e){ e.dataTransfer.setData('text/scene', s.id); card.classList.add('dragging'); });
+        card.addEventListener('dragend', function(){ card.classList.remove('dragging'); });
+        card.addEventListener('dragover', function(e){ if(e.dataTransfer.types.includes('text/scene')) e.preventDefault(); });
+        card.addEventListener('drop', function(e){
+            e.preventDefault();
+            var id = e.dataTransfer.getData('text/scene');
+            var from = D.scenes.findIndex(function(x){ return x.id === id; });
+            if(from < 0 || from === i) return;
+            var moved = D.scenes.splice(from,1)[0];
+            D.scenes.splice(D.scenes.indexOf(s), 0, moved);
+            OS.save(); render();
+        });
+    });
+}
+function refreshTimeline(){
+    var total = D.scenes.reduce(function(a,s){ return a + (+s.secs || 0); }, 0);
+    var host = $('#tl'); if(!host) return;
+    host.outerHTML = timeline(total).split('<div class="tl-marks">')[0];
+    bindScenes();
+}
+function fullPrompt(s){
+    return s.prompt + '\n\nShot: ' + s.shot + '. Camera: ' + s.move + '. Duur: ' + s.secs + 's. ' +
+        'Formaat: ' + D.video.format + '. Stijl: ' + D.video.style + '.';
+}
+function uploadFor(s){
+    var inp = document.createElement('input');
+    inp.type = 'file'; inp.accept = 'image/*,video/mp4';
+    inp.onchange = function(){
+        var f = inp.files[0]; if(!f) return;
+        if(f.size > 2.4e6){ KM.toast('Bestand te groot (max ~2,4 MB)', 'err'); return; }
+        var r = new FileReader();
+        r.onload = function(){ s.media = r.result; OS.save(); render(); };
+        r.readAsDataURL(f);
+    };
+    inp.click();
+}
+function genScene(s){
+    s.status = 'busy'; render();
+    var f = FORMATS[D.video.format];
+    KM.ai.video(fullPrompt(s), { width:f.w, height:f.h, seconds:s.secs })
+        .then(function(r){
+            s.media = r.url || r.video || r.image || '';
+            s.status = s.media ? 'done' : 'idle';
+            if(!s.media) KM.toast('Geen media terug van de proxy', 'err');
+            OS.save(); render();
+        })
+        .catch(function(e){ s.status = 'idle'; OS.save(); render(); KM.toast(e.message, 'err'); });
+}
+function genAll(){
+    var q = D.scenes.filter(function(s){ return !s.media; });
+    if(!q.length){ KM.toast('Alle scenes hebben al beeld'); return; }
+    KM.toast('Bezig met ' + q.length + ' scenes…');
+    (function next(i){
+        if(i >= q.length){ KM.toast('Klaar'); return; }
+        genScene(q[i]);
+        setTimeout(function(){ next(i+1); }, 1500);
+    })(0);
+}
+
+/* ---------- script ---------- */
+function renderScript(){
+    var total = D.scenes.reduce(function(a,s){ return a + (+s.secs||0); }, 0);
+    var t = 0;
+    var txt = '# ' + D.video.title + '\n' +
+        '# ' + D.video.format + ' · ' + total + ' seconden · ' + D.scenes.length + ' scenes\n' +
+        '# ' + D.video.style + '\n\n';
+    D.scenes.forEach(function(s, i){
+        var from = t, to = t + (+s.secs||0); t = to;
+        txt += String(i+1).padStart(2,'0') + '  ' + fmt(from) + '–' + fmt(to) + '   ' + s.title.toUpperCase() + '\n';
+        txt += '    SHOT   ' + s.shot + ' · ' + s.move + '\n';
+        if(s.prompt) txt += '    BEELD  ' + s.prompt.replace(/\n/g,'\n           ') + '\n';
+        txt += '    VO     ' + (s.voice || '—') + '\n\n';
+    });
+    $('#view').innerHTML =
+        '<div class="sec-head"><h2 class="grotesk">Draaiboek</h2>' +
+            '<div style="margin-left:auto;display:flex;gap:8px;">' +
+                '<button class="btn ghost sm" id="cpScript">Kopieer</button>' +
+                '<button class="btn ghost sm" id="dlScript">Download .txt</button>' +
+            '</div></div>' +
+        '<div class="script">' + esc(txt) + '</div>' +
+        '<div class="sec-head"><h2 class="grotesk">Voice-over alleen</h2></div>' +
+        '<div class="card"><p style="line-height:1.9;font-size:15.5px;">' +
+            (D.scenes.map(function(s){ return esc(s.voice); }).filter(Boolean).join(' ') || '<span style="color:var(--text-faint)">Nog geen voice-over ingevuld</span>') +
+        '</p></div>';
+    $('#cpScript').onclick = function(){ KM.copy(txt); };
+    $('#dlScript').onclick = function(){ KM.download('draaiboek-' + KM.iso() + '.txt', txt, 'text/plain'); };
+}
+function fmt(sec){ return String(Math.floor(sec/60)).padStart(2,'0') + ':' + String(sec%60).padStart(2,'0'); }
+
+function exportMd(){
+    var md = '# ' + D.video.title + '\n\n' + D.video.brief + '\n\n' +
+        '**Formaat:** ' + D.video.format + ' · **Duur:** ' + D.scenes.reduce(function(a,s){ return a+(+s.secs||0); },0) + 's\n\n' +
+        '| # | Scene | Shot | Beweging | Sec | Voice-over |\n|---|---|---|---|---|---|\n' +
+        D.scenes.map(function(s,i){
+            return '| ' + (i+1) + ' | ' + s.title + ' | ' + s.shot + ' | ' + s.move + ' | ' + s.secs + ' | ' + (s.voice||'') + ' |';
+        }).join('\n') +
+        '\n\n## Beeldprompts\n\n' + D.scenes.map(function(s,i){
+            return '**' + (i+1) + '. ' + s.title + '**\n\n```\n' + fullPrompt(s) + '\n```\n';
+        }).join('\n');
+    KM.download('shotlist-' + KM.iso() + '.md', md, 'text/markdown');
+    KM.toast('Shotlist gedownload');
+}
+
+/* ---------- werkwijze ---------- */
+function renderTools(){
+    var on = KM.ai.on();
+    $('#view').innerHTML =
+        '<div class="sec-head"><h2 class="grotesk">Hoe deze studio werkt</h2></div>' +
+        '<div class="card" style="line-height:1.75;font-size:15px;color:var(--text-soft);">' +
+            '<p><b style="color:var(--text)">Zonder AI</b> is dit een volwaardige storyboard-tool: je bouwt de beats, bepaalt shots en camerabewegingen, ' +
+            'schrijft de voice-over en exporteert een draaiboek of shotlist die je meeneemt naar de opname of naar een externe generator.</p>' +
+            '<p style="margin-top:14px;"><b style="color:var(--text)">Met AI</b> vult hij de teksten in en genereert hij per scene beeld. ' +
+            'Dat loopt via je eigen proxy op Vercel, zodat je API-sleutel op de server blijft en niet in de browser staat.</p>' +
+        '</div>' +
+
+        '<div class="sec-head"><h2 class="grotesk">Status</h2></div>' +
+        '<div class="card" style="display:flex;align-items:center;gap:13px;flex-wrap:wrap;">' +
+            '<span class="dot-live" style="' + (on ? '' : 'background:var(--text-faint);animation:none;') + '"></span>' +
+            '<b class="grotesk" style="font-size:15px;">AI-proxy ' + (on ? 'verbonden' : 'niet ingesteld') + '</b>' +
+            '<span class="label">' + (on ? KM.SET.data.ai.endpoint : 'genereren staat uit') + '</span>' +
+            '<a class="btn sm" href="integrations.html" style="margin-left:auto;">Naar Integraties</a>' +
+        '</div>' +
+
+        '<div class="sec-head"><h2 class="grotesk">Werkstroom zonder key</h2></div>' +
+        '<div class="grid" style="gap:10px;">' +
+            step(1, 'Vul de brief in', 'Titel, doel en beeldstijl. Dit stuurt alle prompts aan.') +
+            step(2, 'Genereer het storyboard', 'Zes beats die bewezen werken voor korte video: haak, probleem, belofte, bewijs, hoe, uitnodiging.') +
+            step(3, 'Schaaf de scenes bij', 'Pas shots, bewegingen, duur en voice-over aan. Sleep om de volgorde te wijzigen.') +
+            step(4, 'Exporteer', 'Draaiboek als tekst, shotlist als Markdown of alles als JSON. Prompts zijn los te kopiëren naar welke generator dan ook.') +
+            step(5, 'Plak het beeld terug', '“Eigen beeld” zet een still of clip bij elke scene, zodat je storyboard compleet wordt.') +
+        '</div>';
+}
+function step(n, title, txt){
+    return '<div class="tool"><span class="ti">' + n + '</span><span style="flex:1;min-width:0;">' +
+        '<b>' + esc(title) + '</b><span>' + esc(txt) + '</span></span></div>';
+}
+
+render();
+window.VID = { generateBoard:generateBoard, BEATS:BEATS, fullPrompt:fullPrompt, render:render, newScene:newScene };
+}
+</script>
+</body>
+</html>

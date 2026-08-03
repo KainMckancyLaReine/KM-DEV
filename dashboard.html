@@ -3035,6 +3035,7 @@ $('#wsBtn').onclick = e => {
         { label:'Backup downloaden', icon:'⬇️', sub:'Alles als JSON', run:exportAll },
         { label:'Backup importeren', icon:'⬆️', sub:'Vervangt huidige data', run:importAll },
         { sep:true },
+        { label:'Naar KM.OS launcher', icon:'◈', run:() => location.href = 'os/index.html' },
         { label:'Terug naar site', icon:'🌐', run:() => location.href = 'index.html' },
         { label:'Uitloggen', icon:'🚪', danger:true, run:logout }
     ]);
@@ -3043,6 +3044,8 @@ $('#moreBtn').onclick = e => showMenu(e.currentTarget, [
     { label:'Backup downloaden', icon:'⬇️', run:exportAll },
     { label:'Backup importeren', icon:'⬆️', run:importAll },
     { label:'Deze pagina als Markdown', icon:'📄', run:() => cur && exportMd(cur) },
+    { label:'Life OS openen', icon:'◎', run:() => location.href = 'os/life-os.html' },
+    { label:'Mind Matrix openen', icon:'⬡', run:() => location.href = 'os/matrix.html' },
     { sep:true },
     { label:'Alles wissen', icon:'💣', danger:true, run:() => {
         if(!confirm('Alle data wissen en opnieuw beginnen?')) return;

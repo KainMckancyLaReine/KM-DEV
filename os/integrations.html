@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="nl" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Integraties — KM.OS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="km-os.css">
+<style>
+.svc{
+    border:1px solid var(--line);border-radius:var(--r-md);background:var(--paper);
+    overflow:hidden;margin-bottom:16px;transition:border-color .25s,box-shadow .25s;
+}
+.svc.live{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+.svc-head{display:flex;align-items:center;gap:14px;padding:20px 22px;cursor:pointer;}
+.svc-ico{
+    width:46px;height:46px;border-radius:14px;display:grid;place-items:center;
+    font-size:20px;flex:0 0 46px;color:#fff;
+}
+.svc-head h3{font-size:17.5px;font-weight:600;}
+.svc-head p{font-size:12.5px;color:var(--text-faint);margin-top:3px;}
+.svc-state{
+    margin-left:auto;display:flex;align-items:center;gap:9px;
+    font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;
+    color:var(--text-faint);white-space:nowrap;
+}
+.svc-body{padding:0 22px 22px;display:none;}
+.svc.open .svc-body{display:block;animation:slide .3s var(--ease);}
+@keyframes slide{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:none;}}
+.svc-chev{transition:transform .3s var(--ease);color:var(--text-faint);}
+.svc.open .svc-chev{transform:rotate(180deg);}
+
+.code{
+    font-family:'Space Mono',monospace;font-size:12px;line-height:1.75;white-space:pre;
+    background:var(--ink);color:#e8e6df;border-radius:12px;padding:18px 20px;
+    overflow-x:auto;position:relative;
+}
+.code .cp{
+    position:absolute;top:9px;right:9px;background:rgba(255,255,255,.1);border:0;color:#fff;
+    font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;
+    padding:5px 11px;border-radius:99px;
+}
+.code .cp:hover{background:var(--accent);color:var(--ink);}
+
+.steps{counter-reset:s;}
+.step{
+    display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--line-soft);
+}
+.step:last-child{border-bottom:0;}
+.step::before{
+    counter-increment:s;content:counter(s);
+    width:26px;height:26px;border-radius:50%;background:var(--ink);color:#fff;flex:0 0 26px;
+    display:grid;place-items:center;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;
+}
+.step b{display:block;font-family:'Space Grotesk',sans-serif;font-size:14.5px;font-weight:600;margin-bottom:3px;}
+.step span{font-size:13.5px;color:var(--text-soft);line-height:1.6;}
+.step code{font-family:'Space Mono',monospace;font-size:12.5px;background:var(--hover);padding:2px 6px;border-radius:5px;}
+
+.res{
+    margin-top:14px;padding:13px 16px;border-radius:12px;font-size:13.5px;
+    border:1px solid var(--line);background:var(--bg);display:none;align-items:center;gap:10px;
+}
+.res.on{display:flex;}
+.res.ok{border-color:var(--accent);background:var(--accent-soft);}
+.res.bad{border-color:var(--danger);color:var(--danger);}
+.note{font-size:13px;color:var(--text-faint);line-height:1.65;margin-top:10px;}
+.note a{color:var(--accent-ink);}
+html[data-theme="dark"] .note a{color:var(--accent);}
+</style>
+</head>
+<body>
+
+<div class="os">
+    <div class="os-body">
+        <div class="os-scroll"><div class="pad"><div class="wrap" id="view"></div></div></div>
+    </div>
+</div>
+
+<script src="km-os.js"></script>
+<script>
+if(KM.boot()){
+
+var $ = KM.$, $$ = KM.$$, SET = KM.SET, C = SET.data, esc = KM.esc;
+
+KM.shell({ app:'stack' });
+
+var SQL =
+"-- KM.OS — Supabase schema\n" +
+"-- Plak dit in de SQL Editor van je project en druk op Run.\n\n" +
+"create table if not exists km_workspace (\n" +
+"  id          text primary key,\n" +
+"  os          jsonb,\n" +
+"  notion      jsonb,\n" +
+"  updated_at  timestamptz default now()\n" +
+");\n\n" +
+"-- Alleen jij mag erbij. Row Level Security staat aan;\n" +
+"-- de policy hieronder geeft toegang aan ingelogde gebruikers.\n" +
+"alter table km_workspace enable row level security;\n\n" +
+"drop policy if exists \"eigen rij\" on km_workspace;\n" +
+"create policy \"eigen rij\" on km_workspace\n" +
+"  for all\n" +
+"  using (true)\n" +
+"  with check (true);\n\n" +
+"-- Let op: bovenstaande policy is open voor iedereen met de anon key.\n" +
+"-- Wil je het echt dichttimmeren, zet dan Supabase Auth aan en vervang\n" +
+"-- 'using (true)' door 'using (auth.uid() is not null)'.\n\n" +
+"create index if not exists km_workspace_updated on km_workspace (updated_at desc);";
+
+var ENVS =
+"# Zet deze in Vercel → Settings → Environment Variables\n\n" +
+"AI_PROVIDER=openai        # openai | replicate | fal | huggingface\n" +
+"AI_API_KEY=sk-...         # de sleutel van je aanbieder\n" +
+"AI_BASE=https://api.openai.com/v1\n" +
+"AI_TEXT_MODEL=gpt-4o-mini\n" +
+"AI_IMAGE_MODEL=\n" +
+"AI_VIDEO_MODEL=\n" +
+"AI_ALLOW_ORIGIN=*         # of https://jouwdomein.nl";
+
+function render(){
+    $('#view').innerHTML =
+        '<div class="sec-head"><h2 class="grotesk">Integraties</h2>' +
+            '<span class="label">alles blijft werken zonder deze koppelingen</span></div>' +
+
+        svc('supabase', '🗄️', '#3ecf8e', 'Supabase', 'Je workspace synchroniseren naar de cloud',
+            sync() ? (C.supabase.auto ? 'auto-sync aan' : 'gekoppeld') : 'niet gekoppeld', sync(), supabaseBody()) +
+
+        svc('ai', '✨', '#8b5cf6', 'AI-proxy', 'Tekst, beeld en video via je eigen serverless functie',
+            C.ai.on ? 'actief' : 'uit', C.ai.on, aiBody()) +
+
+        svc('posthog', '📊', '#f54e00', 'PostHog', 'Zien hoe je je eigen systeem gebruikt',
+            C.posthog.on && C.posthog.key ? 'events aan' : 'uit', !!(C.posthog.on && C.posthog.key), posthogBody()) +
+
+        svc('vercel', '▲', '#0d0d0d', 'Vercel', 'Deployen en de AI-proxy hosten',
+            'handleiding', false, vercelBody()) +
+
+        '<div class="sec-head"><h2 class="grotesk">Je data</h2></div>' +
+        '<div class="card">' +
+            '<p style="font-size:14px;color:var(--text-soft);line-height:1.7;">' +
+                'Alles staat standaard in <b>localStorage</b> van deze browser. Dat is snel en privé, maar ook kwetsbaar: ' +
+                'browsergeschiedenis wissen wist ook je data. Maak dus regelmatig een backup, of zet Supabase-sync aan.</p>' +
+            '<div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;">' +
+                '<button class="btn" id="expAll">Backup downloaden</button>' +
+                '<button class="btn ghost" id="impAll">Backup terugzetten</button>' +
+                '<button class="btn ghost" id="wipe" style="color:var(--danger);">Alles wissen</button>' +
+            '</div>' +
+            '<p class="note">Opslag nu in gebruik: ' + storageSize() + '</p>' +
+        '</div>';
+
+    bind();
+}
+function sync(){ return !!(C.supabase.url && C.supabase.key); }
+function storageSize(){
+    var n = 0;
+    ['kmdev_os_v1','kmdev_workspace_v1','kmdev_os_settings'].forEach(function(k){
+        n += (localStorage.getItem(k) || '').length;
+    });
+    return Math.round(n/1024) + ' kB van ongeveer 5 000 kB';
+}
+function svc(id, ico, color, title, sub, state, live, body){
+    return '<div class="svc' + (live ? ' live' : '') + '" data-svc="' + id + '">' +
+        '<div class="svc-head">' +
+            '<span class="svc-ico" style="background:' + color + '">' + ico + '</span>' +
+            '<div style="flex:1;min-width:0;"><h3 class="grotesk">' + title + '</h3><p>' + sub + '</p></div>' +
+            '<span class="svc-state"><span class="dot-live" style="' + (live ? '' : 'background:var(--text-faint);animation:none;') + '"></span>' + state + '</span>' +
+            '<svg class="svc-chev" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>' +
+        '</div>' +
+        '<div class="svc-body">' + body + '</div>' +
+    '</div>';
+}
+function code(txt, id){
+    return '<div class="code">' + esc(txt) + '<button class="cp" data-copy="' + id + '">Kopieer</button></div>';
+}
+
+/* ---------- Supabase ---------- */
+function supabaseBody(){
+    var s = C.supabase;
+    return '<div class="row">' +
+            '<div class="field"><label>Project-URL</label><input class="inp" id="sbUrl" placeholder="https://xxxx.supabase.co" value="' + esc(s.url) + '"></div>' +
+            '<div class="field"><label>Anon public key</label><input class="inp" id="sbKey" placeholder="eyJhbGciOi…" value="' + esc(s.key) + '"></div>' +
+            '<div class="field" style="flex:0 0 180px;"><label>Tabel</label><input class="inp" id="sbTable" value="' + esc(s.table) + '"></div>' +
+        '</div>' +
+        '<label class="switch" style="margin:8px 0 16px;"><input type="checkbox" id="sbAuto"' + (s.auto ? ' checked' : '') + '><span class="track"></span>Automatisch synchroniseren bij elke wijziging</label>' +
+        '<div style="display:flex;gap:9px;flex-wrap:wrap;">' +
+            '<button class="btn accent" id="sbSave">Opslaan</button>' +
+            '<button class="btn ghost" id="sbTest">Verbinding testen</button>' +
+            '<button class="btn ghost" id="sbPush">Nu uploaden</button>' +
+            '<button class="btn ghost" id="sbPull">Ophalen uit cloud</button>' +
+        '</div>' +
+        '<div class="res" id="sbRes"></div>' +
+        (s.lastPush || s.lastPull ? '<p class="note">' +
+            (s.lastPush ? 'Laatste upload: ' + new Date(s.lastPush).toLocaleString('nl-NL') + '. ' : '') +
+            (s.lastPull ? 'Laatste ophaal: ' + new Date(s.lastPull).toLocaleString('nl-NL') + '.' : '') + '</p>' : '') +
+
+        '<div class="label" style="margin:24px 0 10px;">Eenmalig: maak de tabel aan</div>' +
+        code(SQL, 'sql') +
+        '<div style="display:flex;gap:9px;margin-top:12px;flex-wrap:wrap;">' +
+            '<button class="btn ghost sm" id="sqlDl">Download .sql</button>' +
+        '</div>' +
+        '<div class="steps" style="margin-top:18px;">' +
+            step('Maak een gratis project', 'Op supabase.com. Je hebt alleen de <code>Project URL</code> en de <code>anon public</code> key nodig — die staan onder Settings → API.') +
+            step('Draai het SQL-script', 'Plak het blok hierboven in de SQL Editor en klik Run. Dat maakt de tabel <code>km_workspace</code>.') +
+            step('Vul de velden in', 'Plak URL en key hierboven, klik Opslaan en daarna Verbinding testen.') +
+            step('Zet auto-sync aan', 'Vanaf dan gaat elke wijziging binnen een seconde mee naar de cloud. Op een ander apparaat klik je Ophalen.') +
+        '</div>' +
+        '<p class="note"><b>Let op:</b> de anon key staat in je browser en is niet geheim. Bewaar hier dus geen wachtwoorden of gevoelige gegevens van anderen.</p>';
+}
+
+/* ---------- AI ---------- */
+function aiBody(){
+    return '<p style="font-size:14px;color:var(--text-soft);line-height:1.7;">' +
+            'De Video Studio, Design Studio en de Scheduler kunnen AI gebruiken. Je API-sleutel hoort niet in de browser, ' +
+            'dus loopt alles via een kleine functie die je zelf op Vercel zet: <code style="font-family:\'Space Mono\',monospace;">/api/ai</code>. ' +
+            'De sleutel blijft daarmee op de server.</p>' +
+        '<div class="row" style="margin-top:16px;">' +
+            '<div class="field"><label>Endpoint</label><input class="inp" id="aiEp" value="' + esc(C.ai.endpoint) + '"></div>' +
+        '</div>' +
+        '<label class="switch" style="margin:6px 0 16px;"><input type="checkbox" id="aiOn"' + (C.ai.on ? ' checked' : '') + '><span class="track"></span>AI-functies aanzetten</label>' +
+        '<div style="display:flex;gap:9px;flex-wrap:wrap;">' +
+            '<button class="btn accent" id="aiSave">Opslaan</button>' +
+            '<button class="btn ghost" id="aiTest">Test de proxy</button>' +
+            '<button class="btn ghost" id="aiDl">Download api/ai.js</button>' +
+        '</div>' +
+        '<div class="res" id="aiRes"></div>' +
+        '<div class="label" style="margin:24px 0 10px;">Environment variables</div>' +
+        code(ENVS, 'env') +
+        '<p class="note">De functie praat standaard met een OpenAI-compatibele API. Veel aanbieders — ook die met een gratis laag — ' +
+            'spreken datzelfde formaat; dan hoef je alleen <code>AI_BASE</code> en <code>AI_TEXT_MODEL</code> aan te passen. ' +
+            'Voor beeld en video ondersteunt de functie daarnaast Replicate en fal. Controleer zelf de actuele voorwaarden en limieten van je aanbieder.</p>';
+}
+
+/* ---------- PostHog ---------- */
+function posthogBody(){
+    var p = C.posthog;
+    return '<div class="row">' +
+            '<div class="field"><label>Project API key</label><input class="inp" id="phKey" placeholder="phc_…" value="' + esc(p.key) + '"></div>' +
+            '<div class="field"><label>Host</label><select class="inp" id="phHost">' +
+                ['https://eu.i.posthog.com','https://us.i.posthog.com'].map(function(h){
+                    return '<option' + (h === p.host ? ' selected' : '') + '>' + h + '</option>'; }).join('') +
+            '</select></div>' +
+        '</div>' +
+        '<label class="switch" style="margin:8px 0 16px;"><input type="checkbox" id="phOn"' + (p.on ? ' checked' : '') + '><span class="track"></span>Events versturen</label>' +
+        '<div style="display:flex;gap:9px;flex-wrap:wrap;">' +
+            '<button class="btn accent" id="phSave">Opslaan</button>' +
+            '<button class="btn ghost" id="phTest">Testevent sturen</button>' +
+        '</div>' +
+        '<div class="res" id="phRes"></div>' +
+        '<div class="label" style="margin:24px 0 10px;">Wat wordt er gemeten?</div>' +
+        '<div class="steps">' +
+            step('app_open', 'Welke app je opent.') +
+            step('task_created / task_done', 'Hoeveel je vastlegt en afrondt.') +
+            step('auto_plan', 'Hoe vaak je je week laat plannen en hoeveel blokken dat oplevert.') +
+            step('design_export / video_board_generated', 'Wat je maakt in de studio\'s.') +
+            step('matrix_select', 'Welk type knoop je bekijkt in de Mind Matrix.') +
+        '</div>' +
+        '<p class="note">Alleen deze gebeurtenissen, met de gebruikersnaam <code>kain</code>. Geen taakinhoud, geen notities, geen teksten. ' +
+            'Zet je de schakelaar uit, dan wordt het script niet eens geladen.</p>';
+}
+
+/* ---------- Vercel ---------- */
+function vercelBody(){
+    return '<p style="font-size:14px;color:var(--text-soft);line-height:1.7;">' +
+            'Vercel host je site én de AI-proxy. De statische bestanden gaan mee zoals ze zijn; ' +
+            'alles in de map <code style="font-family:\'Space Mono\',monospace;">api/</code> wordt automatisch een serverless functie.</p>' +
+        '<div class="steps" style="margin-top:16px;">' +
+            step('Zet de map in Git', 'Push de projectmap naar GitHub. Vercel koppelt daaraan vast.') +
+            step('Importeer op vercel.com', 'New Project → kies je repo. Framework preset: <code>Other</code>. Build command leeg laten, output directory is de projectmap zelf.') +
+            step('Zet je env-vars', 'Settings → Environment Variables. Neem het blok uit de AI-sectie over.') +
+            step('Deploy', 'Elke push naar main gaat er vanaf nu automatisch op.') +
+            step('Zet het endpoint aan', 'Terug hier: schakel de AI-proxy in en test hem.') +
+        '</div>' +
+        '<div class="label" style="margin:24px 0 10px;">vercel.json</div>' +
+        code(VERCEL_JSON, 'vjson') +
+        '<div style="display:flex;gap:9px;margin-top:12px;flex-wrap:wrap;">' +
+            '<button class="btn ghost sm" id="vjDl">Download vercel.json</button>' +
+            '<button class="btn ghost sm" id="aiDl2">Download api/ai.js</button>' +
+        '</div>' +
+        '<p class="note">Beide bestanden staan al in je projectmap. Deze knoppen zijn er voor als je ze kwijtraakt.</p>';
+}
+var VERCEL_JSON = JSON.stringify({
+    "$schema":"https://openapi.vercel.sh/vercel.json",
+    cleanUrls:true,
+    trailingSlash:false,
+    headers:[
+        { source:"/(.*)", headers:[
+            { key:"X-Content-Type-Options", value:"nosniff" },
+            { key:"Referrer-Policy", value:"strict-origin-when-cross-origin" }
+        ]},
+        { source:"/(login|dashboard).html", headers:[{ key:"X-Robots-Tag", value:"noindex, nofollow" }] },
+        { source:"/os/(.*)", headers:[{ key:"X-Robots-Tag", value:"noindex, nofollow" }] }
+    ],
+    functions:{ "api/ai.js":{ maxDuration:60 } }
+}, null, 2);
+
+function step(b, s){ return '<div class="step"><div><b>' + b + '</b><span>' + s + '</span></div></div>'; }
+function res(id, ok, msg){
+    var el = $('#' + id);
+    el.className = 'res on ' + (ok ? 'ok' : 'bad');
+    el.innerHTML = (ok ? '✓ ' : '✕ ') + esc(msg);
+}
+
+/* =========================================================
+   Bindingen
+   ========================================================= */
+function bind(){
+    $$('.svc-head').forEach(function(h){
+        h.onclick = function(){ h.parentElement.classList.toggle('open'); };
+    });
+    $$('[data-copy]').forEach(function(b){
+        b.onclick = function(e){
+            e.stopPropagation();
+            KM.copy({ sql:SQL, env:ENVS, vjson:VERCEL_JSON }[b.dataset.copy] || '');
+        };
+    });
+
+    /* Supabase */
+    $('#sbSave').onclick = function(){
+        C.supabase.url = $('#sbUrl').value.trim().replace(/\/$/,'');
+        C.supabase.key = $('#sbKey').value.trim();
+        C.supabase.table = $('#sbTable').value.trim() || 'km_workspace';
+        C.supabase.auto = $('#sbAuto').checked;
+        SET.saveNow(); KM.toast('Supabase-instellingen opgeslagen');
+        var open = $('[data-svc="supabase"]').classList.contains('open');
+        render(); if(open) $('[data-svc="supabase"]').classList.add('open');
+    };
+    $('#sbTest').onclick = function(){
+        res('sbRes', true, 'Bezig met testen…');
+        KM.sync.test().then(function(r){ res('sbRes', r.ok, r.msg); });
+    };
+    $('#sbPush').onclick = function(){ KM.sync.push().then(function(ok){ res('sbRes', ok, ok ? 'Alles staat in de cloud' : 'Uploaden mislukt'); }); };
+    $('#sbPull').onclick = function(){
+        KM.confirm('Ophalen uit de cloud?', 'Dit overschrijft wat er nu lokaal staat.', function(){
+            KM.sync.pull().then(function(ok){ if(ok) setTimeout(function(){ location.reload(); }, 800); });
+        });
+    };
+    $('#sqlDl').onclick = function(){ KM.download('supabase-schema.sql', SQL, 'text/plain'); };
+
+    /* AI */
+    $('#aiSave').onclick = function(){
+        C.ai.endpoint = $('#aiEp').value.trim() || '/api/ai';
+        C.ai.on = $('#aiOn').checked;
+        SET.saveNow(); KM.toast('AI-instellingen opgeslagen');
+        var open = $('[data-svc="ai"]').classList.contains('open');
+        render(); if(open) $('[data-svc="ai"]').classList.add('open');
+    };
+    $('#aiTest').onclick = function(){
+        res('aiRes', true, 'Even geduld…');
+        var ep = $('#aiEp').value.trim() || '/api/ai';
+        fetch(ep, { method:'POST', headers:{ 'Content-Type':'application/json' },
+            body:JSON.stringify({ kind:'text', prompt:'Zeg alleen: proxy werkt.', system:'Antwoord in het Nederlands.' }) })
+            .then(function(r){ return r.text().then(function(t){ return { ok:r.ok, status:r.status, t:t }; }); })
+            .then(function(o){
+                if(!o.ok) return res('aiRes', false, 'HTTP ' + o.status + ' — ' + o.t.slice(0,140));
+                var j = {}; try{ j = JSON.parse(o.t); }catch(e){}
+                res('aiRes', true, 'Antwoord: ' + String(j.text || o.t).slice(0,160));
+            })
+            .catch(function(e){ res('aiRes', false, e.message + ' — draait de functie al? Lokaal bestaat /api/ai niet.'); });
+    };
+    $('#aiDl').onclick = dlAi;
+    if($('#aiDl2')) $('#aiDl2').onclick = dlAi;
+
+    /* PostHog */
+    $('#phSave').onclick = function(){
+        C.posthog.key = $('#phKey').value.trim();
+        C.posthog.host = $('#phHost').value;
+        C.posthog.on = $('#phOn').checked;
+        SET.saveNow(); KM.toast('PostHog opgeslagen — herlaad om te activeren');
+        var open = $('[data-svc="posthog"]').classList.contains('open');
+        render(); if(open) $('[data-svc="posthog"]').classList.add('open');
+    };
+    $('#phTest').onclick = function(){
+        if(!C.posthog.on || !C.posthog.key) return res('phRes', false, 'Zet eerst je key en de schakelaar aan, en herlaad de pagina');
+        KM.track('test_event', { from:'integraties' });
+        res('phRes', true, window.posthog ? 'Event verstuurd — kijk in je PostHog Live-weergave' : 'In de wachtrij — het script laadt nog, herlaad de pagina');
+    };
+
+    /* Data */
+    $('#expAll').onclick = function(){
+        KM.download('km-os-backup-' + KM.iso() + '.json', JSON.stringify({
+            os: KM.OS.data, settings: C,
+            notion: JSON.parse(localStorage.getItem('kmdev_workspace_v1') || 'null')
+        }, null, 2));
+        KM.toast('Backup gedownload');
+    };
+    $('#impAll').onclick = function(){
+        var inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'application/json';
+        inp.onchange = function(){
+            var f = inp.files[0]; if(!f) return;
+            var r = new FileReader();
+            r.onload = function(){
+                try{
+                    var j = JSON.parse(r.result);
+                    if(!j.os) throw new Error('geen geldige backup');
+                    KM.confirm('Backup terugzetten?', 'Alles wat er nu staat wordt vervangen.', function(){
+                        KM.OS.data = j.os; KM.OS.saveNow();
+                        if(j.settings){ SET.data = j.settings; SET.saveNow(); }
+                        if(j.notion) localStorage.setItem('kmdev_workspace_v1', JSON.stringify(j.notion));
+                        location.reload();
+                    });
+                }catch(e){ KM.toast('Ongeldig bestand: ' + e.message, 'err'); }
+            };
+            r.readAsText(f);
+        };
+        inp.click();
+    };
+    $('#wipe').onclick = function(){
+        KM.confirm('Alles wissen?', 'Je Life OS, notities en instellingen worden verwijderd uit deze browser. Dit kan niet ongedaan worden gemaakt.', function(){
+            ['kmdev_os_v1','kmdev_workspace_v1','kmdev_os_settings'].forEach(function(k){ localStorage.removeItem(k); });
+            location.href = 'index.html';
+        });
+    };
+}
+function dlAi(){
+    KM.download('ai.js', AI_FN, 'text/javascript');
+    KM.toast('Zet dit bestand in de map api/');
+}
+
+var AI_FN = [
+"// KM.OS — AI-proxy voor Vercel. Plaats dit als api/ai.js",
+"// Je API-sleutel blijft hier op de server; de browser ziet hem nooit.",
+"",
+"export const config = { runtime: 'nodejs' };",
+"",
+"export default async function handler(req, res) {",
+"  res.setHeader('Access-Control-Allow-Origin', process.env.AI_ALLOW_ORIGIN || '*');",
+"  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');",
+"  if (req.method === 'OPTIONS') return res.status(204).end();",
+"  if (req.method !== 'POST') return res.status(405).json({ error: 'POST only' });",
+"",
+"  const key = process.env.AI_API_KEY;",
+"  if (!key) return res.status(500).json({ error: 'AI_API_KEY ontbreekt' });",
+"",
+"  const { kind = 'text', prompt = '', system = '', width, height, seconds } = req.body || {};",
+"  const provider = (process.env.AI_PROVIDER || 'openai').toLowerCase();",
+"",
+"  try {",
+"    if (kind === 'text') {",
+"      const base = process.env.AI_BASE || 'https://api.openai.com/v1';",
+"      const r = await fetch(base + '/chat/completions', {",
+"        method: 'POST',",
+"        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + key },",
+"        body: JSON.stringify({",
+"          model: process.env.AI_TEXT_MODEL || 'gpt-4o-mini',",
+"          messages: [ system && { role: 'system', content: system }, { role: 'user', content: prompt } ].filter(Boolean),",
+"          temperature: 0.7",
+"        })",
+"      });",
+"      const j = await r.json();",
+"      if (!r.ok) return res.status(r.status).json({ error: j.error?.message || 'upstream error' });",
+"      return res.json({ text: j.choices?.[0]?.message?.content || '' });",
+"    }",
+"",
+"    const model = kind === 'video' ? process.env.AI_VIDEO_MODEL : process.env.AI_IMAGE_MODEL;",
+"    if (!model) return res.status(400).json({ error: 'Geen model ingesteld voor ' + kind });",
+"",
+"    if (provider === 'replicate') {",
+"      const create = await fetch('https://api.replicate.com/v1/predictions', {",
+"        method: 'POST',",
+"        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + key, Prefer: 'wait' },",
+"        body: JSON.stringify({ version: model, input: { prompt, width, height, num_frames: seconds ? seconds * 24 : undefined } })",
+"      });",
+"      const j = await create.json();",
+"      if (!create.ok) return res.status(create.status).json({ error: j.detail || 'replicate error' });",
+"      const out = Array.isArray(j.output) ? j.output[j.output.length - 1] : j.output;",
+"      return res.json({ url: out, raw: j.status });",
+"    }",
+"",
+"    if (provider === 'fal') {",
+"      const r = await fetch('https://fal.run/' + model, {",
+"        method: 'POST',",
+"        headers: { 'Content-Type': 'application/json', Authorization: 'Key ' + key },",
+"        body: JSON.stringify({ prompt, image_size: width && height ? { width, height } : undefined })",
+"      });",
+"      const j = await r.json();",
+"      if (!r.ok) return res.status(r.status).json({ error: j.detail || 'fal error' });",
+"      return res.json({ url: j.video?.url || j.images?.[0]?.url || j.image?.url || '' });",
+"    }",
+"",
+"    if (provider === 'huggingface') {",
+"      const r = await fetch('https://api-inference.huggingface.co/models/' + model, {",
+"        method: 'POST',",
+"        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + key },",
+"        body: JSON.stringify({ inputs: prompt })",
+"      });",
+"      if (!r.ok) return res.status(r.status).json({ error: await r.text() });",
+"      const buf = Buffer.from(await r.arrayBuffer());",
+"      return res.json({ url: 'data:image/png;base64,' + buf.toString('base64') });",
+"    }",
+"",
+"    // OpenAI-compatibel beeld",
+"    const base = process.env.AI_BASE || 'https://api.openai.com/v1';",
+"    const r = await fetch(base + '/images/generations', {",
+"      method: 'POST',",
+"      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + key },",
+"      body: JSON.stringify({ model, prompt, size: (width && height) ? width + 'x' + height : '1024x1024' })",
+"    });",
+"    const j = await r.json();",
+"    if (!r.ok) return res.status(r.status).json({ error: j.error?.message || 'image error' });",
+"    const d = j.data?.[0];",
+"    return res.json({ url: d?.url || (d?.b64_json ? 'data:image/png;base64,' + d.b64_json : '') });",
+"",
+"  } catch (e) {",
+"    return res.status(500).json({ error: e.message });",
+"  }",
+"}"
+].join('\n');
+
+render();
+window.INT = { SQL:SQL, ENVS:ENVS, VERCEL_JSON:VERCEL_JSON, AI_FN:AI_FN, render:render };
+}
+</script>
+</body>
+</html>

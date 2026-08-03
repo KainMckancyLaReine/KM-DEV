@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="nl" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Mind Matrix — KM.OS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="km-os.css">
+<style>
+.mx{position:relative;flex:1;min-height:0;overflow:hidden;background:var(--bg);}
+#cv{display:block;width:100%;height:100%;cursor:grab;touch-action:none;}
+#cv.grabbing{cursor:grabbing;}
+
+/* zwevende panelen */
+.float{
+    position:absolute;background:var(--paper);border:1px solid var(--line);
+    border-radius:var(--r-md);box-shadow:var(--shadow-soft);backdrop-filter:blur(10px);
+}
+.mx-tools{
+    top:16px;left:16px;right:16px;display:flex;gap:8px;align-items:center;padding:9px 10px;
+    flex-wrap:wrap;z-index:5;
+}
+.mx-search{
+    flex:1;min-width:150px;border:0;background:transparent;outline:none;
+    padding:7px 10px;font-size:14.5px;
+}
+.mx-filters{display:flex;gap:4px;flex-wrap:wrap;}
+.fchip{
+    border:1px solid var(--line);background:transparent;padding:5px 11px;border-radius:999px;
+    font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--text-faint);transition:all .18s;display:flex;align-items:center;gap:6px;
+}
+.fchip .d{width:7px;height:7px;border-radius:50%;background:currentColor;}
+.fchip.on{background:var(--ink);color:#fff;border-color:var(--ink);}
+html[data-theme="dark"] .fchip.on{background:var(--accent);color:var(--ink);border-color:var(--accent);}
+
+.mx-legend{
+    left:16px;bottom:16px;padding:14px 16px;z-index:5;max-width:210px;
+}
+.mx-legend .lg{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--text-soft);padding:3px 0;}
+.mx-legend .lg .d{width:11px;height:11px;border-radius:50%;flex:0 0 11px;}
+.mx-legend .lg small{margin-left:auto;font-family:'Space Mono',monospace;font-size:10px;color:var(--text-faint);}
+
+.mx-hud{
+    right:16px;bottom:16px;padding:9px;z-index:5;display:flex;gap:5px;align-items:center;
+}
+.mx-hud .iconbtn{width:34px;height:34px;opacity:.7;}
+.mx-hud .zoomv{font-family:'Space Mono',monospace;font-size:10px;color:var(--text-faint);padding:0 8px;letter-spacing:.1em;}
+
+/* detailpaneel */
+.mx-panel{
+    position:absolute;top:0;right:0;bottom:0;width:min(380px,86vw);z-index:8;
+    background:var(--paper);border-left:1px solid var(--line);
+    transform:translateX(100%);transition:transform .38s var(--ease);
+    display:flex;flex-direction:column;box-shadow:-6px 0 40px rgba(13,13,13,.16);
+}
+.mx-panel.on{transform:none;}
+.mp-head{padding:22px 22px 16px;border-bottom:1px solid var(--line);display:flex;gap:13px;align-items:flex-start;}
+.mp-ico{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-size:21px;flex:0 0 46px;color:#fff;}
+.mp-head h3{font-size:18px;font-weight:600;line-height:1.25;flex:1;}
+.mp-body{flex:1;overflow-y:auto;padding:20px 22px 40px;}
+.mp-sec{margin-bottom:22px;}
+.mp-sec > .label{margin-bottom:10px;}
+.mp-link{
+    display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:11px;
+    border:1px solid var(--line);margin-bottom:7px;cursor:pointer;font-size:13.5px;
+    transition:all .2s var(--ease);
+}
+.mp-link:hover{border-color:var(--text-faint);transform:translateX(3px);}
+.mp-link .d{width:9px;height:9px;border-radius:50%;flex:0 0 9px;}
+.mp-link span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+.mx-empty{
+    position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;
+    font-family:'Space Mono',monospace;font-size:12px;color:var(--text-faint);letter-spacing:.1em;
+}
+@media(max-width:820px){
+    .mx-legend{display:none;}
+    .mx-tools{top:8px;left:8px;right:8px;padding:7px;}
+    .mx-hud{right:8px;bottom:8px;}
+}
+</style>
+</head>
+<body>
+
+<div class="os">
+    <div class="os-body">
+        <div class="mx">
+            <canvas id="cv"></canvas>
+
+            <div class="float mx-tools">
+                <input class="mx-search" id="q" placeholder="Zoek een knoop…" autocomplete="off">
+                <div class="mx-filters" id="filters"></div>
+            </div>
+
+            <div class="float mx-legend" id="legend"></div>
+
+            <div class="float mx-hud">
+                <button class="iconbtn" id="zOut" title="Uitzoomen">−</button>
+                <span class="zoomv" id="zv">100%</span>
+                <button class="iconbtn" id="zIn" title="Inzoomen">+</button>
+                <button class="iconbtn" id="zFit" title="Passend maken">⤢</button>
+                <button class="iconbtn" id="reheat" title="Opnieuw schikken">↻</button>
+            </div>
+
+            <div class="mx-panel" id="panel">
+                <div class="mp-head">
+                    <span class="mp-ico" id="mpIco">◎</span>
+                    <div style="flex:1;min-width:0;"><h3 class="grotesk" id="mpTitle">—</h3>
+                        <div class="label" id="mpType" style="margin-top:5px;">—</div></div>
+                    <button class="iconbtn" id="mpClose">
+                        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+                    </button>
+                </div>
+                <div class="mp-body" id="mpBody"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="km-os.js"></script>
+<script>
+if(KM.boot()){
+
+var $ = KM.$, $$ = KM.$$, OS = KM.OS, D = OS.data, esc = KM.esc;
+
+KM.shell({
+    app:'matrix',
+    actionsHTML:'<button class="btn ghost sm" id="snap">Exporteer PNG</button>'
+});
+
+/* =========================================================
+   1. Graaf opbouwen uit alle bronnen
+   ========================================================= */
+var TYPES = {
+    area:    { name:'Gebied',   r:27, color:null,      key:'area'    },
+    goal:    { name:'Doel',     r:20, color:null,      key:'goal'    },
+    project: { name:'Project',  r:15, color:null,      key:'project' },
+    task:    { name:'Taak',     r:9,  color:null,      key:'task'    },
+    habit:   { name:'Gewoonte', r:12, color:'#3f8f5c', key:'habit'   },
+    note:    { name:'Notitie',  r:10, color:'#8f8d85', key:'note'    },
+    page:    { name:'Pagina',   r:9,  color:'#6f6d66', key:'page'    }
+};
+var nodes = [], links = [], byId = {};
+
+function build(){
+    nodes.length = 0; links.length = 0; byId = {};   // in-place legen zodat externe referenties blijven kloppen
+    function N(o){ o.x = o.x || (Math.random()*600 - 300); o.y = o.y || (Math.random()*600 - 300);
+        o.vx = 0; o.vy = 0; nodes.push(o); byId[o.id] = o; return o; }
+    function L(a, b, strength){ if(byId[a] && byId[b]) links.push({ s:a, t:b, k:strength||1 }); }
+
+    KM.AREAS.forEach(function(a){
+        N({ id:'area:'+a.id, t:'area', label:a.name, icon:a.icon, color:a.hex, ref:a, pinned:false });
+    });
+    D.goals.forEach(function(g){
+        var a = KM.areaOf(g.area);
+        N({ id:'goal:'+g.id, t:'goal', label:g.title, icon:g.icon || '🎯', color:a.hex, ref:g });
+        L('area:'+g.area, 'goal:'+g.id, 1.4);
+    });
+    D.projects.forEach(function(p){
+        var a = KM.areaOf(p.area);
+        N({ id:'proj:'+p.id, t:'project', label:p.title, icon:p.icon || '📦', color:a.hex, ref:p });
+        if(p.goalId) L('goal:'+p.goalId, 'proj:'+p.id, 1.2);
+        else L('area:'+p.area, 'proj:'+p.id, .9);
+    });
+    D.tasks.forEach(function(t){
+        var a = KM.areaOf(t.area);
+        N({ id:'task:'+t.id, t:'task', label:t.title, icon:'', color:a.hex, ref:t, done:t.status === 'done' });
+        if(t.projectId) L('proj:'+t.projectId, 'task:'+t.id, 1);
+        else if(t.goalId) L('goal:'+t.goalId, 'task:'+t.id, .8);
+        else L('area:'+t.area, 'task:'+t.id, .5);
+    });
+    D.habits.forEach(function(h){
+        N({ id:'habit:'+h.id, t:'habit', label:h.title, icon:h.icon, color:h.color, ref:h });
+        L('area:health', 'habit:'+h.id, .7);
+    });
+    (D.notes||[]).forEach(function(n){
+        N({ id:'note:'+n.id, t:'note', label:n.title, icon:'📝', color:TYPES.note.color, ref:n });
+        ((n.links||{}).goals||[]).forEach(function(g){ L('goal:'+g, 'note:'+n.id, .6); });
+    });
+
+    // Notion-werkruimte meenemen
+    try{
+        var ws = JSON.parse(localStorage.getItem('kmdev_workspace_v1') || 'null');
+        if(ws && ws.pages){
+            Object.values(ws.pages).forEach(function(p){
+                if(p.trashed) return;
+                N({ id:'page:'+p.id, t:'page', label:p.title || 'Naamloos', icon:p.icon || '📄',
+                    color:TYPES.page.color, ref:p, href:'../dashboard.html#' + p.id });
+            });
+            Object.values(ws.pages).forEach(function(p){
+                if(p.trashed || !p.parent) return;
+                L('page:'+p.parent, 'page:'+p.id, .8);
+            });
+        }
+    }catch(e){}
+
+    // buren-index
+    nodes.forEach(function(n){ n.deg = 0; });
+    links.forEach(function(l){ byId[l.s].deg++; byId[l.t].deg++; });
+}
+
+/* =========================================================
+   2. Physics
+   ========================================================= */
+var alpha = 1, view = { x:0, y:0, k:1 }, W = 0, H = 0, dpr = 1;
+var cv = $('#cv'), ctx = cv.getContext('2d');
+var hover = null, selected = null, dragging = null, panning = null, focusSet = null;
+var filters = { area:true, goal:true, project:true, task:true, habit:true, note:true, page:true };
+var query = '';
+
+function resize(){
+    var r = cv.parentElement.getBoundingClientRect();
+    dpr = Math.min(2, window.devicePixelRatio || 1);
+    W = r.width; H = r.height;
+    cv.width = W * dpr; cv.height = H * dpr;
+    cv.style.width = W + 'px'; cv.style.height = H + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+
+function visible(n){
+    if(!filters[n.t]) return false;
+    if(query && n.label.toLowerCase().indexOf(query) < 0) return false;
+    if(focusSet && !focusSet[n.id]) return false;
+    return true;
+}
+
+function tick(){
+    if(alpha > .0015){
+        alpha *= .985;
+        var vis = nodes.filter(visible);
+        // afstoting
+        for(var i = 0; i < vis.length; i++){
+            var a = vis[i];
+            for(var j = i + 1; j < vis.length; j++){
+                var b = vis[j];
+                var dx = b.x - a.x, dy = b.y - a.y;
+                var d2 = dx*dx + dy*dy || .01;
+                if(d2 > 260000) continue;
+                var f = (1400 + (TYPES[a.t].r + TYPES[b.t].r) * 42) / d2;
+                var d = Math.sqrt(d2);
+                var fx = dx / d * f, fy = dy / d * f;
+                a.vx -= fx; a.vy -= fy; b.vx += fx; b.vy += fy;
+            }
+        }
+        // veren
+        links.forEach(function(l){
+            var a = byId[l.s], b = byId[l.t];
+            if(!a || !b || !visible(a) || !visible(b)) return;
+            var dx = b.x - a.x, dy = b.y - a.y;
+            var d = Math.sqrt(dx*dx + dy*dy) || .01;
+            var rest = 74 + TYPES[a.t].r + TYPES[b.t].r;
+            var f = (d - rest) * .022 * l.k;
+            var fx = dx / d * f, fy = dy / d * f;
+            a.vx += fx; a.vy += fy; b.vx -= fx; b.vy -= fy;
+        });
+        // naar het midden + demping
+        vis.forEach(function(n){
+            n.vx -= n.x * .0016; n.vy -= n.y * .0016;
+            if(n === dragging) return;
+            n.vx *= .84; n.vy *= .84;
+            n.x += n.vx * alpha * 2.4;
+            n.y += n.vy * alpha * 2.4;
+        });
+    }
+    draw();
+    requestAnimationFrame(tick);
+}
+
+/* =========================================================
+   3. Tekenen
+   ========================================================= */
+function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+var THEME = {};
+function readTheme(){
+    THEME.line = css('--line') || '#e4e2d9';
+    THEME.text = css('--text') || '#0d0d0d';
+    THEME.faint = css('--text-faint') || '#b6b4ac';
+    THEME.paper = css('--paper') || '#fff';
+    THEME.accent = css('--accent') || '#c6ff4a';
+}
+readTheme();
+
+function screenOf(n){ return { x: n.x * view.k + view.x + W/2, y: n.y * view.k + view.y + H/2 }; }
+
+function neighbours(id){
+    var set = {}; set[id] = true;
+    links.forEach(function(l){ if(l.s === id) set[l.t] = true; if(l.t === id) set[l.s] = true; });
+    return set;
+}
+
+function draw(){
+    ctx.clearRect(0, 0, W, H);
+    var vis = nodes.filter(visible);
+    var hl = (hover || selected) ? neighbours((hover || selected).id) : null;
+
+    // verbindingen
+    links.forEach(function(l){
+        var a = byId[l.s], b = byId[l.t];
+        if(!a || !b || !visible(a) || !visible(b)) return;
+        var pa = screenOf(a), pb = screenOf(b);
+        var on = hl && hl[a.id] && hl[b.id];
+        ctx.beginPath();
+        ctx.moveTo(pa.x, pa.y);
+        // lichte kromming voor een organischer beeld
+        var mx = (pa.x + pb.x)/2, my = (pa.y + pb.y)/2;
+        var nx = -(pb.y - pa.y) * .07, ny = (pb.x - pa.x) * .07;
+        ctx.quadraticCurveTo(mx + nx, my + ny, pb.x, pb.y);
+        ctx.strokeStyle = on ? a.color : THEME.line;
+        ctx.globalAlpha = on ? .85 : (hl ? .18 : .5);
+        ctx.lineWidth = on ? 2 : 1;
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+    });
+
+    // knopen
+    vis.sort(function(a,b){ return TYPES[a.t].r - TYPES[b.t].r; }).forEach(function(n){
+        var p = screenOf(n);
+        var r = TYPES[n.t].r * view.k;
+        var dim = hl && !hl[n.id];
+        var isSel = selected && selected.id === n.id;
+
+        ctx.globalAlpha = dim ? .22 : 1;
+
+        // glow
+        if(isSel || (hover && hover.id === n.id)){
+            ctx.beginPath(); ctx.arc(p.x, p.y, r + 9, 0, 6.2832);
+            ctx.fillStyle = n.color; ctx.globalAlpha = .16; ctx.fill(); ctx.globalAlpha = 1;
+        }
+        // bol
+        ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, 6.2832);
+        if(n.t === 'task'){
+            ctx.fillStyle = n.done ? THEME.paper : n.color;
+            ctx.fill();
+            ctx.lineWidth = 2; ctx.strokeStyle = n.color; ctx.stroke();
+        }else{
+            ctx.fillStyle = n.color; ctx.fill();
+            ctx.lineWidth = isSel ? 3 : 1.5;
+            ctx.strokeStyle = isSel ? THEME.accent : THEME.paper;
+            ctx.stroke();
+        }
+        // icoon
+        if(n.icon && r > 11){
+            ctx.font = Math.round(r * 1.05) + 'px system-ui, "Apple Color Emoji", sans-serif';
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText(n.icon, p.x, p.y + 1);
+        }
+        // label
+        if(r > 7 && view.k > .45){
+            var show = TYPES[n.t].r >= 15 || isSel || (hover && hover.id === n.id) || view.k > 1.25;
+            if(show){
+                ctx.font = '600 ' + Math.max(10, Math.min(14, 11 * view.k)) + 'px "Space Grotesk", sans-serif';
+                ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+                var txt = n.label.length > 26 ? n.label.slice(0,24) + '…' : n.label;
+                ctx.lineWidth = 3.5; ctx.strokeStyle = THEME.paper;
+                ctx.strokeText(txt, p.x, p.y + r + 6);
+                ctx.fillStyle = dim ? THEME.faint : THEME.text;
+                ctx.fillText(txt, p.x, p.y + r + 6);
+            }
+        }
+        ctx.globalAlpha = 1;
+    });
+}
+
+/* =========================================================
+   4. Interactie
+   ========================================================= */
+function nodeAt(mx, my){
+    for(var i = nodes.length - 1; i >= 0; i--){
+        var n = nodes[i]; if(!visible(n)) continue;
+        var p = screenOf(n), r = TYPES[n.t].r * view.k + 4;
+        if((mx - p.x)*(mx - p.x) + (my - p.y)*(my - p.y) < r*r) return n;
+    }
+    return null;
+}
+function local(e){
+    var r = cv.getBoundingClientRect();
+    var t = e.touches ? e.touches[0] : e;
+    return { x:t.clientX - r.left, y:t.clientY - r.top };
+}
+
+cv.addEventListener('mousemove', function(e){
+    var p = local(e);
+    if(dragging){
+        dragging.x = (p.x - W/2 - view.x) / view.k;
+        dragging.y = (p.y - H/2 - view.y) / view.k;
+        dragging.vx = dragging.vy = 0;
+        alpha = Math.max(alpha, .28);
+        return;
+    }
+    if(panning){
+        view.x = panning.vx + (p.x - panning.x);
+        view.y = panning.vy + (p.y - panning.y);
+        return;
+    }
+    var n = nodeAt(p.x, p.y);
+    if(n !== hover){ hover = n; cv.style.cursor = n ? 'pointer' : 'grab'; }
+});
+cv.addEventListener('mousedown', function(e){
+    var p = local(e);
+    var n = nodeAt(p.x, p.y);
+    if(n){ dragging = n; n.pinned = true; }
+    else { panning = { x:p.x, y:p.y, vx:view.x, vy:view.y }; cv.classList.add('grabbing'); }
+});
+window.addEventListener('mouseup', function(){
+    if(dragging){ alpha = Math.max(alpha, .2); dragging = null; }
+    panning = null; cv.classList.remove('grabbing');
+});
+cv.addEventListener('click', function(e){
+    var p = local(e);
+    var n = nodeAt(p.x, p.y);
+    if(n) select(n); else closePanel();
+});
+cv.addEventListener('dblclick', function(e){
+    var p = local(e);
+    var n = nodeAt(p.x, p.y);
+    if(!n){ focusSet = null; alpha = 1; KM.toast('Volledige matrix'); return; }
+    focusSet = neighbours(n.id);
+    // twee niveaus diep
+    Object.keys(focusSet).slice().forEach(function(id){
+        var s = neighbours(id); Object.keys(s).forEach(function(k){ focusSet[k] = true; });
+    });
+    alpha = 1;
+    KM.toast('Ingezoomd op ' + n.label + ' — dubbelklik leegte om terug te gaan');
+});
+cv.addEventListener('wheel', function(e){
+    e.preventDefault();
+    var p = local(e);
+    var f = Math.exp(-e.deltaY * .0016);
+    var k2 = KM.clamp(view.k * f, .25, 3.2);
+    var r = k2 / view.k;
+    view.x = p.x - W/2 - (p.x - W/2 - view.x) * r;
+    view.y = p.y - H/2 - (p.y - H/2 - view.y) * r;
+    view.k = k2;
+    $('#zv').textContent = Math.round(view.k * 100) + '%';
+}, { passive:false });
+
+// touch
+var pinch = null;
+cv.addEventListener('touchstart', function(e){
+    if(e.touches.length === 2){
+        pinch = { d:dist(e.touches), k:view.k };
+        return;
+    }
+    var p = local(e);
+    var n = nodeAt(p.x, p.y);
+    if(n){ dragging = n; select(n); }
+    else panning = { x:p.x, y:p.y, vx:view.x, vy:view.y };
+}, { passive:true });
+cv.addEventListener('touchmove', function(e){
+    if(pinch && e.touches.length === 2){
+        e.preventDefault();
+        view.k = KM.clamp(pinch.k * (dist(e.touches) / pinch.d), .25, 3.2);
+        $('#zv').textContent = Math.round(view.k * 100) + '%';
+        return;
+    }
+    var p = local(e);
+    if(dragging){
+        e.preventDefault();
+        dragging.x = (p.x - W/2 - view.x) / view.k;
+        dragging.y = (p.y - H/2 - view.y) / view.k;
+        alpha = Math.max(alpha, .28);
+    }else if(panning){
+        e.preventDefault();
+        view.x = panning.vx + (p.x - panning.x);
+        view.y = panning.vy + (p.y - panning.y);
+    }
+}, { passive:false });
+cv.addEventListener('touchend', function(){ dragging = null; panning = null; pinch = null; });
+function dist(t){ var dx = t[0].clientX - t[1].clientX, dy = t[0].clientY - t[1].clientY; return Math.hypot(dx, dy); }
+
+/* =========================================================
+   5. Detailpaneel
+   ========================================================= */
+function select(n){
+    selected = n;
+    var T = TYPES[n.t];
+    $('#mpIco').textContent = n.icon || T.name[0];
+    $('#mpIco').style.background = n.color;
+    $('#mpTitle').textContent = n.label;
+    $('#mpType').textContent = T.name;
+
+    var body = '';
+    var r = n.ref || {};
+
+    if(n.t === 'goal'){
+        var pct = KM.q.progress(r.id);
+        body += '<div class="mp-sec"><div class="label">Voortgang</div>' +
+            '<div style="display:flex;align-items:center;gap:14px;">' + KM.ring(pct, 54, 5) +
+            '<div><b class="grotesk" style="font-size:24px;">' + pct + '%</b><div style="font-size:12.5px;color:var(--text-faint);">' +
+            KM.q.tasksOfGoal(r.id).filter(function(t){ return t.status === 'done'; }).length + ' van ' + KM.q.tasksOfGoal(r.id).length + ' taken</div></div></div></div>';
+        if(r.why) body += sec('Waarom', '<p style="font-size:13.5px;color:var(--text-soft);line-height:1.6;">' + esc(r.why) + '</p>');
+        if(r.due) body += sec('Streefdatum', '<p style="font-size:13.5px;">' + KM.fmtDate(r.due) + '</p>');
+    }
+    if(n.t === 'project'){
+        var pp = KM.q.projectProgress(r.id);
+        body += sec('Voortgang', '<div class="bar"><i style="width:' + pp + '%;background:' + n.color + '"></i></div><div style="margin-top:8px;font-size:12.5px;color:var(--text-faint);">' + pp + '% afgerond</div>');
+        if(r.due) body += sec('Deadline', '<p style="font-size:13.5px;">' + KM.fmtDate(r.due) + '</p>');
+    }
+    if(n.t === 'task'){
+        var pr = KM.PRIOS.filter(function(x){ return x.id === r.prio; })[0] || KM.PRIOS[2];
+        var en = KM.ENERGY.filter(function(x){ return x.id === r.energy; })[0] || KM.ENERGY[1];
+        body += sec('Status', '<span class="tag" style="background:' + pr.color + '22;color:' + pr.color + '">' + pr.name + '</span> ' +
+            '<span class="tag" style="background:var(--hover);color:var(--text-soft)">' + en.icon + ' ' + en.name + '</span>' +
+            (r.status === 'done' ? ' <span class="tag" style="background:var(--accent);color:var(--accent-ink)">afgerond</span>' : ''));
+        if(r.due) body += sec('Deadline', '<p style="font-size:13.5px;">' + KM.fmtDate(r.due) + '</p>');
+        if(r.notes) body += sec('Notitie', '<p style="font-size:13.5px;color:var(--text-soft);line-height:1.6;">' + esc(r.notes) + '</p>');
+    }
+    if(n.t === 'habit'){
+        body += sec('Reeks', '<b class="grotesk" style="font-size:28px;">' + KM.q.streak(r) + '</b><span style="color:var(--text-faint);font-size:13px;"> dagen op rij</span>');
+    }
+    if(n.t === 'area'){
+        var gs = D.goals.filter(function(g){ return g.area === r.id; });
+        var ts = D.tasks.filter(function(t){ return t.area === r.id; });
+        body += sec('Inhoud', '<p style="font-size:13.5px;color:var(--text-soft);">' + gs.length + ' doelen · ' + ts.length + ' taken</p>');
+    }
+    if(n.t === 'page'){
+        body += sec('Bron', '<p style="font-size:13.5px;color:var(--text-soft);">Pagina uit je Notion-werkruimte</p>');
+    }
+
+    // verbindingen
+    var nb = links.filter(function(l){ return l.s === n.id || l.t === n.id; })
+                  .map(function(l){ return byId[l.s === n.id ? l.t : l.s]; })
+                  .filter(Boolean);
+    if(nb.length){
+        body += '<div class="mp-sec"><div class="label">Verbonden met — ' + nb.length + '</div>' +
+            nb.map(function(x){
+                return '<div class="mp-link" data-go="' + x.id + '"><span class="d" style="background:' + x.color + '"></span>' +
+                    '<span>' + esc(x.label) + '</span><small class="label">' + TYPES[x.t].name + '</small></div>';
+            }).join('') + '</div>';
+    }
+
+    // acties
+    var actions = '';
+    if(n.t === 'task' || n.t === 'goal' || n.t === 'project') actions += '<a class="btn ghost sm" href="life-os.html#' + (n.t === 'task' ? 'today' : n.t === 'goal' ? 'goals' : 'projects') + '">Open in Life OS</a> ';
+    if(n.href) actions += '<a class="btn ghost sm" href="' + n.href + '">Open pagina</a> ';
+    actions += '<button class="btn ghost sm" id="mpFocus">Focus hierop</button>';
+    body += '<div class="mp-sec" style="display:flex;gap:8px;flex-wrap:wrap;">' + actions + '</div>';
+
+    $('#mpBody').innerHTML = body;
+    $('#panel').classList.add('on');
+    $$('[data-go]').forEach(function(el){
+        el.onclick = function(){ var x = byId[el.dataset.go]; if(x){ select(x); centerOn(x); } };
+    });
+    if($('#mpFocus')) $('#mpFocus').onclick = function(){
+        focusSet = neighbours(n.id);
+        Object.keys(focusSet).slice().forEach(function(id){
+            var s = neighbours(id); Object.keys(s).forEach(function(k){ focusSet[k] = true; });
+        });
+        alpha = 1;
+    };
+    KM.track('matrix_select', { type:n.t });
+}
+function sec(label, html){ return '<div class="mp-sec"><div class="label">' + label + '</div>' + html + '</div>'; }
+function closePanel(){ selected = null; $('#panel').classList.remove('on'); }
+$('#mpClose').onclick = closePanel;
+
+function centerOn(n){
+    view.x = -n.x * view.k; view.y = -n.y * view.k;
+}
+function fit(){
+    var vis = nodes.filter(visible);
+    if(!vis.length) return;
+    var minX = 1e9, maxX = -1e9, minY = 1e9, maxY = -1e9;
+    vis.forEach(function(n){ minX = Math.min(minX, n.x); maxX = Math.max(maxX, n.x); minY = Math.min(minY, n.y); maxY = Math.max(maxY, n.y); });
+    var w = Math.max(1, maxX - minX + 140), h = Math.max(1, maxY - minY + 140);
+    view.k = KM.clamp(Math.min(W / w, H / h), .25, 1.6);
+    view.x = -((minX + maxX)/2) * view.k;
+    view.y = -((minY + maxY)/2) * view.k;
+    $('#zv').textContent = Math.round(view.k * 100) + '%';
+}
+
+/* =========================================================
+   6. Bediening
+   ========================================================= */
+function drawFilters(){
+    $('#filters').innerHTML = Object.keys(TYPES).map(function(k){
+        var n = nodes.filter(function(x){ return x.t === k; }).length;
+        if(!n) return '';
+        return '<button class="fchip' + (filters[k] ? ' on' : '') + '" data-t="' + k + '">' + TYPES[k].name + ' ' + n + '</button>';
+    }).join('');
+    $$('#filters .fchip').forEach(function(b){
+        b.onclick = function(){
+            filters[b.dataset.t] = !filters[b.dataset.t];
+            b.classList.toggle('on', filters[b.dataset.t]);
+            alpha = Math.max(alpha, .5);
+        };
+    });
+}
+function drawLegend(){
+    $('#legend').innerHTML = '<div class="label" style="margin-bottom:9px;">Levensgebieden</div>' +
+        KM.AREAS.map(function(a){
+            var n = nodes.filter(function(x){ return x.color === a.hex; }).length;
+            return '<div class="lg"><span class="d" style="background:' + a.hex + '"></span>' + esc(a.name) + '<small>' + n + '</small></div>';
+        }).join('') +
+        '<div class="label" style="margin-top:12px;">' + nodes.length + ' knopen · ' + links.length + ' verbindingen</div>';
+}
+
+$('#q').addEventListener('input', function(e){
+    query = e.target.value.toLowerCase().trim();
+    alpha = Math.max(alpha, .4);
+});
+$('#zIn').onclick  = function(){ view.k = KM.clamp(view.k * 1.25, .25, 3.2); $('#zv').textContent = Math.round(view.k*100)+'%'; };
+$('#zOut').onclick = function(){ view.k = KM.clamp(view.k / 1.25, .25, 3.2); $('#zv').textContent = Math.round(view.k*100)+'%'; };
+$('#zFit').onclick = function(){ focusSet = null; fit(); };
+$('#reheat').onclick = function(){
+    nodes.forEach(function(n){ n.x = Math.random()*500 - 250; n.y = Math.random()*500 - 250; n.vx = n.vy = 0; });
+    alpha = 1; KM.toast('Opnieuw geschikt');
+};
+$('#snap').onclick = function(){
+    var a = document.createElement('a');
+    a.download = 'mind-matrix-' + KM.iso() + '.png';
+    a.href = cv.toDataURL('image/png');
+    a.click();
+    KM.toast('PNG gedownload');
+};
+
+window.addEventListener('resize', function(){ resize(); });
+new MutationObserver(readTheme).observe(document.documentElement, { attributes:true, attributeFilter:['data-theme'] });
+
+/* start */
+build(); resize(); drawFilters(); drawLegend();
+setTimeout(function(){ fit(); }, 700);
+tick();
+
+window.MX = { nodes:nodes, links:links, select:select, fit:fit, build:build };
+}
+</script>
+</body>
+</html>

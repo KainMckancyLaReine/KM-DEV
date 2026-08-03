@@ -386,7 +386,7 @@ async function sha256(str){
 (function(){
     try{
         const s = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null');
-        if(s && s.exp > Date.now()){ location.replace('dashboard.html'); }
+        if(s && s.exp > Date.now()){ location.replace('os/index.html'); }
     }catch(e){}
 })();
 
@@ -456,7 +456,7 @@ card.addEventListener('submit', async e => {
         const days = $('remember').checked ? 30 : 0.5;
         localStorage.setItem(SESSION_KEY, JSON.stringify({ exp: Date.now() + days*864e5, at: Date.now() }));
         $('success').classList.add('on');
-        setTimeout(() => location.href = 'dashboard.html', 1500);
+        setTimeout(() => location.href = 'os/index.html', 1500);
     }else{
         f.n++;
         if(f.n >= MAX_ATTEMPTS){ f.until = Date.now() + LOCK_MS; f.n = 0; }

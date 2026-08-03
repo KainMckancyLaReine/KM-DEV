@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="nl" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>AI Scheduling — KM.OS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="km-os.css">
+<style>
+.wk{display:grid;grid-template-columns:56px repeat(7,1fr);gap:0;border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;background:var(--paper);}
+.wk-h{
+    padding:12px 10px;border-bottom:1px solid var(--line);border-right:1px solid var(--line-soft);
+    background:var(--bg);position:sticky;top:0;z-index:3;
+}
+.wk-h b{display:block;font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:600;}
+.wk-h span{font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-faint);}
+.wk-h.today{background:var(--accent-soft);}
+.wk-h.today b{color:var(--accent-ink);}
+html[data-theme="dark"] .wk-h.today b{color:var(--accent);}
+.wk-h .cap{margin-top:7px;height:4px;border-radius:99px;background:var(--line);overflow:hidden;}
+.wk-h .cap i{display:block;height:100%;background:var(--accent);transition:width .8s var(--ease);}
+
+.wk-time{
+    border-right:1px solid var(--line);border-bottom:1px solid var(--line-soft);
+    font-family:'Space Mono',monospace;font-size:9.5px;color:var(--text-faint);
+    padding:4px 6px;text-align:right;background:var(--bg);
+}
+.wk-cell{
+    border-right:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);
+    min-height:34px;padding:2px;position:relative;transition:background .18s;
+}
+.wk-cell.drop{background:var(--accent-soft);box-shadow:inset 0 0 0 1.5px var(--accent);}
+.wk-cell.off{background:var(--line-soft);}
+.wk-cell.now::after{content:'';position:absolute;left:0;right:0;top:0;height:2px;background:var(--danger);z-index:2;}
+
+.blk{
+    border-radius:9px;padding:6px 9px;font-size:11.5px;line-height:1.35;cursor:grab;
+    color:#fff;overflow:hidden;height:100%;display:flex;flex-direction:column;justify-content:center;
+    transition:transform .2s var(--ease),box-shadow .2s;
+}
+.blk:hover{transform:scale(1.03);box-shadow:var(--shadow-soft);z-index:4;position:relative;}
+.blk.dragging{opacity:.4;}
+.blk b{font-weight:600;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.blk small{opacity:.8;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.06em;}
+.blk.done{opacity:.45;text-decoration:line-through;}
+
+.pool{display:flex;flex-direction:column;gap:7px;max-height:420px;overflow-y:auto;}
+.pitem{
+    display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:12px;
+    border:1px solid var(--line);background:var(--paper);cursor:grab;font-size:13.5px;
+    transition:all .2s var(--ease);
+}
+.pitem:hover{border-color:var(--text-faint);transform:translateX(3px);}
+.pitem .d{width:8px;height:8px;border-radius:50%;flex:0 0 8px;}
+.pitem .pt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.pitem .sc{font-family:'Space Mono',monospace;font-size:9.5px;color:var(--text-faint);}
+
+.slot-legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;}
+.slot-legend span{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text-soft);}
+.slot-legend i{width:12px;height:12px;border-radius:4px;}
+
+.ai-box{
+    border:1px solid var(--line);border-radius:var(--r-md);padding:18px 20px;background:var(--bg);
+    margin-top:16px;
+}
+.ai-out{white-space:pre-wrap;font-size:14px;line-height:1.7;color:var(--text-soft);margin-top:12px;}
+
+@media(max-width:820px){
+    .wk{grid-template-columns:44px repeat(7,minmax(78px,1fr));overflow-x:auto;}
+    .wk-h b{font-size:13px;}
+    .blk{font-size:10px;padding:4px 6px;}
+}
+</style>
+</head>
+<body>
+
+<div class="os">
+    <div class="os-body">
+        <div class="os-scroll"><div class="pad"><div class="wrap" id="view"></div></div></div>
+    </div>
+</div>
+
+<script src="km-os.js"></script>
+<script>
+if(KM.boot()){
+
+var $ = KM.$, $$ = KM.$$, OS = KM.OS, D = OS.data, esc = KM.esc;
+
+/* standaardinstellingen voor de planner */
+D.planCfg = Object.assign({
+    startH:9, endH:18, weekend:false, maxHours:6,
+    windows:[
+        { from:9,  to:12, energy:'deep',    label:'Diep werk' },
+        { from:13, to:16, energy:'focus',   label:'Focus' },
+        { from:16, to:17, energy:'shallow', label:'Licht werk' },
+        { from:17, to:18, energy:'admin',   label:'Admin' }
+    ]
+}, D.planCfg || {});
+
+var weekOffset = 0;
+var tab = 'week';
+
+KM.shell({
+    app:'plan',
+    tabs:[{ id:'week', name:'Weekplan', on:true }, { id:'cfg', name:'Instellingen' }],
+    actionsHTML:'<button class="btn accent sm" id="autoPlan">⚡ Plan mijn week</button>',
+    onTab:function(t){ tab = t; render(); }
+});
+$('#autoPlan').onclick = function(){ autoPlan(); };
+
+/* =========================================================
+   1. Het algoritme
+   ========================================================= */
+var PRIO_W = { p1:100, p2:60, p3:30, p4:10 };
+
+function score(t){
+    var s = PRIO_W[t.prio] || 30;
+    var dd = KM.dayDiff(t.due);
+    if(dd !== null){
+        if(dd < 0) s += 140 + Math.min(60, -dd * 8);      // te laat weegt het zwaarst
+        else if(dd === 0) s += 90;
+        else s += Math.max(0, 70 - dd * 7);
+    }else{
+        s -= 12;                                          // geen deadline = minder dringend
+    }
+    var age = (Date.now() - (t.created || Date.now())) / 864e5;
+    s += Math.min(25, age * 1.2);                         // oude taken langzaam opwaarderen
+    return Math.round(s);
+}
+function minsOf(t){
+    var e = KM.ENERGY.filter(function(x){ return x.id === t.energy; })[0];
+    return e ? e.mins : 45;
+}
+function dayKeys(){
+    var start = KM.addDays(KM.startOfWeek(), weekOffset * 7);
+    var out = [];
+    for(var i = 0; i < 7; i++) out.push(KM.iso(KM.addDays(start, i)));
+    return out;
+}
+function isWorkday(dateISO){
+    var d = KM.parseISO(dateISO); var w = (d.getDay() + 6) % 7;
+    return D.planCfg.weekend ? true : w < 5;
+}
+/* alle beschikbare blokken van een dag, in volgorde */
+function slotsOf(dateISO){
+    var cfg = D.planCfg, out = [];
+    if(!isWorkday(dateISO)) return out;
+    cfg.windows.forEach(function(w){
+        var t = w.from * 60;
+        var end = w.to * 60;
+        var e = KM.ENERGY.filter(function(x){ return x.id === w.energy; })[0] || KM.ENERGY[1];
+        while(t + Math.min(e.mins, 25) <= end){
+            var len = Math.min(e.mins, end - t);
+            out.push({ start:t, mins:len, energy:w.energy });
+            t += len + 10;                                 // 10 minuten pauze tussen blokken
+        }
+    });
+    return out;
+}
+function hhmm(m){ return String(Math.floor(m/60)).padStart(2,'0') + ':' + String(m%60).padStart(2,'0'); }
+
+function autoPlan(keepManual){
+    var days = dayKeys();
+    var open = KM.q.open().slice();
+
+    // handmatig verplaatste blokken bewaren
+    var locked = {};
+    if(keepManual !== false){
+        days.forEach(function(k){
+            (D.plan[k] || []).forEach(function(b){ if(b.manual) (locked[k] = locked[k] || []).push(b); });
+        });
+    }
+    var lockedIds = {};
+    Object.keys(locked).forEach(function(k){ locked[k].forEach(function(b){ lockedIds[b.taskId] = true; }); });
+
+    open = open.filter(function(t){ return !lockedIds[t.id]; })
+               .map(function(t){ return { t:t, s:score(t), mins:minsOf(t) }; })
+               .sort(function(a,b){ return b.s - a.s; });
+
+    var plan = {};
+    days.forEach(function(k){ plan[k] = (locked[k] || []).slice(); });
+
+    var placed = 0, planned = {};
+    days.forEach(function(dayISO){
+        var slots = slotsOf(dayISO);
+        var used = {};
+        (plan[dayISO] || []).forEach(function(b){ used[b.start] = true; });
+        var minsToday = (plan[dayISO] || []).reduce(function(a,b){ return a + b.mins; }, 0);
+
+        slots.forEach(function(slot){
+            if(used[slot.start]) return;
+            if(minsToday >= D.planCfg.maxHours * 60) return;
+
+            // beste kandidaat voor dit blok
+            var best = -1, bestScore = -1e9;
+            for(var i = 0; i < open.length; i++){
+                var c = open[i];
+                if(planned[c.t.id]) continue;
+                // een taak die op deze dag al over zijn deadline is, hoort zo vroeg mogelijk
+                var late  = !!(c.t.due && c.t.due < dayISO);
+                var fits  = c.mins <= slot.mins + 15;
+                var match = c.t.energy === slot.energy;
+                var sc = c.s + (match ? 55 : 0) + (fits ? 20 : -40) + (late ? 40 : 0);
+                if(sc > bestScore){ bestScore = sc; best = i; }
+            }
+            if(best < 0) return;
+            var pick = open[best];
+            planned[pick.t.id] = true;
+            plan[dayISO].push({
+                taskId: pick.t.id, start:slot.start,
+                mins: Math.min(slot.mins, Math.max(20, pick.mins)),
+                energy: slot.energy, manual:false
+            });
+            minsToday += pick.mins;
+            placed++;
+        });
+        plan[dayISO].sort(function(a,b){ return a.start - b.start; });
+    });
+
+    days.forEach(function(k){ D.plan[k] = plan[k]; });
+    OS.save();
+    render();
+    KM.toast(placed + ' taken ingepland over ' + days.filter(isWorkday).length + ' werkdagen');
+    KM.track('auto_plan', { placed:placed });
+}
+
+/* =========================================================
+   2. Weergave
+   ========================================================= */
+function render(){
+    if(tab === 'cfg') return renderCfg();
+    var days = dayKeys();
+    var start = KM.parseISO(days[0]);
+    var totalMins = days.reduce(function(a,k){ return a + (D.plan[k]||[]).reduce(function(x,b){ return x + b.mins; }, 0); }, 0);
+    var open = KM.q.open();
+    var unplanned = open.filter(function(t){
+        return !days.some(function(k){ return (D.plan[k]||[]).some(function(b){ return b.taskId === t.id; }); });
+    }).map(function(t){ return { t:t, s:score(t) }; }).sort(function(a,b){ return b.s - a.s; });
+
+    $('#view').innerHTML =
+        '<div class="sec-head">' +
+            '<h2 class="grotesk">Week van ' + start.getDate() + ' ' + KM.MONTHS[start.getMonth()] + '</h2>' +
+            '<div style="margin-left:auto;display:flex;gap:6px;align-items:center;">' +
+                '<button class="chip" id="wPrev">‹</button>' +
+                '<button class="chip" id="wNow">Deze week</button>' +
+                '<button class="chip" id="wNext">›</button>' +
+            '</div></div>' +
+
+        '<div class="grid g4" style="margin-bottom:20px;">' +
+            statCard('Ingepland', Math.round(totalMins/60*10)/10 + ' u', 'deze week') +
+            statCard('Capaciteit', (days.filter(isWorkday).length * D.planCfg.maxHours) + ' u', 'beschikbaar') +
+            statCard('Niet gepland', unplanned.length, 'taken over') +
+            statCard('Te laat', open.filter(function(t){ return KM.dayDiff(t.due) < 0; }).length, 'over datum') +
+        '</div>' +
+
+        weekGrid(days) +
+
+        '<div class="slot-legend">' + D.planCfg.windows.map(function(w){
+            var e = KM.ENERGY.filter(function(x){ return x.id === w.energy; })[0];
+            return '<span><i style="background:' + energyColor(w.energy) + '"></i>' + w.label + ' · ' + w.from + '–' + w.to + 'u · ' + (e?e.icon:'') + '</span>';
+        }).join('') + '</div>' +
+
+        '<div class="sec-head"><h2 class="grotesk">Nog in te plannen</h2>' +
+            '<span class="label">' + unplanned.length + ' taken · gesorteerd op urgentie</span></div>' +
+        '<div class="pool" id="pool">' + (unplanned.length ? unplanned.map(function(u){
+            var a = KM.areaOf(u.t.area);
+            var e = KM.ENERGY.filter(function(x){ return x.id === u.t.energy; })[0] || KM.ENERGY[1];
+            return '<div class="pitem" draggable="true" data-task="' + u.t.id + '">' +
+                '<span class="d" style="background:' + a.hex + '"></span>' +
+                '<span class="pt">' + esc(u.t.title) + '</span>' +
+                '<span class="label">' + e.icon + ' ' + e.mins + 'm</span>' +
+                (u.t.due ? '<span class="label" style="color:' + (KM.dayDiff(u.t.due) < 0 ? 'var(--danger)' : 'var(--text-faint)') + '">' + KM.fmtDate(u.t.due) + '</span>' : '') +
+                '<span class="sc">score ' + u.s + '</span>' +
+            '</div>';
+        }).join('') : '<div class="empty">Alles is ingepland</div>') + '</div>' +
+
+        aiBox();
+
+    $('#wPrev').onclick = function(){ weekOffset--; render(); };
+    $('#wNext').onclick = function(){ weekOffset++; render(); };
+    $('#wNow').onclick  = function(){ weekOffset = 0; render(); };
+    bindGrid();
+    bindAI();
+}
+function statCard(label, big, sub){
+    return '<div class="card rise"><div class="stat"><span>' + label + '</span><b>' + big + '</b>' +
+        '<span style="text-transform:none;letter-spacing:0;font-family:Inter,sans-serif;font-size:12.5px;">' + sub + '</span></div></div>';
+}
+function energyColor(e){
+    return { deep:'#8b5cf6', focus:'#2383e2', shallow:'#3f8f5c', admin:'#8f8d85' }[e] || '#8f8d85';
+}
+
+function weekGrid(days){
+    var cfg = D.planCfg;
+    var rows = [];
+    for(var h = cfg.startH; h < cfg.endH; h++){ rows.push(h * 60); rows.push(h * 60 + 30); }
+
+    var head = '<div class="wk-h" style="border-right:1px solid var(--line)"></div>' + days.map(function(k){
+        var d = KM.parseISO(k);
+        var mins = (D.plan[k]||[]).reduce(function(a,b){ return a + b.mins; }, 0);
+        var pct = Math.min(100, mins / (cfg.maxHours * 60) * 100);
+        return '<div class="wk-h' + (k === KM.iso() ? ' today' : '') + '">' +
+            '<span>' + KM.DOW[(d.getDay()+6)%7] + '</span>' +
+            '<b>' + d.getDate() + '</b>' +
+            '<div class="cap"><i style="width:' + pct + '%"></i></div></div>';
+    }).join('');
+
+    var nowM = new Date().getHours() * 60 + new Date().getMinutes();
+    var body = rows.map(function(m){
+        var cells = days.map(function(k){
+            var blocks = (D.plan[k] || []).filter(function(b){ return b.start >= m && b.start < m + 30; });
+            var off = !isWorkday(k) || !cfg.windows.some(function(w){ return m >= w.from*60 && m < w.to*60; });
+            var isNow = k === KM.iso() && nowM >= m && nowM < m + 30;
+            return '<div class="wk-cell' + (off ? ' off' : '') + (isNow ? ' now' : '') + '" data-d="' + k + '" data-m="' + m + '">' +
+                blocks.map(blockHTML).join('') + '</div>';
+        }).join('');
+        return '<div class="wk-time">' + (m % 60 === 0 ? hhmm(m) : '') + '</div>' + cells;
+    }).join('');
+
+    return '<div class="wk">' + head + body + '</div>';
+}
+function blockHTML(b){
+    var t = KM.q.task(b.taskId);
+    if(!t) return '';
+    var a = KM.areaOf(t.area);
+    return '<div class="blk' + (t.status === 'done' ? ' done' : '') + '" draggable="true" ' +
+        'data-b="' + b.taskId + '" data-bd="' + b.start + '" ' +
+        'style="background:' + a.hex + ';' + (b.manual ? 'box-shadow:inset 0 0 0 2px var(--accent);' : '') + '">' +
+        '<b>' + esc(t.title) + '</b>' +
+        '<small>' + hhmm(b.start) + ' · ' + b.mins + 'm</small></div>';
+}
+
+function bindGrid(){
+    // slepen vanuit de pool
+    $$('[data-task]').forEach(function(el){
+        el.addEventListener('dragstart', function(e){
+            e.dataTransfer.setData('text/plan', JSON.stringify({ taskId:el.dataset.task }));
+        });
+    });
+    // bestaande blokken verslepen
+    $$('.blk[data-b]').forEach(function(el){
+        el.addEventListener('dragstart', function(e){
+            e.dataTransfer.setData('text/plan', JSON.stringify({
+                taskId:el.dataset.b, from:el.closest('[data-d]').dataset.d, fromStart:+el.dataset.bd
+            }));
+            el.classList.add('dragging');
+        });
+        el.addEventListener('dragend', function(){ el.classList.remove('dragging'); });
+        el.addEventListener('click', function(){ blockMenu(el.dataset.b, el.closest('[data-d]').dataset.d, +el.dataset.bd); });
+    });
+    // cellen als doelgebied
+    $$('.wk-cell').forEach(function(c){
+        c.addEventListener('dragover', function(e){ if(e.dataTransfer.types.includes('text/plan')){ e.preventDefault(); c.classList.add('drop'); } });
+        c.addEventListener('dragleave', function(){ c.classList.remove('drop'); });
+        c.addEventListener('drop', function(e){
+            e.preventDefault(); c.classList.remove('drop');
+            var p = JSON.parse(e.dataTransfer.getData('text/plan'));
+            if(p.from) D.plan[p.from] = (D.plan[p.from]||[]).filter(function(b){ return !(b.taskId === p.taskId && b.start === p.fromStart); });
+            var t = KM.q.task(p.taskId); if(!t) return;
+            var day = c.dataset.d, start = +c.dataset.m;
+            D.plan[day] = D.plan[day] || [];
+            D.plan[day].push({ taskId:p.taskId, start:start, mins:minsOf(t), energy:t.energy, manual:true });
+            D.plan[day].sort(function(a,b){ return a.start - b.start; });
+            OS.save(); render();
+            KM.toast('Verplaatst naar ' + KM.fmtDate(day) + ' om ' + hhmm(start));
+        });
+    });
+}
+function blockMenu(taskId, day, start){
+    var t = KM.q.task(taskId);
+    KM.modal({
+        title:t.title,
+        body:'<p style="color:var(--text-soft);font-size:14px;">Gepland op ' + KM.fmtDate(day) + ' om ' + hhmm(start) + '.</p>',
+        actions:[
+            { label:'Uit planning halen', ghost:true, run:function(){
+                D.plan[day] = D.plan[day].filter(function(b){ return !(b.taskId === taskId && b.start === start); });
+                OS.save(); render();
+            }},
+            { label: t.status === 'done' ? 'Weer openzetten' : 'Markeer als klaar', accent:true, run:function(){
+                t.status = t.status === 'done' ? 'todo' : 'done';
+                t.doneAt = t.status === 'done' ? Date.now() : null;
+                OS.save(); render();
+            }}
+        ]
+    });
+}
+
+/* =========================================================
+   3. AI-laag (optioneel)
+   ========================================================= */
+function aiBox(){
+    var on = KM.ai.on();
+    return '<div class="ai-box">' +
+        '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">' +
+            '<span class="dot-live" style="' + (on ? '' : 'background:var(--text-faint);animation:none;') + '"></span>' +
+            '<b class="grotesk" style="font-size:15px;">AI-advies</b>' +
+            '<span class="label">' + (on ? 'verbonden' : 'niet ingesteld') + '</span>' +
+            '<button class="btn sm" id="aiGo" style="margin-left:auto;"' + (on ? '' : ' disabled') + '>Analyseer mijn week</button>' +
+        '</div>' +
+        (on ? '' : '<p style="margin-top:12px;font-size:13.5px;color:var(--text-faint);line-height:1.6;">' +
+            'De planner hierboven werkt volledig zonder AI — hij weegt deadlines, prioriteit, energie en capaciteit tegen elkaar af. ' +
+            'Wil je er ook advies in gewone taal bij? Koppel dan de AI-proxy bij <a href="integrations.html" style="color:var(--accent-ink);">Integraties</a>.</p>') +
+        '<div class="ai-out" id="aiOut"></div>' +
+    '</div>';
+}
+function bindAI(){
+    var b = $('#aiGo'); if(!b || b.disabled) return;
+    b.onclick = function(){
+        var days = dayKeys();
+        var summary = days.map(function(k){
+            var bl = (D.plan[k]||[]).map(function(x){ var t = KM.q.task(x.taskId); return t ? (hhmm(x.start) + ' ' + t.title + ' (' + x.mins + 'm)') : ''; }).filter(Boolean);
+            return k + ': ' + (bl.length ? bl.join('; ') : 'leeg');
+        }).join('\n');
+        var open = KM.q.open().map(function(t){ return '- ' + t.title + ' [' + t.prio + (t.due ? ', deadline ' + t.due : '') + ']'; }).join('\n');
+
+        $('#aiOut').innerHTML = '<span class="spin"></span>';
+        b.disabled = true;
+        KM.ai.text(
+            'Dit is mijn weekplanning:\n' + summary + '\n\nOpen taken:\n' + open +
+            '\n\nGeef maximaal 5 concrete, korte observaties in het Nederlands: waar zit overbelasting, wat mis ik, wat zou ik anders plannen. Geen inleiding, alleen de punten.',
+            'Je bent een nuchtere productiviteitscoach. Kort, concreet, geen clichés.'
+        ).then(function(r){
+            $('#aiOut').textContent = r.text || r.output || JSON.stringify(r);
+            b.disabled = false;
+        }).catch(function(e){
+            $('#aiOut').innerHTML = '<span style="color:var(--danger)">' + esc(e.message) + '</span>';
+            b.disabled = false;
+        });
+    };
+}
+
+/* =========================================================
+   4. Instellingen
+   ========================================================= */
+function renderCfg(){
+    var c = D.planCfg;
+    $('#view').innerHTML =
+        '<div class="sec-head"><h2 class="grotesk">Hoe wil je werken?</h2></div>' +
+        '<div class="card">' +
+            '<div class="row">' +
+                '<div class="field"><label>Werkdag begint</label><input class="inp" type="number" id="cS" min="0" max="23" value="' + c.startH + '"></div>' +
+                '<div class="field"><label>Werkdag eindigt</label><input class="inp" type="number" id="cE" min="1" max="24" value="' + c.endH + '"></div>' +
+                '<div class="field"><label>Max uren per dag</label><input class="inp" type="number" id="cM" min="1" max="12" step=".5" value="' + c.maxHours + '"></div>' +
+            '</div>' +
+            '<label class="switch" style="margin-top:6px;"><input type="checkbox" id="cW"' + (c.weekend ? ' checked' : '') + '><span class="track"></span>Ook in het weekend plannen</label>' +
+        '</div>' +
+
+        '<div class="sec-head"><h2 class="grotesk">Energievensters</h2>' +
+            '<span class="label">wanneer past welk soort werk?</span></div>' +
+        '<div class="grid g2" id="wins">' + c.windows.map(function(w, i){
+            return '<div class="card">' +
+                '<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">' +
+                    '<i style="width:14px;height:14px;border-radius:5px;background:' + energyColor(w.energy) + ';display:block;"></i>' +
+                    '<b class="grotesk" style="font-size:15px;">' + esc(w.label) + '</b>' +
+                    '<button class="iconbtn" data-wdel="' + i + '" style="margin-left:auto;">✕</button>' +
+                '</div>' +
+                '<div class="row">' +
+                    '<div class="field"><label>Van</label><input class="inp" type="number" data-wf="' + i + '" min="0" max="23" value="' + w.from + '"></div>' +
+                    '<div class="field"><label>Tot</label><input class="inp" type="number" data-wt="' + i + '" min="1" max="24" value="' + w.to + '"></div>' +
+                    '<div class="field"><label>Type werk</label><select class="inp" data-we="' + i + '">' +
+                        KM.ENERGY.map(function(e){ return '<option value="' + e.id + '"' + (e.id === w.energy ? ' selected' : '') + '>' + e.icon + ' ' + e.name + ' (' + e.mins + 'm)</option>'; }).join('') +
+                    '</select></div>' +
+                '</div></div>';
+        }).join('') + '</div>' +
+        '<div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;">' +
+            '<button class="btn" id="addWin">＋ Venster</button>' +
+            '<button class="btn accent" id="saveCfg">Opslaan en opnieuw plannen</button>' +
+            '<button class="btn ghost" id="clearPlan">Planning wissen</button>' +
+        '</div>';
+
+    $('#addWin').onclick = function(){
+        c.windows.push({ from:19, to:20, energy:'shallow', label:'Nieuw venster' });
+        OS.save(); renderCfg();
+    };
+    $$('[data-wdel]').forEach(function(b){ b.onclick = function(){ c.windows.splice(+b.dataset.wdel,1); OS.save(); renderCfg(); }; });
+    $('#saveCfg').onclick = function(){
+        c.startH = +$('#cS').value; c.endH = +$('#cE').value; c.maxHours = +$('#cM').value; c.weekend = $('#cW').checked;
+        $$('[data-wf]').forEach(function(el){ c.windows[+el.dataset.wf].from = +el.value; });
+        $$('[data-wt]').forEach(function(el){ c.windows[+el.dataset.wt].to = +el.value; });
+        $$('[data-we]').forEach(function(el){
+            var i = +el.dataset.we; c.windows[i].energy = el.value;
+            var e = KM.ENERGY.filter(function(x){ return x.id === el.value; })[0];
+            if(e && /Nieuw venster/.test(c.windows[i].label)) c.windows[i].label = e.name;
+        });
+        c.windows.sort(function(a,b){ return a.from - b.from; });
+        OS.save();
+        tab = 'week';
+        $$('#osTabs .os-tab').forEach(function(x){ x.classList.toggle('on', x.dataset.tab === 'week'); });
+        autoPlan(false);
+    };
+    $('#clearPlan').onclick = function(){
+        KM.confirm('Planning wissen?', 'Alle ingeplande blokken van alle weken worden verwijderd.', function(){
+            D.plan = {}; OS.save(); tab = 'week';
+            $$('#osTabs .os-tab').forEach(function(x){ x.classList.toggle('on', x.dataset.tab === 'week'); });
+            render(); KM.toast('Planning gewist');
+        });
+    };
+}
+
+D.plan = D.plan || {};
+render();
+window.PLAN = { autoPlan:autoPlan, score:score, slotsOf:slotsOf, dayKeys:dayKeys, render:render };
+}
+</script>
+</body>
+</html>
