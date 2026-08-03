@@ -88,6 +88,40 @@
     .menu-side{display:flex;flex-direction:column;justify-content:space-between;color:rgba(255,255,255,.5);font-size:14.5px;min-width:220px;}
     .menu-side a{color:#fff;text-decoration:none;}
     .menu-side .menu-cta{margin-top:24px;}
+
+    /* --- private access (apart, onderaan menu) --- */
+    .menu-private{
+        position:absolute;left:50%;transform:translateX(-50%);bottom:34px;
+        width:min(1280px,calc(100% - 48px));
+        padding-top:22px;border-top:1px solid rgba(255,255,255,.1);
+        display:flex;align-items:center;gap:16px;
+    }
+    .menu-private .mp-tag{
+        font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.16em;
+        text-transform:uppercase;color:rgba(255,255,255,.28);
+    }
+    .menu-private .mp-link{
+        margin-left:auto;display:inline-flex;align-items:center;gap:12px;
+        padding:11px 14px 11px 16px;border-radius:999px;text-decoration:none;
+        border:1px solid rgba(255,255,255,.16);color:rgba(255,255,255,.65);
+        font-size:14.5px;font-weight:500;transition:all .3s cubic-bezier(.16,1,.3,1);
+        background:rgba(255,255,255,.03);
+    }
+    .menu-private .mp-link:hover{
+        color:var(--ink);background:var(--accent);border-color:var(--accent);
+        transform:translateY(-2px);box-shadow:0 12px 30px rgba(198,255,74,.22);
+    }
+    .menu-private .mp-link .mp-dot{
+        width:7px;height:7px;border-radius:50%;background:var(--accent);
+        box-shadow:0 0 0 0 rgba(198,255,74,.55);animation:mpPulse 2.6s ease-out infinite;
+    }
+    .menu-private .mp-link:hover .mp-dot{background:var(--ink);animation:none;}
+    @keyframes mpPulse{0%{box-shadow:0 0 0 0 rgba(198,255,74,.5);}70%,100%{box-shadow:0 0 0 10px rgba(198,255,74,0);}}
+    @media(max-width:760px){
+        .menu-private{position:static;transform:none;width:100%;margin-top:34px;flex-direction:column;align-items:flex-start;gap:12px;}
+        .menu-private .mp-link{margin-left:0;}
+    }
+
     .menu-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);color:#fff;padding:8px 16px;border-radius:20px;font-size:12.5px;font-weight:600;margin-bottom:26px;width:fit-content;}
     .menu-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block;}
     .menu-socials{display:flex;gap:10px;margin-top:18px;}
@@ -319,6 +353,17 @@
             <a href="about.html" data-en="About" data-nl="Over ons">About</a>
             <a href="contact.html" data-en="Contact" data-nl="Contact">Contact</a>
         </nav>
+
+        <!-- Private workspace access — bewust apart van de hoofdnavigatie -->
+        <div class="menu-private">
+            <span class="mp-tag">Restricted / 01</span>
+            <a href="login.html" class="mp-link">
+                <span class="mp-dot"></span>
+                <span data-en="Private workspace" data-nl="Privé workspace">Privé workspace</span>
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10.5" width="16" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg>
+            </a>
+        </div>
+
         <div class="menu-side">
             <div>
                 <div class="menu-badge"><span class="dot"></span> <span data-en="1 spot open — Q3" data-nl="1 plek vrij — Q3">1 spot open — Q3</span></div>
