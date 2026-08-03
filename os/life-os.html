@@ -146,10 +146,12 @@ html[data-theme="dark"] .due.now{color:var(--accent);}
 </div>
 
 <script src="km-os.js"></script>
+<script src="km-viz.js"></script>
+<script src="km-live.js"></script>
 <script>
 if(KM.boot()){
 
-var $ = KM.$, $$ = KM.$$, OS = KM.OS, D = OS.data, esc = KM.esc;
+var $ = KM.$, $$ = KM.$$, OS = KM.OS, D = OS.data, esc = KM.esc, V = KMviz, L = KMlive;
 var tab = location.hash.slice(1) || 'today';
 
 KM.shell({
@@ -203,6 +205,7 @@ function bindTasks(root){
             t.status = t.status === 'done' ? 'todo' : 'done';
             t.doneAt = t.status === 'done' ? Date.now() : null;
             OS.save(); KM.track('task_toggle', { done:t.status === 'done' });
+            KMlive.log(t.status === 'done' ? 'task_done' : 'task_new', (t.status === 'done' ? 'Afgevinkt: ' : 'Weer open: ') + t.title);
             row.classList.toggle('done', t.status === 'done');
             cb.classList.toggle('on', t.status === 'done');
             setTimeout(render, 420);
@@ -237,7 +240,7 @@ function vToday(v){
 
     v.innerHTML =
         '<div class="grid g2" style="margin-bottom:26px;">' +
-            card('Momentum', KM.q.momentum() + '%', 'laatste 7 dagen actief', spark()) +
+            card('Momentum', KM.q.momentum() + '%', 'laatste 7 dagen actief', spark(14)) +
             card('Vandaag af', D.tasks.filter(function(t){ return t.doneAt && KM.iso(new Date(t.doneAt)) === td; }).length, 'taken afgerond') +
             card('Open', KM.q.open().length, 'taken in het systeem') +
             card('Gewoontes', D.habits.filter(function(h){ return h.log[td]; }).length + '/' + D.habits.length, 'vandaag afgevinkt') +
@@ -252,27 +255,53 @@ function vToday(v){
         '<div class="sec-head"><h2 class="grotesk">Inbox</h2><span class="mini">' + inbox.length + ' zonder project of datum</span></div>' +
         '<div class="plist" id="l3">' + (inbox.length ? inbox.map(function(t){ return taskRow(t); }).join('') : '<div class="empty">Inbox is leeg</div>') + '</div>' +
 
-        '<div class="sec-head"><h2 class="grotesk">Gewoontes vandaag</h2></div>' +
-        '<div class="grid g2" id="hq">' + D.habits.map(habitMini).join('') + '</div>';
+        '<div class="sec-head"><h2 class="grotesk">Gewoontes vandaag</h2>' +
+            '<span class="label">' + D.habits.filter(function(h){ return h.log[td]; }).length + ' van ' + D.habits.length + ' af</span></div>' +
+        '<div class="grid g2" id="hq">' + D.habits.map(habitMini).join('') + '</div>' +
+
+        '<div class="sec-head"><h2 class="grotesk">Ritme</h2><span class="label">laatste 17 weken</span></div>' +
+        '<div class="card">' + V.heatmap({ days:heatDays(), weeks:17 }) + '</div>';
 
     bindTasks(v);
     bindHabitMini(v);
+    V.animate(v);
 }
 function card(label, big, sub, extra){
     return '<div class="card rise"><div class="stat"><span>' + label + '</span>' +
         '<b>' + big + '</b><span style="letter-spacing:0;text-transform:none;font-family:Inter,sans-serif;font-size:12.5px;">' + sub + '</span></div>' +
         (extra || '') + '</div>';
 }
-function spark(){
-    var out = '';
-    for(var i = 13; i >= 0; i--){
-        var day = KM.iso(KM.addDays(new Date(), -i));
-        var n = D.tasks.filter(function(t){ return t.doneAt && KM.iso(new Date(t.doneAt)) === day; }).length
-              + D.habits.filter(function(h){ return h.log[day]; }).length;
-        var h = Math.min(100, n * 22);
-        out += '<i class="' + (n ? '' : 'dim') + '" style="height:' + Math.max(4, h) + '%" title="' + day + ': ' + n + '"></i>';
+function dayScore(dayISO){
+    return D.tasks.filter(function(t){ return t.doneAt && KM.iso(new Date(t.doneAt)) === dayISO; }).length
+         + D.habits.filter(function(h){ return h.log[dayISO]; }).length;
+}
+function seriesOf(n){
+    var v = [], l = [];
+    for(var i = n - 1; i >= 0; i--){
+        var k = KM.iso(KM.addDays(new Date(), -i));
+        v.push(dayScore(k)); l.push(k);
     }
-    return '<div class="spark">' + out + '</div>';
+    return { values:v, labels:l };
+}
+function spark(n){
+    var s = seriesOf(n || 14);
+    return V.area({ points:s.values, labels:s.labels, w:420, h:96, dots:false });
+}
+function heatDays(){
+    var m = {};
+    D.tasks.forEach(function(t){ if(t.doneAt){ var k = KM.iso(new Date(t.doneAt)); m[k] = (m[k]||0)+1; } });
+    D.habits.forEach(function(h){ Object.keys(h.log).forEach(function(k){ m[k] = (m[k]||0)+1; }); });
+    return m;
+}
+function balance(){
+    return KM.AREAS.map(function(a){
+        var ts = D.tasks.filter(function(t){ return t.area === a.id; });
+        var done = ts.filter(function(t){ return t.status === 'done'; }).length;
+        var gs = D.goals.filter(function(g){ return g.area === a.id; }).length;
+        var recent = D.tasks.filter(function(t){ return t.area === a.id && t.doneAt && t.doneAt > Date.now() - 14*864e5; }).length;
+        var v = Math.min(1, (gs * .22) + (ts.length ? done/ts.length * .4 : 0) + Math.min(.38, recent * .13));
+        return { label:a.name.split(' ')[0], icon:a.icon, color:a.hex, value:Math.max(.06, v) };
+    });
 }
 function habitMini(h){
     var on = !!h.log[KM.iso()];
@@ -292,6 +321,7 @@ function bindHabitMini(root){
             b.classList.toggle('on', !!h.log[d]);
             $('.habit-t span', el).textContent = KM.q.streak(h) + ' dagen op rij';
             OS.save(); KM.track('habit_toggle', { on: !!h.log[d] });
+            if(h.log[d]) KMlive.log('habit', h.title + ' afgevinkt — ' + KM.q.streak(h) + ' op rij');
         };
     });
 }
@@ -299,7 +329,16 @@ function bindHabitMini(root){
 /* ---------- doelen ---------- */
 function vGoals(v){
     v.innerHTML =
-        '<div class="sec-head"><h2 class="grotesk">Levensgebieden</h2><span class="mini">balans over zes gebieden</span></div>' +
+        '<div class="sec-head"><h2 class="grotesk">Levensbalans</h2><span class="mini">waar gaat je aandacht heen?</span></div>' +
+        '<div class="card" style="display:flex;gap:30px;align-items:center;flex-wrap:wrap;justify-content:center;">' +
+            V.radar({ axes:balance(), size:280 }) +
+            '<div class="viz-key" style="min-width:190px;">' + KM.AREAS.map(function(a){
+                var gs = D.goals.filter(function(g){ return g.area === a.id; }).length;
+                var ts = D.tasks.filter(function(t){ return t.area === a.id; }).length;
+                return '<div class="k"><i style="background:' + a.hex + '"></i>' + a.icon + ' ' + esc(a.name) + '<b>' + gs + 'd · ' + ts + 't</b></div>';
+            }).join('') + '</div>' +
+        '</div>' +
+        '<div class="sec-head"><h2 class="grotesk">Levensgebieden</h2><span class="mini">klik om te filteren</span></div>' +
         '<div class="grid g3">' + KM.AREAS.map(function(a){
             var gs = D.goals.filter(function(g){ return g.area === a.id; });
             var ts = D.tasks.filter(function(t){ return t.area === a.id; });
@@ -315,6 +354,7 @@ function vGoals(v){
             '<button class="btn sm" id="newGoal">＋ Doel</button></div>' +
         '<div class="grid g2" id="goalGrid">' + (D.goals.length ? D.goals.map(goalCard).join('') : '<div class="empty">Nog geen doelen</div>') + '</div>';
 
+    V.animate(v);
     $('#newGoal').onclick = function(){ editGoal(); };
     $$('[data-goal]', v).forEach(function(el){
         el.onclick = function(e){
@@ -337,7 +377,7 @@ function goalCard(g){
             '<span class="goal-ico">' + (g.icon || '🎯') + '</span>' +
             '<div style="flex:1;min-width:0;"><h3 class="grotesk">' + esc(g.title) + '</h3>' +
                 '<div class="why">' + esc(g.why || '') + '</div></div>' +
-            '<div class="goal-ring">' + KM.ring(pct, 58, 5) + '<span class="pct">' + pct + '%</span></div>' +
+            '<div class="goal-ring">' + V.ring(pct, 58, 5, a.hex) + '<span class="pct">' + pct + '%</span></div>' +
         '</div>' +
         '<div class="goal-foot">' +
             tagPill(a.icon + ' ' + a.name, a.hex) +
@@ -362,6 +402,7 @@ function vProjects(v){
         '<div class="plist">' + (list.length ? list.map(projectRow).join('') : '<div class="empty">Geen projecten in dit gebied</div>') + '</div>' +
         (list.length ? list.map(projectBlock).join('') : '');
 
+    V.animate(v);
     $$('[data-f]', v).forEach(function(b){ b.onclick = function(){ areaFilter = b.dataset.f; render(); }; });
     $('#newProject').onclick = function(){ editProject(); };
     $$('[data-p]', v).forEach(function(el){
@@ -446,38 +487,42 @@ function vHabits(v){
             '<button class="btn sm" id="newHabit">＋ Gewoonte</button></div>' +
         '<div class="plist">' + (D.habits.length ? D.habits.map(habitRow).join('') : '<div class="empty">Nog geen gewoontes</div>') + '</div>';
 
+    V.animate(v);
     $('#newHabit').onclick = function(){ editHabit(); };
     $$('[data-h]', v).forEach(function(el){
         var h = D.habits.filter(function(x){ return x.id === el.dataset.h; })[0];
         $('[data-hc]', el).onclick = function(){
             var d = KM.iso();
             if(h.log[d]) delete h.log[d]; else h.log[d] = true;
-            OS.save(); render();
+            OS.save(); L.log('habit', h.title + (h.log[d] ? ' afgevinkt' : ' teruggedraaid')); render();
         };
         $('[data-hedit]', el).onclick = function(e){ e.stopPropagation(); editHabit(h); };
-        $$('.heat i', el).forEach(function(cell){
+        $$('.hm-c', el).forEach(function(cell){
             cell.onclick = function(){
                 var d = cell.dataset.d;
+                if(!d || KM.dayDiff(d) > 0) return;
                 if(h.log[d]) delete h.log[d]; else h.log[d] = true;
                 OS.save(); render();
             };
+            cell.style.cursor = 'pointer';
         });
     });
 }
 function habitRow(h){
-    var cells = '';
-    for(var i = 29; i >= 0; i--){
-        var d = KM.iso(KM.addDays(new Date(), -i));
-        cells += '<i class="' + (h.log[d] ? 'on' : '') + '" data-d="' + d + '" title="' + d + '"></i>';
-    }
+    var days = {};
+    Object.keys(h.log).forEach(function(k){ days[k] = 1; });
     var done30 = Object.keys(h.log).filter(function(d){ return KM.dayDiff(d) >= -29; }).length;
-    return '<div class="habit rise" style="--hc:' + h.color + '" data-h="' + h.id + '">' +
-        '<span class="habit-ico">' + h.icon + '</span>' +
-        '<span class="habit-t"><b>' + esc(h.title) + '</b>' +
-            '<span>' + KM.q.streak(h) + ' op rij · ' + Math.round(done30/30*100) + '% deze maand</span></span>' +
-        '<span class="heat">' + cells + '</span>' +
-        '<button class="iconbtn" data-hedit><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M4 20h4L20 8l-4-4L4 16v4Z"/></svg></button>' +
-        '<span class="hcheck' + (h.log[KM.iso()] ? ' on' : '') + '" data-hc>✓</span>' +
+    var done90 = Object.keys(h.log).filter(function(d){ return KM.dayDiff(d) >= -89; }).length;
+    return '<div class="card rise" style="--hc:' + h.color + '" data-h="' + h.id + '">' +
+        '<div style="display:flex;align-items:center;gap:15px;margin-bottom:16px;">' +
+            '<span class="habit-ico">' + h.icon + '</span>' +
+            '<span class="habit-t"><b>' + esc(h.title) + '</b>' +
+                '<span>' + KM.q.streak(h) + ' op rij · ' + Math.round(done30/30*100) + '% deze maand · ' + done90 + ' in 90 dagen</span></span>' +
+            V.ring(Math.round(done30/30*100), 44, 4, h.color) +
+            '<button class="iconbtn" data-hedit><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M4 20h4L20 8l-4-4L4 16v4Z"/></svg></button>' +
+            '<span class="hcheck' + (h.log[KM.iso()] ? ' on' : '') + '" data-hc>✓</span>' +
+        '</div>' +
+        V.heatmap({ days:days, weeks:17, color:h.color }) +
     '</div>';
 }
 
@@ -499,7 +544,13 @@ function vReview(v){
             '<div class="card rise"><div class="stat"><span>Momentum</span><b>' + KM.q.momentum() + '%</b><span style="text-transform:none;letter-spacing:0;font-family:Inter,sans-serif;font-size:12.5px;">dagen actief</span></div></div>' +
         '</div>' +
 
+        '<div class="sec-head"><h2 class="grotesk">Verloop</h2><span class="mini">taken en gewoontes per dag</span></div>' +
+        '<div class="card">' + V.area({ points:seriesOf(30).values, labels:seriesOf(30).labels, w:900, h:170 }) + '</div>' +
+
         '<div class="sec-head"><h2 class="grotesk">Waar ging je aandacht heen?</h2></div>' +
+        '<div class="card" style="margin-bottom:14px;">' + V.bars({
+            items: byArea.map(function(x){ return { label:x.a.name.split(' ')[0], value:x.n, color:x.a.hex }; }), h:150
+        }) + '</div>' +
         '<div class="grid g3">' + byArea.map(function(x){
             var pct = done.length ? Math.round(x.n/done.length*100) : 0;
             return '<div class="area-card rise" style="--c:' + x.a.hex + '">' +
@@ -522,11 +573,13 @@ function vReview(v){
                 return '<div class="prow"><span class="pi">📝</span><span class="pt"><b>' + r.date + '</b><span>' + esc((r.focus||'').slice(0,90)) + '</span></span></div>';
             }).join('') + '</div>' : '');
 
+    V.animate(v);
     $('#saveRev').onclick = function(){
         var r = { date:KM.iso(), wins:$('#rWins').value, blockers:$('#rBlock').value, focus:$('#rFocus').value };
         D.reviews = D.reviews || [];
         if(D.reviews[0] && D.reviews[0].date === r.date) D.reviews[0] = r; else D.reviews.unshift(r);
         OS.save(); KM.toast('Review opgeslagen'); KM.track('review_saved');
+        KMlive.log('review', 'Weekreview opgeslagen');
     };
     $('#exportRev').onclick = function(){
         var md = '# Weekreview ' + KM.iso() + '\n\n## Afgerond (' + done.length + ')\n' +
@@ -569,6 +622,7 @@ function quickAdd(pre){
                     area: pr ? pr.area : 'work', status:'todo', due:$('#qD').value, prio:$('#qPr').value,
                     energy:$('#qE').value, tags:[], created:Date.now(), doneAt:null });
                 OS.save(); render(); KM.toast('Taak toegevoegd'); KM.track('task_created');
+                KMlive.log('task_new', 'Nieuwe taak: ' + title);
             }}
         ],
         mounted:function(ov){ setTimeout(function(){ $('#qT', ov).focus(); }, 60); }
@@ -628,6 +682,7 @@ function editGoal(g){
                 g.area = $('#gA').value; g.horizon = $('#gH').value; g.due = $('#gD').value;
                 if(isNew) D.goals.push(g);
                 OS.save(); render(); KM.toast(isNew ? 'Doel toegevoegd' : 'Opgeslagen'); KM.track('goal_saved');
+                KMlive.log('goal', (isNew ? 'Nieuw doel: ' : 'Doel bijgewerkt: ') + g.title);
             }}
         ])
     });
@@ -695,6 +750,9 @@ function editHabit(h){
         }
     });
 }
+
+L.on('data', function(){ D = OS.data; render(); KM.toast('Bijgewerkt vanuit een ander tabblad'); });
+L.on('timer', function(){ if(tab === 'today') render(); });
 
 window.addEventListener('hashchange', function(){
     var t = location.hash.slice(1); if(!t || t === tab) return;

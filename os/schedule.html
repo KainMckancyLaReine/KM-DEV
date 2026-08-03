@@ -62,6 +62,15 @@ html[data-theme="dark"] .wk-h.today b{color:var(--accent);}
 .slot-legend span{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text-soft);}
 .slot-legend i{width:12px;height:12px;border-radius:4px;}
 
+.dashrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;}
+.nowbar{
+    display:flex;align-items:center;gap:15px;padding:15px 18px;border-radius:var(--r-md);
+    border:1px solid var(--c);background:color-mix(in srgb, var(--c) 9%, var(--paper));
+    margin-bottom:18px;flex-wrap:wrap;
+}
+.nowbar .nb-t{flex:1;min-width:150px;}
+.nowbar .nb-t b{display:block;font-family:'Space Grotesk',sans-serif;font-size:15.5px;font-weight:600;}
+.nowbar .nb-t span{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--text-soft);}
 .ai-box{
     border:1px solid var(--line);border-radius:var(--r-md);padding:18px 20px;background:var(--bg);
     margin-top:16px;
@@ -84,10 +93,12 @@ html[data-theme="dark"] .wk-h.today b{color:var(--accent);}
 </div>
 
 <script src="km-os.js"></script>
+<script src="km-viz.js"></script>
+<script src="km-live.js"></script>
 <script>
 if(KM.boot()){
 
-var $ = KM.$, $$ = KM.$$, OS = KM.OS, D = OS.data, esc = KM.esc;
+var $ = KM.$, $$ = KM.$$, OS = KM.OS, D = OS.data, esc = KM.esc, V = KMviz, L = KMlive;
 
 /* standaardinstellingen voor de planner */
 D.planCfg = Object.assign({
@@ -225,6 +236,7 @@ function autoPlan(keepManual){
     render();
     KM.toast(placed + ' taken ingepland over ' + days.filter(isWorkday).length + ' werkdagen');
     KM.track('auto_plan', { placed:placed });
+    KMlive.log('plan', placed + ' taken ingepland voor deze week');
 }
 
 /* =========================================================
@@ -249,11 +261,34 @@ function render(){
                 '<button class="chip" id="wNext">›</button>' +
             '</div></div>' +
 
-        '<div class="grid g4" style="margin-bottom:20px;">' +
-            statCard('Ingepland', Math.round(totalMins/60*10)/10 + ' u', 'deze week') +
-            statCard('Capaciteit', (days.filter(isWorkday).length * D.planCfg.maxHours) + ' u', 'beschikbaar') +
-            statCard('Niet gepland', unplanned.length, 'taken over') +
-            statCard('Te laat', open.filter(function(t){ return KM.dayDiff(t.due) < 0; }).length, 'over datum') +
+        '<div id="nowSlot"></div>' +
+
+        '<div class="dashrow" style="margin-bottom:20px;">' +
+            vizCard('Bezetting', Math.round(totalMins/60*10)/10 + ' van ' + cap(days) + ' u',
+                V.gauge({ value: cap(days) ? totalMins / (cap(days)*60) : 0, size:180,
+                    label:(cap(days) ? Math.round(totalMins/(cap(days)*60)*100) : 0) + '%', sub:'van je week' })) +
+            vizCard('Per dag', 'uren ingepland',
+                V.bars({ items: days.map(function(k, i){
+                    var m = (D.plan[k]||[]).reduce(function(a,b){ return a + b.mins; }, 0);
+                    return { label:KM.DOW[i], value:Math.round(m/60*10)/10,
+                             color: k === KM.iso() ? 'var(--accent)' : (isWorkday(k) ? 'var(--a-work)' : 'var(--line)') };
+                }), h:150 })) +
+            vizCard('Soort werk', open.length + ' open taken',
+                V.donut({ size:170, thickness:20, center:{ big:String(open.length), small:'open' },
+                    slices: KM.ENERGY.map(function(e){
+                        return { label:e.name, value:open.filter(function(t){ return t.energy === e.id; }).length, color:energyColor(e.id) };
+                    }) }) +
+                '<div class="viz-key" style="margin-top:12px;">' + KM.ENERGY.map(function(e){
+                    var n = open.filter(function(t){ return t.energy === e.id; }).length;
+                    return n ? '<div class="k"><i style="background:' + energyColor(e.id) + '"></i>' + e.icon + ' ' + e.name + '<b>' + n + '</b></div>' : '';
+                }).join('') + '</div>') +
+            vizCard('Aandacht', 'te laat en onbelegd',
+                '<div style="display:flex;flex-direction:column;gap:14px;width:100%;">' +
+                    miniRow('Niet gepland', unplanned.length, unplanned.length ? 'var(--warn)' : 'var(--line)', Math.min(100, unplanned.length*12)) +
+                    miniRow('Te laat', open.filter(function(t){ return KM.dayDiff(t.due) < 0; }).length, 'var(--danger)',
+                        Math.min(100, open.filter(function(t){ return KM.dayDiff(t.due) < 0; }).length * 25)) +
+                    miniRow('Vandaag af', D.tasks.filter(function(t){ return t.doneAt && KM.iso(new Date(t.doneAt)) === KM.iso(); }).length, 'var(--accent)', 60) +
+                '</div>') +
         '</div>' +
 
         weekGrid(days) +
@@ -279,15 +314,76 @@ function render(){
 
         aiBox();
 
+    V.animate($('#view'));
+    paintNow(); moveNowLine();
     $('#wPrev').onclick = function(){ weekOffset--; render(); };
     $('#wNext').onclick = function(){ weekOffset++; render(); };
     $('#wNow').onclick  = function(){ weekOffset = 0; render(); };
     bindGrid();
     bindAI();
 }
-function statCard(label, big, sub){
-    return '<div class="card rise"><div class="stat"><span>' + label + '</span><b>' + big + '</b>' +
-        '<span style="text-transform:none;letter-spacing:0;font-family:Inter,sans-serif;font-size:12.5px;">' + sub + '</span></div></div>';
+function cap(days){ return days.filter(isWorkday).length * D.planCfg.maxHours; }
+function vizCard(title, meta, body){
+    return '<div class="card rise" style="display:flex;flex-direction:column;">' +
+        '<div style="display:flex;align-items:center;gap:9px;margin-bottom:14px;">' +
+            '<b class="grotesk" style="font-size:14.5px;">' + title + '</b>' +
+            '<span class="label" style="margin-left:auto;">' + esc(meta) + '</span></div>' +
+        '<div style="flex:1;display:flex;align-items:center;justify-content:center;">' + body + '</div></div>';
+}
+function miniRow(label, val, color, pct){
+    return '<div><div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px;">' +
+        '<span class="label" style="flex:1;">' + label + '</span>' +
+        '<b class="grotesk" style="font-size:17px;">' + val + '</b></div>' +
+        '<div class="bar"><i style="width:' + pct + '%;background:' + color + '"></i></div></div>';
+}
+
+/* ---------- wat loopt er nu? ---------- */
+function currentBlock(){
+    var k = KM.iso();
+    var now = new Date().getHours()*60 + new Date().getMinutes();
+    var list = (D.plan[k] || []).slice().sort(function(a,b){ return a.start - b.start; });
+    for(var i = 0; i < list.length; i++){
+        if(now >= list[i].start && now < list[i].start + list[i].mins) return { b:list[i], next:list[i+1] || null, state:'busy' };
+    }
+    for(var j = 0; j < list.length; j++){
+        if(list[j].start > now) return { b:list[j], next:list[j+1] || null, state:'next' };
+    }
+    return null;
+}
+function paintNow(){
+    var host = $('#nowSlot'); if(!host) return;
+    var c = currentBlock();
+    if(!c){ host.innerHTML = ''; return; }
+    var t = KM.q.task(c.b.taskId);
+    if(!t){ host.innerHTML = ''; return; }
+    var a = KM.areaOf(t.area);
+    var now = new Date().getHours()*60 + new Date().getMinutes();
+    var left = c.state === 'busy' ? (c.b.start + c.b.mins - now) : (c.b.start - now);
+    var pct = c.state === 'busy' ? (now - c.b.start) / c.b.mins * 100 : 0;
+    host.innerHTML =
+        '<div class="nowbar" style="--c:' + a.hex + '">' +
+            V.ring(pct, 48, 5, a.hex) +
+            '<span class="nb-t"><b>' + esc(t.title) + '</b>' +
+                '<span>' + (c.state === 'busy' ? 'loopt nu — nog ' + left + ' min' : 'straks om ' + hhmm(c.b.start) + ' · over ' + left + ' min') + '</span></span>' +
+            (c.next ? '<span class="label">daarna: ' + esc((KM.q.task(c.next.taskId)||{}).title || '—').slice(0,26) + '</span>' : '') +
+            '<button class="btn sm" id="nbFocus">▶ Focusblok</button>' +
+            '<button class="btn ghost sm" id="nbDone">✓ Klaar</button>' +
+        '</div>';
+    $('#nbFocus').onclick = function(){ L.timer.start(Math.max(10, Math.min(90, c.b.mins)), t.id, t.title); };
+    $('#nbDone').onclick = function(){
+        t.status = 'done'; t.doneAt = Date.now(); OS.save();
+        L.log('task_done', 'Afgevinkt: ' + t.title);
+        render();
+    };
+    V.animate(host);
+}
+/* de nu-lijn verschuift mee zonder de hele weergave opnieuw te tekenen */
+function moveNowLine(){
+    var td = KM.iso();
+    var now = new Date().getHours()*60 + new Date().getMinutes();
+    $$('.wk-cell.now').forEach(function(c){ c.classList.remove('now'); });
+    var cell = $('.wk-cell[data-d="' + td + '"][data-m="' + (Math.floor(now/30)*30) + '"]');
+    if(cell) cell.classList.add('now');
 }
 function energyColor(e){
     return { deep:'#8b5cf6', focus:'#2383e2', shallow:'#3f8f5c', admin:'#8f8d85' }[e] || '#8f8d85';
@@ -501,8 +597,14 @@ function renderCfg(){
 }
 
 D.plan = D.plan || {};
+
+/* live: nu-lijn en aftelling lopen mee */
+L.every(20, function(){ if(tab === 'week' && weekOffset === 0){ moveNowLine(); paintNow(); } });
+L.on('data', function(){ D = OS.data; render(); KM.toast('Planning bijgewerkt'); });
+L.on('timer', function(){ if(tab === 'week') paintNow(); });
+
 render();
-window.PLAN = { autoPlan:autoPlan, score:score, slotsOf:slotsOf, dayKeys:dayKeys, render:render };
+window.PLAN = { autoPlan:autoPlan, score:score, slotsOf:slotsOf, dayKeys:dayKeys, render:render, paintNow:paintNow, moveNowLine:moveNowLine, currentBlock:currentBlock };
 }
 </script>
 </body>

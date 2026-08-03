@@ -89,6 +89,8 @@
 </div>
 
 <script src="km-os.js"></script>
+<script src="km-viz.js"></script>
+<script src="km-live.js"></script>
 <script>
 if(KM.boot()){
 
@@ -152,6 +154,7 @@ function generateBoard(){
     OS.save(); render();
     KM.toast('Storyboard van ' + D.scenes.length + ' scenes klaar');
     KM.track('video_board_generated');
+    KMlive.log('video', 'Storyboard gegenereerd: ' + D.video.title);
 
     if(KM.ai.on()) enrichWithAI();
 }

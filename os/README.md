@@ -43,6 +43,41 @@ De Mind Matrix leest al deze verbanden — inclusief je Notion-pagina's — en t
 als één netwerk. De Scheduler leest dezelfde taken en plant ze in. Vink je iets af in
 de launcher, dan zie je dat terug in de voortgangsring van het doel.
 
+## Visuals
+
+`km-viz.js` levert acht SVG-visuals die overal hetzelfde werken en meebewegen met je thema:
+
+| Functie | Waar je hem ziet |
+|---|---|
+| `radar` | Levensbalans over zes gebieden — launcher en Life OS |
+| `donut` | Werkverdeling naar prioriteit en soort werk |
+| `area` | 30 dagen momentum, verloop in de weekreview |
+| `bars` | Uren per dag in de Scheduler, aandacht per gebied |
+| `heatmap` | 17 weken activiteit; per gewoonte klikbaar om een dag terug te zetten |
+| `gauge` | Weekbezetting |
+| `ring` | Voortgang per doel, per gewoonte, per focusblok |
+| `spark` | Miniatuurgrafiekjes op de app-tegels |
+
+Alles animeert bij binnenkomst: bogen tellen op, staven groeien, de radar klapt open,
+de heatmap komt cel voor cel binnen.
+
+## Live
+
+`km-live.js` maakt het systeem levend:
+
+- **Klok** in de balk en groot in de hero, met hoeveel werkdag je nog hebt
+- **Focus-timer** die doorloopt als je naar een andere app gaat, en zelfs als je de tab
+  sluit en terugkomt. Rond je hem af, dan wordt de gekozen taak afgevinkt. Start hem
+  vanaf de launcher, vanaf een taak in Vandaag, of vanaf het blok dat nu loopt in de Scheduler
+- **Cross-tab sync** — open KM.OS in twee tabbladen en een wijziging in het ene verschijnt
+  direct in het andere. Ook je thema en je uitloggen volgen mee
+- **Activiteitenfeed** met de laatste tachtig gebeurtenissen en tijden die meelopen
+- **Netwerkstatus** in de balk; offline blijft alles gewoon lokaal werken
+- **Nu-lijn** in de Scheduler die elke twintig seconden verschuift, met aftelling van het
+  lopende blok
+- **Deeltjes** die door de verbindingen van de Mind Matrix stromen, en een puls om knopen
+  die je net hebt aangeraakt
+
 ## Opslag
 
 | Sleutel | Inhoud |
@@ -51,6 +86,7 @@ de launcher, dan zie je dat terug in de voortgangsring van het doel.
 | `kmdev_workspace_v1` | Notion-werkruimte |
 | `kmdev_os_settings` | Integraties en thema |
 | `kmdev_session` | Je inlogsessie |
+| `kmdev_focus_timer` | De lopende focus-timer |
 
 localStorage heeft ongeveer 5 MB ruimte. De opslagmeter staat bij Integraties.
 **Browsergeschiedenis wissen wist ook je data** — maak dus regelmatig een backup,

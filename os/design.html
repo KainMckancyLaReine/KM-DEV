@@ -97,6 +97,8 @@
 </div>
 
 <script src="km-os.js"></script>
+<script src="km-viz.js"></script>
+<script src="km-live.js"></script>
 <script>
 if(KM.boot()){
 
@@ -486,11 +488,13 @@ $('#dlPng').onclick = function(){
     a.click();
     KM.toast('PNG op ' + (tplOf(S.tpl).w * 2) + 'px gedownload');
     KM.track('design_export', { tpl:S.tpl });
+    KMlive.log('design', 'PNG geëxporteerd: ' + tplOf(S.tpl).name);
 };
 $('#saveD').onclick = function(){
     D.designs.unshift({ id:KM.uid(), at:Date.now(), state:Object.assign({}, S) });
     if(D.designs.length > 12) D.designs.length = 12;
     OS.save(); sideUI(); KM.toast('Ontwerp bewaard');
+    KMlive.log('design', 'Ontwerp bewaard: ' + tplOf(S.tpl).name);
 };
 
 KM.shell({ app:'design' });
