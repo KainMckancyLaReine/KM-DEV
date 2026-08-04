@@ -919,3 +919,94 @@ html[data-theme="dark"] .lp{background:rgba(13,13,13,.62);}
     position:absolute;inset:0;display:grid;place-items:center;
     font-family:'Space Grotesk',sans-serif;font-weight:700;letter-spacing:-.03em;color:var(--text);
 }
+
+/* =========================================================
+   KM.clock — de tijd als kunstwerk
+   ========================================================= */
+.kclock{
+    position:relative;display:block;cursor:pointer;user-select:none;
+    width:clamp(200px,22vw,300px);aspect-ratio:1;flex:0 0 auto;
+    perspective:900px;
+}
+.kclock .kc-cv{
+    display:block;width:100%;height:100%;
+    transform:rotateX(var(--kc-rx,0deg)) rotateY(var(--kc-ry,0deg));
+    transition:transform .18s ease-out;
+    animation:kcBreath 7s ease-in-out infinite;
+}
+@keyframes kcBreath{0%,100%{filter:saturate(1);}50%{filter:saturate(1.12);}}
+
+.kc-face{
+    position:absolute;inset:0;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;pointer-events:none;
+    transform:rotateX(var(--kc-rx,0deg)) rotateY(var(--kc-ry,0deg)) translateZ(18px);
+    transition:transform .18s ease-out;
+}
+.kc-digits{
+    display:flex;align-items:baseline;
+    font-family:'Space Grotesk',sans-serif;font-weight:700;
+    font-size:calc(var(--kc-size,280px) * .215);
+    letter-spacing:-.06em;line-height:1;color:var(--text);
+    font-variant-numeric:tabular-nums;
+}
+.kc-d{
+    position:relative;display:inline-block;
+    width:calc(var(--kc-size,280px) * .132);text-align:center;
+}
+.kc-d.in{animation:kcIn .62s var(--spring-soft);}
+.kc-d.out{
+    position:absolute;left:0;right:0;
+    animation:kcOut .62s var(--ease-out) forwards;
+}
+@keyframes kcIn{
+    0%{opacity:0;transform:translateY(52%) scale(.82);filter:blur(7px);}
+    60%{filter:blur(0);}
+    100%{opacity:1;transform:none;filter:blur(0);}
+}
+@keyframes kcOut{
+    0%{opacity:1;transform:none;filter:blur(0);}
+    100%{opacity:0;transform:translateY(-52%) scale(1.14);filter:blur(9px);}
+}
+.kc-sep{
+    opacity:.22;margin:0 calc(var(--kc-size,280px) * .006);
+    animation:kcBlink 2s steps(1,end) infinite;
+}
+@keyframes kcBlink{0%,49%{opacity:.22;}50%,100%{opacity:.06;}}
+
+.kc-sub{
+    display:flex;align-items:center;gap:9px;margin-top:calc(var(--kc-size,280px) * .028);
+    font-family:'Space Mono',monospace;font-size:calc(var(--kc-size,280px) * .036);
+    letter-spacing:.2em;text-transform:uppercase;color:var(--text-faint);
+}
+.kc-sub .kc-secs{color:var(--kc-accent,var(--accent-ink));font-weight:700;}
+html[data-theme="dark"] .kc-sub .kc-secs{color:var(--kc-accent,var(--accent));}
+.kc-sub .kc-dot{width:3px;height:3px;border-radius:50%;background:currentColor;opacity:.4;}
+
+.kc-mode{
+    position:absolute;left:50%;bottom:calc(var(--kc-size,280px) * -.02);
+    transform:translateX(-50%);display:flex;gap:5px;pointer-events:none;
+    opacity:0;transition:opacity .3s ease;
+}
+.kclock:hover .kc-mode{opacity:1;}
+.kc-mode span{
+    width:5px;height:5px;border-radius:50%;background:var(--text-faint);opacity:.35;
+    transition:all .4s var(--spring-soft);
+}
+.kc-mode span.on{opacity:1;width:16px;border-radius:3px;background:var(--kc-accent,var(--accent-ink));}
+html[data-theme="dark"] .kc-mode span.on{background:var(--kc-accent,var(--accent));}
+
+.kclock.kc-swap .kc-cv{animation:kcSwap .7s var(--spring-soft), kcBreath 7s ease-in-out infinite;}
+@keyframes kcSwap{
+    0%{opacity:.25;transform:scale(.9) rotate(-6deg);filter:blur(6px);}
+    100%{opacity:1;transform:none;filter:blur(0);}
+}
+.kclock:active .kc-cv{transform:scale(.97);transition-duration:.1s;}
+
+@media(max-width:820px){
+    .kclock{width:min(220px,62vw);margin:4px auto 0;}
+    .kc-mode{opacity:1;}
+}
+@media(prefers-reduced-motion:reduce){
+    .kc-cv,.kc-face{animation:none !important;}
+    .kc-d.in,.kc-d.out{animation-duration:.01ms !important;}
+}

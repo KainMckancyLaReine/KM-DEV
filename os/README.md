@@ -115,6 +115,30 @@ Live weer via **Open-Meteo** — geen API-sleutel, geen account, geen limiet voo
 Plaats wijzigen doe je door op de plaatsnaam in de weertegel te klikken: zoek een
 stad of gebruik je huidige locatie.
 
+## De klok
+
+Op het dashboard staat geen cijferklok maar een **canvas-kunstwerk** (`km-clock.js`)
+dat de tijd niet alleen afleesbaar maakt maar ook laat voelen.
+
+Drie vormen, klik om te wisselen (je keuze wordt onthouden):
+
+| Modus | Wat je ziet |
+|---|---|
+| **chrono** | Zestig seconde-tikken rond de rand; elke voorbije tik licht op en popt kort naar buiten. Een komeet met staart loopt de secondering rond. De minuten zijn een dikke boog die zachtjes golft. Twaalf uur-punten waarvan de huidige pulseert. Binnenin draait een fijne ring traag mee. |
+| **orbit** | Drie hemellichamen op gekantelde ellipsbanen — seconde, minuut en uur — elk met een uitdovende staart. |
+| **bloom** | Drie ringen van punten die vollopen: zestig voor seconden, zestig voor minuten, en twaalf bloemblaadjes voor de uren. |
+
+Wat er in alle drie doorloopt:
+
+- **De kleur volgt het uur.** Nacht is diepblauw, dageraad roze, ochtend amber, middag
+  lime, namiddag oranje, schemer paars. Het palet interpoleert continu, dus de tint
+  schuift de hele dag door. Het dagdeel staat in woorden onder de cijfers.
+- **Cijfers morphen.** Wisselt een cijfer, dan schuift het oude omhoog weg met blur
+  terwijl het nieuwe van onderen inveert.
+- **Zonneboog.** Zodra het weer binnen is tekent de chrono-modus een dunne boog van
+  zonsopkomst tot ondergang, met een gloeiend stipje op de werkelijke stand van de zon.
+- **Parallax.** Het hele stuk kantelt zachtjes mee met je muis, en ademt langzaam.
+
 ## Live
 
 `km-live.js` maakt het systeem levend:

@@ -40,17 +40,12 @@
 html[data-theme="dark"] .greet em{background:linear-gradient(100deg,var(--accent),#8fc7ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
 .greet-sub{margin-top:13px;color:var(--text-soft);font-size:16px;max-width:520px;line-height:1.6;}
 
-.clockbox{margin-left:auto;text-align:right;flex:0 0 auto;}
-.clockbox .t{
-    font-family:'Space Grotesk',sans-serif;font-weight:700;letter-spacing:-.06em;
-    font-size:clamp(40px,6vw,72px);line-height:.9;font-variant-numeric:tabular-nums;
-}
-.clockbox .t .s{opacity:.22;font-size:.44em;}
+.clockbox{margin-left:auto;flex:0 0 auto;display:flex;flex-direction:column;align-items:center;}
 .clockbox .m{
-    margin-top:9px;font-family:'Space Mono',monospace;font-size:9.5px;
-    letter-spacing:.18em;text-transform:uppercase;color:var(--text-faint);
+    margin-top:12px;font-family:'Space Mono',monospace;font-size:9.5px;
+    letter-spacing:.18em;text-transform:uppercase;color:var(--text-faint);text-align:center;
 }
-.clockbox .prog{width:150px;height:3px;border-radius:99px;background:var(--line);margin-top:10px;margin-left:auto;overflow:hidden;}
+.clockbox .prog{width:150px;height:3px;border-radius:99px;background:var(--line);margin-top:9px;overflow:hidden;}
 .clockbox .prog i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-ink));transition:width 1s linear;}
 
 .capture{display:flex;gap:10px;margin-top:26px;max-width:700px;position:relative;}
@@ -156,8 +151,8 @@ html[data-theme="dark"] .greet em{background:linear-gradient(100deg,var(--accent
     .hero{padding:20px 16px 20px;}
     .zone{padding:0 16px;}
     .hero-top{gap:12px;align-items:flex-start;}
-    .clockbox{margin-left:0;text-align:left;}
-    .clockbox .prog{margin-left:0;}
+    .clockbox{margin-left:0;align-items:flex-start;width:100%;}
+    .clockbox .m,.clockbox .prog{margin-left:auto;margin-right:auto;}
     .capture{flex-direction:column;}
     .capture .hint{display:none;}
     .apps{grid-template-columns:1fr 1fr;gap:9px;}
@@ -186,7 +181,7 @@ html[data-theme="dark"] .greet em{background:linear-gradient(100deg,var(--accent
                             <p class="greet-sub" id="sub">Je systeem draait.</p>
                         </div>
                         <div class="clockbox">
-                            <div class="t" id="bigClock">--:--<span class="s">:--</span></div>
+                            <div id="artClock"></div>
                             <div class="m" id="clockSub">—</div>
                             <div class="prog"><i id="dayProg" style="width:0"></i></div>
                         </div>
@@ -237,6 +232,7 @@ html[data-theme="dark"] .greet em{background:linear-gradient(100deg,var(--accent
 <script src="km-viz.js"></script>
 <script src="km-live.js"></script>
 <script src="km-weather.js"></script>
+<script src="km-clock.js"></script>
 <script>
 if(KM.boot()){
     KM.shell({ app:'home' });
@@ -305,10 +301,9 @@ if(KM.boot()){
             : open ? open + (open === 1 ? ' taak vraagt vandaag om aandacht.' : ' taken vragen vandaag om aandacht.')
                    : 'Niets staat vandaag open. Mooi moment om vooruit te werken.';
     }
+    var artClock = KMclock.mount($('#artClock'));
     L.every(1, function(){
-        var d = new Date(), el = $('#bigClock'); if(!el) return;
-        el.firstChild.nodeValue = String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
-        $('.s', el).textContent = ':' + String(d.getSeconds()).padStart(2,'0');
+        var d = new Date();
         var mins = d.getHours()*60 + d.getMinutes();
         var cfg = D.planCfg || { startH:9, endH:18 };
         var span = cfg.endH*60 - cfg.startH*60;
@@ -422,6 +417,7 @@ if(KM.boot()){
     function loadWeather(force){
         W.load(force).then(function(d){
             wx = d; wxErr = d.error || null;
+            if(artClock) artClock.setSun(d.sunrise, d.sunset);
             renderNow(); wxTheme();
         }).catch(function(e){
             wxErr = 'Weer niet beschikbaar — ' + e.message;
