@@ -841,8 +841,11 @@ html[data-theme="dark"] .lp{background:rgba(13,13,13,.62);}
 .boot-aur i{
     position:absolute;display:block;border-radius:50%;filter:blur(70px);opacity:.42;
 }
+/* Alleen de twee huiskleuren: lime en het diepe lime-schaduwgroen.
+   Geen vreemd blauw meer — het opstartscherm hoort bij dezelfde familie
+   als de ink-veeg waarmee de inlogpagina afsluit. */
 .boot-aur i:nth-child(1){width:52vw;height:52vw;left:-10%;top:-24%;background:#c6ff4a;animation:au1 14s ease-in-out infinite alternate;}
-.boot-aur i:nth-child(2){width:40vw;height:40vw;right:-8%;bottom:-20%;background:#2383e2;animation:au2 18s ease-in-out infinite alternate;}
+.boot-aur i:nth-child(2){width:40vw;height:40vw;right:-8%;bottom:-20%;background:#3f5a17;opacity:.6;animation:au2 18s ease-in-out infinite alternate;}
 .boot-in{position:relative;text-align:center;}
 .boot-mark{margin:0 auto;}
 .bm-plate{opacity:0;transform:scale(.7);transform-origin:100px 100px;animation:bmPlate .8s var(--spring-soft) .12s forwards;}

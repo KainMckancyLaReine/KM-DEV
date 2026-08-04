@@ -9,199 +9,300 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
+/* =========================================================
+   KM.dev huisstijl — dezelfde tokens als index.html
+   ========================================================= */
 :root{
+    --bg:#f4f3ef;
+    --paper:#ffffff;
     --ink:#0d0d0d;
+    --muted:#b6b4ac;
+    --gray:#6f6d66;
+    --line:#e4e2d9;
     --accent:#c6ff4a;
     --accent-ink:#3f5a17;
+    --danger:#c0432f;
+    --radius:28px;
     --spring:cubic-bezier(.34,1.56,.44,1);
     --ease:cubic-bezier(.16,1,.3,1);
 }
+*{margin:0;padding:0;box-sizing:border-box;}
 html,body{height:100%;}
 body{
     font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-    background:#08080a;color:#fff;overflow:hidden;
+    background:var(--bg);color:var(--ink);line-height:1.6;
     -webkit-font-smoothing:antialiased;letter-spacing:-.011em;
-    display:grid;place-items:center;
+    display:grid;place-items:center;overflow:hidden;
+    padding:24px;
 }
 button,input{font-family:inherit;font-size:inherit;color:inherit;}
 button{cursor:pointer;}
+h1,h2{font-family:'Space Grotesk',sans-serif;}
+.mono{font-family:'Space Mono',monospace;}
 
-/* ---------- achtergrond ---------- */
-.bg{position:fixed;inset:0;overflow:hidden;z-index:0;}
-.bg i{position:absolute;display:block;border-radius:50%;filter:blur(80px);}
-.bg i:nth-child(1){width:58vw;height:58vw;left:-14%;top:-26%;background:#c6ff4a;opacity:.20;animation:f1 22s ease-in-out infinite alternate;}
-.bg i:nth-child(2){width:46vw;height:46vw;right:-12%;bottom:-22%;background:#2383e2;opacity:.16;animation:f2 28s ease-in-out infinite alternate;}
-.bg i:nth-child(3){width:34vw;height:34vw;left:42%;top:32%;background:#8b5cf6;opacity:.11;animation:f3 34s ease-in-out infinite alternate;}
-@keyframes f1{to{transform:translate3d(7vw,5vh,0) scale(1.16);}}
-@keyframes f2{to{transform:translate3d(-6vw,-6vh,0) scale(1.12);}}
-@keyframes f3{to{transform:translate3d(4vw,-5vh,0) scale(1.22);}}
+/* ---------- canvas ---------- */
 .grid{
-    position:fixed;inset:0;z-index:1;pointer-events:none;
-    background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),
-                     linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
-    background-size:72px 72px;
-    mask-image:radial-gradient(ellipse 80% 70% at 50% 45%,#000 20%,transparent 88%);
-    -webkit-mask-image:radial-gradient(ellipse 80% 70% at 50% 45%,#000 20%,transparent 88%);
+    position:fixed;inset:0;z-index:0;pointer-events:none;
+    background-image:linear-gradient(rgba(13,13,13,.045) 1px,transparent 1px),
+                     linear-gradient(90deg,rgba(13,13,13,.045) 1px,transparent 1px);
+    background-size:76px 76px;
+    mask-image:radial-gradient(ellipse 78% 66% at 50% 46%,#000 12%,transparent 86%);
+    -webkit-mask-image:radial-gradient(ellipse 78% 66% at 50% 46%,#000 12%,transparent 86%);
 }
+/* één zachte lime gloed achter de kaart — geen aurora-was over het hele scherm */
+.halo{
+    position:fixed;left:50%;top:50%;width:min(760px,120vw);height:min(760px,120vw);
+    transform:translate(-50%,-50%);z-index:0;pointer-events:none;
+    background:radial-gradient(circle at 50% 50%,rgba(198,255,74,.30),rgba(198,255,74,0) 62%);
+    animation:breathe 14s ease-in-out infinite alternate;
+}
+@keyframes breathe{to{transform:translate(-50%,-50%) scale(1.14);opacity:.72;}}
 .noise{
-    position:fixed;inset:0;z-index:2;pointer-events:none;opacity:.032;
+    position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.028;
     background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* ---------- kaart ---------- */
-.wrap{position:relative;z-index:5;width:min(420px,90vw);text-align:center;}
+/* ---------- pill-nav, net als op de site ---------- */
+.pill{
+    position:fixed;top:22px;left:22px;z-index:20;
+    display:flex;align-items:center;gap:14px;
+    background:var(--ink);border-radius:40px;padding:9px 9px 9px 20px;
+    box-shadow:0 10px 30px -10px rgba(0,0,0,.35);
+    text-decoration:none;color:#fff;
+    opacity:0;transform:translateY(-10px);
+    animation:up .7s var(--ease) .15s forwards;
+    transition:transform .3s var(--spring);
+}
+.pill:hover{transform:translateY(-2px);}
+.pill .logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:18px;letter-spacing:-.5px;}
+.pill .logo i{color:var(--accent);font-style:normal;}
+.pill .back{
+    font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+    background:#1c1c1c;border-radius:20px;padding:7px 13px;color:rgba(255,255,255,.6);
+    transition:background .3s ease,color .3s ease;
+}
+.pill:hover .back{background:var(--accent);color:var(--ink);}
+
+/* ---------- het vel ---------- */
+.wrap{position:relative;z-index:5;width:min(430px,100%);}
+.sheet{
+    background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);
+    padding:38px 34px 30px;text-align:center;
+    box-shadow:0 1px 2px rgba(20,18,14,.04),
+               0 30px 60px -24px rgba(20,18,14,.22),
+               0 4px 16px rgba(20,18,14,.05);
+    opacity:0;transform:translateY(20px) scale(.985);
+    animation:up .95s var(--ease) .3s forwards;
+}
+.sheet.shake{animation:shake .5s cubic-bezier(.36,.07,.19,.97);}
+@keyframes shake{10%,90%{transform:translateX(-3px);}20%,80%{transform:translateX(5px);}30%,50%,70%{transform:translateX(-9px);}40%,60%{transform:translateX(9px);}}
+@keyframes up{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}
+
 .mark{
-    display:inline-block;margin-bottom:26px;
-    opacity:0;transform:scale(.72) translateY(14px);
-    animation:pop .95s var(--spring) .1s forwards;
-    filter:drop-shadow(0 18px 40px rgba(0,0,0,.6));
+    display:inline-block;
+    opacity:0;transform:scale(.7) translateY(10px);
+    animation:pop .9s var(--spring) .42s forwards;
+    filter:drop-shadow(0 14px 26px rgba(20,18,14,.22));
 }
 @keyframes pop{to{opacity:1;transform:none;}}
+
+.eyebrow{
+    display:inline-flex;align-items:center;gap:8px;margin-top:20px;
+    background:var(--bg);border:1px solid var(--line);
+    padding:7px 15px;border-radius:20px;
+    font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;
+    letter-spacing:.14em;text-transform:uppercase;color:var(--gray);
+    opacity:0;animation:up .7s var(--ease) .56s forwards;
+}
+.eyebrow .live{
+    width:7px;height:7px;border-radius:50%;background:var(--accent);
+    box-shadow:0 0 0 3px rgba(198,255,74,.3);animation:blip 2.4s ease-in-out infinite;
+}
+@keyframes blip{50%{box-shadow:0 0 0 6px rgba(198,255,74,0);}}
+
 h1{
-    font-family:'Space Grotesk',sans-serif;font-size:31px;font-weight:700;letter-spacing:-.045em;
-    opacity:0;animation:up .8s var(--ease) .34s forwards;
+    margin-top:16px;font-size:36px;font-weight:600;letter-spacing:-.035em;line-height:1.1;
+    opacity:0;animation:up .8s var(--ease) .62s forwards;
 }
+h1 i{color:var(--accent);font-style:normal;-webkit-text-stroke:.6px var(--accent-ink);}
 .sub{
-    margin-top:9px;color:rgba(255,255,255,.42);font-size:14.5px;line-height:1.55;
-    opacity:0;animation:up .8s var(--ease) .44s forwards;
+    margin-top:10px;color:var(--gray);font-size:14.5px;line-height:1.55;
+    opacity:0;animation:up .8s var(--ease) .7s forwards;
 }
-@keyframes up{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:none;}}
 
-.card{
-    margin-top:30px;padding:8px;border-radius:26px;
-    background:rgba(255,255,255,.055);
-    border:1px solid rgba(255,255,255,.10);
-    backdrop-filter:saturate(180%) blur(26px);-webkit-backdrop-filter:saturate(180%) blur(26px);
-    box-shadow:0 30px 70px -30px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.10);
-    opacity:0;transform:translateY(18px);
-    animation:up .9s var(--ease) .54s forwards;
+/* ---------- formulier ---------- */
+form{margin-top:26px;opacity:0;animation:up .8s var(--ease) .78s forwards;}
+.field{
+    position:relative;display:flex;align-items:center;
+    background:var(--bg);border:1.5px solid var(--line);border-radius:18px;
+    transition:border-color .25s ease,box-shadow .25s ease,background .25s ease;
 }
-.card.shake{animation:shake .5s cubic-bezier(.36,.07,.19,.97);}
-@keyframes shake{10%,90%{transform:translateX(-3px);}20%,80%{transform:translateX(5px);}30%,50%,70%{transform:translateX(-10px);}40%,60%{transform:translateX(10px);}}
-
-.field{position:relative;display:flex;align-items:center;}
+.field:focus-within{
+    border-color:var(--ink);background:var(--paper);
+    box-shadow:0 0 0 4px rgba(198,255,74,.45);
+}
 .field input{
-    flex:1;background:transparent;border:0;outline:none;
-    padding:17px 54px 17px 20px;font-size:16px;
-    font-family:'Space Mono',monospace;letter-spacing:.22em;
+    flex:1;background:transparent;border:0;outline:none;min-width:0;
+    padding:16px 52px 16px 19px;font-size:16px;
+    font-family:'Space Mono',monospace;letter-spacing:.2em;
 }
-.field input::placeholder{letter-spacing:.06em;color:rgba(255,255,255,.24);font-family:'Inter',sans-serif;}
+.field input::placeholder{letter-spacing:.02em;color:var(--muted);font-family:'Inter',sans-serif;}
 .eye{
-    position:absolute;right:9px;width:38px;height:38px;border-radius:12px;border:0;background:transparent;
-    color:rgba(255,255,255,.38);display:grid;place-items:center;transition:all .25s var(--spring);
+    position:absolute;right:8px;width:38px;height:38px;border-radius:12px;border:0;background:transparent;
+    color:var(--muted);display:grid;place-items:center;transition:all .25s var(--spring);
 }
-.eye:hover{color:#fff;background:rgba(255,255,255,.09);}
+.eye:hover{color:var(--ink);background:rgba(13,13,13,.055);}
 .eye:active{transform:scale(.9);}
 
+/* ink-pil met lime chevron — exact de knop van de site */
 .go{
-    width:100%;margin-top:8px;border:0;border-radius:19px;padding:16px;
-    background:var(--accent);color:var(--ink);
-    font-size:15.5px;font-weight:600;letter-spacing:-.015em;
-    display:flex;align-items:center;justify-content:center;gap:10px;
-    transition:transform .4s var(--spring), box-shadow .3s, filter .2s;
-    box-shadow:0 10px 30px -12px rgba(198,255,74,.85);
+    width:100%;margin-top:12px;border:1px solid var(--ink);border-radius:30px;padding:15px 22px;
+    background:var(--ink);color:#fff;
+    font-size:15px;font-weight:600;letter-spacing:-.015em;
+    display:flex;align-items:center;justify-content:center;gap:11px;
+    transition:background .3s cubic-bezier(.2,.8,.2,1),transform .35s var(--spring),box-shadow .3s ease;
+    box-shadow:0 10px 26px -14px rgba(20,18,14,.8);
 }
-.go:hover{transform:translateY(-2px);box-shadow:0 18px 40px -14px rgba(198,255,74,.95);}
-.go:active{transform:scale(.97);transition-duration:.1s;}
+.go:hover{background:#222;transform:translateY(-2px);box-shadow:0 18px 34px -16px rgba(20,18,14,.85);}
+.go:hover .chev{transform:translateX(3px);}
+.go:active{transform:scale(.98);transition-duration:.1s;}
 .go[disabled]{opacity:.45;pointer-events:none;box-shadow:none;}
-.go .spin{width:16px;height:16px;border:2px solid rgba(13,13,13,.22);border-top-color:var(--ink);border-radius:50%;animation:spin .7s linear infinite;display:none;}
+.go .chev{
+    width:22px;height:22px;border-radius:50%;background:var(--accent);color:var(--ink);
+    display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;
+    transition:transform .3s ease;flex:0 0 22px;
+}
+.go .spin{
+    width:20px;height:20px;border:2px solid rgba(255,255,255,.25);border-top-color:var(--accent);
+    border-radius:50%;animation:spin .7s linear infinite;display:none;flex:0 0 20px;
+}
 @keyframes spin{to{transform:rotate(360deg);}}
-.go.busy .lbl{display:none;} .go.busy .spin{display:block;}
+.go.busy .lbl,.go.busy .chev{display:none;}
+.go.busy .spin{display:block;}
 
 .msg{
-    min-height:20px;margin-top:14px;font-size:13.5px;color:#ff7b73;
+    min-height:20px;margin-top:13px;font-size:13.5px;color:var(--danger);
     opacity:0;transition:opacity .25s;
 }
 .msg.on{opacity:1;}
-.msg.ok{color:var(--accent);}
+.msg.ok{color:var(--accent-ink);}
 
 .row{
-    display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px;
-    opacity:0;animation:up .8s var(--ease) .66s forwards;
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    margin-top:14px;padding-top:16px;border-top:1px solid var(--line);
+    opacity:0;animation:up .8s var(--ease) .88s forwards;
 }
-.check{display:flex;align-items:center;gap:9px;color:rgba(255,255,255,.5);font-size:13.5px;user-select:none;cursor:pointer;}
+.check{display:flex;align-items:center;gap:9px;color:var(--gray);font-size:13.5px;user-select:none;cursor:pointer;}
 .check input{display:none;}
 .box{
-    width:19px;height:19px;border-radius:7px;border:1px solid rgba(255,255,255,.22);
-    display:grid;place-items:center;transition:all .3s var(--spring);
+    width:20px;height:20px;border-radius:7px;border:1.5px solid var(--line);background:var(--bg);
+    display:grid;place-items:center;transition:all .3s var(--spring);flex:0 0 20px;
 }
-.check input:checked + .box{background:var(--accent);border-color:var(--accent);transform:scale(1.05);}
-.box svg{opacity:0;color:var(--ink);transition:opacity .2s;} .check input:checked + .box svg{opacity:1;}
-.link{background:none;border:0;color:rgba(255,255,255,.38);font-size:13.5px;transition:color .2s;}
-.link:hover{color:var(--accent);}
+.check:hover .box{border-color:var(--muted);}
+.check input:checked + .box{background:var(--accent);border-color:var(--accent-ink);transform:scale(1.06);}
+.box svg{opacity:0;color:var(--accent-ink);transition:opacity .2s;}
+.check input:checked + .box svg{opacity:1;}
+.link{background:none;border:0;color:var(--muted);font-size:13.5px;transition:color .2s;text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--line);}
+.link:hover{color:var(--ink);text-decoration-color:var(--accent);}
 
 .foot{
-    margin-top:32px;display:flex;align-items:center;justify-content:center;gap:16px;
+    margin-top:22px;display:flex;align-items:center;justify-content:center;gap:14px;
     font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;
-    color:rgba(255,255,255,.24);opacity:0;animation:up .8s var(--ease) .8s forwards;
+    color:var(--muted);opacity:0;animation:up .8s var(--ease) 1s forwards;
 }
-.foot a{color:inherit;text-decoration:none;transition:color .2s;}
-.foot a:hover{color:rgba(255,255,255,.6);}
-.foot .sep{width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.2);}
+.foot .sep{width:3px;height:3px;border-radius:50%;background:var(--line);flex:0 0 3px;}
 
-/* ---------- ontgrendel-overgang ---------- */
-.wrap.unlock{animation:unlockOut .8s var(--ease) forwards;}
-@keyframes unlockOut{
-    30%{transform:scale(.97);}
-    100%{opacity:0;transform:scale(1.5);filter:blur(22px);}
+/* ---------- ontgrendelen: ink-veeg met lime rand ---------- */
+.wrap.unlock{animation:sheetOut .7s var(--ease) forwards;}
+@keyframes sheetOut{
+    26%{transform:scale(.98);}
+    100%{opacity:0;transform:scale(1.06) translateY(-14px);filter:blur(10px);}
 }
-.flash{
-    position:fixed;inset:0;z-index:20;background:var(--accent);opacity:0;pointer-events:none;
+.sweep{
+    position:fixed;inset:0;z-index:30;pointer-events:none;
+    background:var(--ink);
+    transform:translateY(100%);
 }
-.flash.on{animation:flash .9s var(--ease) forwards;}
-@keyframes flash{0%{opacity:0;}18%{opacity:.9;}100%{opacity:0;}}
+.sweep::before{
+    content:'';position:absolute;left:0;right:0;top:0;height:5px;background:var(--accent);
+    box-shadow:0 0 28px 6px rgba(198,255,74,.7);
+}
+.sweep.on{animation:sweepUp .75s cubic-bezier(.7,0,.2,1) .12s forwards;}
+@keyframes sweepUp{to{transform:translateY(0);}}
 
 @media(max-width:520px){
-    .wrap{width:min(400px,92vw);}
-    h1{font-size:26px;}
-    .field input{padding:15px 50px 15px 17px;font-size:16px;}
+    body{padding:16px;}
+    .pill{top:14px;left:14px;padding:7px 7px 7px 16px;gap:10px;}
+    .pill .logo{font-size:16px;}
+    .wrap{width:100%;}
+    .sheet{padding:30px 22px 24px;border-radius:24px;}
+    h1{font-size:30px;}
+    .field input{padding:15px 48px 15px 16px;font-size:16px;}
+    .foot{gap:10px;font-size:9px;letter-spacing:.14em;}
 }
-@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms !important;transition-duration:.01ms !important;}}
+@media(max-height:640px){
+    .sheet{padding:24px 22px 20px;}
+    h1{font-size:27px;}
+    .sub{display:none;}
+}
+@media(prefers-reduced-motion:reduce){
+    *{animation-duration:.01ms !important;transition-duration:.01ms !important;}
+    .sheet,.mark,.eyebrow,h1,.sub,form,.row,.foot,.pill{opacity:1 !important;transform:none !important;}
+}
 </style>
 </head>
 <body>
 
-<div class="bg"><i></i><i></i><i></i></div>
 <div class="grid"></div>
+<div class="halo"></div>
 <div class="noise"></div>
-<div class="flash" id="flash"></div>
+<div class="sweep" id="sweep"></div>
+
+<a class="pill" href="index.html">
+    <span class="logo">KM<i>.</i>dev</span>
+    <span class="back">← Website</span>
+</a>
 
 <div class="wrap" id="wrap">
-    <div class="mark" id="mark"></div>
-    <h1>KM.OS</h1>
-    <p class="sub">Je persoonlijke besturingssysteem.<br>Alleen jij komt hier binnen.</p>
+    <div class="sheet" id="card">
+        <div class="mark" id="mark"></div>
 
-    <form class="card" id="card" autocomplete="off">
-        <div class="field">
-            <input type="password" id="pw" placeholder="Toegangssleutel" autocomplete="current-password" spellcheck="false">
-            <button type="button" class="eye" id="eye" aria-label="Toon sleutel">
-                <svg id="eyeIcon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12Z"/><circle cx="12" cy="12" r="2.7"/></svg>
+        <span class="eyebrow"><span class="live"></span>Privétoegang</span>
+        <h1>KM<i>.</i>OS</h1>
+        <p class="sub">Je persoonlijke besturingssysteem.<br>Alleen jij komt hier binnen.</p>
+
+        <form id="form" autocomplete="off">
+            <div class="field">
+                <input type="password" id="pw" placeholder="Toegangssleutel" autocomplete="current-password" spellcheck="false">
+                <button type="button" class="eye" id="eye" aria-label="Toon sleutel">
+                    <svg id="eyeIcon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12Z"/><circle cx="12" cy="12" r="2.7"/></svg>
+                </button>
+            </div>
+            <button class="go" type="submit" id="go">
+                <span class="lbl">Ontgrendel</span>
+                <span class="chev">→</span>
+                <span class="spin"></span>
             </button>
+        </form>
+
+        <div class="msg" id="msg"></div>
+
+        <div class="row">
+            <label class="check">
+                <input type="checkbox" id="remember" checked>
+                <span class="box"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7"/></svg></span>
+                Ingelogd blijven
+            </label>
+            <button type="button" class="link" id="hint">Sleutel vergeten?</button>
         </div>
-        <button class="go" type="submit" id="go">
-            <span class="lbl">Ontgrendel</span>
-            <span class="spin"></span>
-        </button>
-    </form>
-
-    <div class="msg" id="msg"></div>
-
-    <div class="row">
-        <label class="check">
-            <input type="checkbox" id="remember" checked>
-            <span class="box"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7"/></svg></span>
-            Ingelogd blijven
-        </label>
-        <button type="button" class="link" id="hint">Sleutel vergeten?</button>
     </div>
 
     <div class="foot">
-        <a href="index.html">← Website</a>
-        <span class="sep"></span>
         <span id="clock">--:--</span>
         <span class="sep"></span>
         <span>SHA-256</span>
+        <span class="sep"></span>
+        <span>Lokaal</span>
     </div>
 </div>
 
@@ -216,9 +317,9 @@ const SESSION = 'kmdev_session';
 const MAX = 5, LOCK = 30000;
 
 const $ = id => document.getElementById(id);
-const card = $('card'), pw = $('pw'), msg = $('msg'), go = $('go');
+const card = $('card'), form = $('form'), pw = $('pw'), msg = $('msg'), go = $('go');
 
-$('mark').innerHTML = KMbrand.mark(84);
+$('mark').innerHTML = KMbrand.mark(76);
 
 async function sha256(str){
     const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
@@ -270,7 +371,7 @@ function lockUI(){
 }
 lockUI();
 
-card.addEventListener('submit', async e => {
+form.addEventListener('submit', async e => {
     e.preventDefault();
     const f = fails();
     if(f.until > Date.now()) return;
@@ -300,12 +401,12 @@ card.addEventListener('submit', async e => {
 
 function unlock(){
     show('Welkom terug', true);
-    $('flash').classList.add('on');
     $('wrap').classList.add('unlock');
-    setTimeout(() => location.href = 'os/index.html', 760);
+    $('sweep').classList.add('on');
+    setTimeout(() => location.href = 'os/index.html', 800);
 }
 
-window.addEventListener('load', () => setTimeout(() => pw.focus(), 800));
+window.addEventListener('load', () => setTimeout(() => pw.focus(), 900));
 </script>
 </body>
 </html>
