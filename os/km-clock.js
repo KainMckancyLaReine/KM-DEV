@@ -92,6 +92,11 @@ function mount(host, opt){
     var sun = null;         // { rise:Date, set:Date }
     var theme = {};
 
+    /* De dagkleur is soms te licht voor een witte achtergrond (lime op de middag).
+       Voor lijnen en punten trekken we hem daarom naar ink; de zachte gloed
+       gebruikt de rauwe kleur, die mag wel bleek zijn. */
+    function ink(hex){ return theme.dark ? hex : mixHex(hex, '#0d0d0d', .45); }
+
     function readTheme(){
         var cs = getComputedStyle(document.documentElement);
         theme.line = (cs.getPropertyValue('--line') || '#e4e2d9').trim();
@@ -150,8 +155,9 @@ function mount(host, opt){
         var hr  = (t.getHours() % 12) + min/60;
 
         /* zachte gloed in de kleur van het uur */
+        var K = ink(pal.rawA);
         var g = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * 1.25);
-        g.addColorStop(0, rgba(pal.rawA, theme.dark ? .17 : .12));
+        g.addColorStop(0, rgba(pal.rawA, theme.dark ? .16 : .10));
         g.addColorStop(1, 'rgba(0,0,0,0)');
         ctx.fillStyle = g;
         ctx.fillRect(0, 0, W, H);
@@ -160,7 +166,7 @@ function mount(host, opt){
         if(sun){
             var p = (Date.now() - sun.rise) / Math.max(1, sun.set - sun.rise);
             var a0 = -Math.PI * .82, a1 = -Math.PI * .18;
-            ring(cx, cy, R * 1.06, a0, a1, 1.5, rgba(pal.rawA, .18));
+            ring(cx, cy, R * 1.06, a0, a1, 1.5, rgba(K, .26));
             if(p > 0 && p < 1){
                 var sa = a0 + (a1 - a0) * p;
                 dot(cx + Math.cos(sa) * R * 1.06, cy + Math.sin(sa) * R * 1.06, 3.2, rgba('#ffd66b', .9), 10);
@@ -181,8 +187,8 @@ function mount(host, opt){
             ctx.lineTo(cx + Math.cos(a) * r1, cy + Math.sin(a) * r1);
             ctx.lineWidth = isFive ? 2 : 1.2;
             ctx.strokeStyle = passed
-                ? rgba(pal.rawA, .35 + pop * .55 + (isFive ? .2 : 0))
-                : (theme.dark ? 'rgba(255,255,255,.10)' : 'rgba(13,13,13,.10)');
+                ? rgba(K, .5 + pop * .5 + (isFive ? .22 : 0))
+                : (theme.dark ? 'rgba(255,255,255,.13)' : 'rgba(13,13,13,.16)');
             ctx.lineCap = 'round';
             ctx.stroke();
         }
@@ -193,9 +199,9 @@ function mount(host, opt){
             var back = sa2 - q * .022;
             var fade = (1 - q / 22);
             dot(cx + Math.cos(back) * R, cy + Math.sin(back) * R, 1.2 + fade * 2.6,
-                rgba(pal.rawA, fade * .5), 0);
+                rgba(K, fade * .55), 0);
         }
-        dot(cx + Math.cos(sa2) * R, cy + Math.sin(sa2) * R, 4.6, rgba(pal.rawA, 1), 16);
+        dot(cx + Math.cos(sa2) * R, cy + Math.sin(sa2) * R, 4.6, rgba(K, 1), 14);
 
         /* minutenboog met lichte golving */
         var ma = -Math.PI/2 + (min / 60) * TAU;
@@ -207,8 +213,8 @@ function mount(host, opt){
             if(s2 === -Math.PI/2) ctx.moveTo(x, y); else ctx.lineTo(x, y);
         }
         var lg = ctx.createLinearGradient(cx - mr, cy - mr, cx + mr, cy + mr);
-        lg.addColorStop(0, rgba(pal.rawA, .95));
-        lg.addColorStop(1, rgba(pal.rawA, .35));
+        lg.addColorStop(0, rgba(K, .95));
+        lg.addColorStop(1, rgba(K, .42));
         ctx.strokeStyle = lg; ctx.lineWidth = 5; ctx.lineCap = 'round';
         ctx.stroke();
 
@@ -220,8 +226,8 @@ function mount(host, opt){
             var pulse = active ? 1 + Math.sin(Date.now()/620) * .16 : 1;
             dot(cx + Math.cos(ha) * hr2, cy + Math.sin(ha) * hr2,
                 (active ? 5.4 : 2) * pulse,
-                active ? rgba(pal.rawA, 1) : (theme.dark ? 'rgba(255,255,255,.18)' : 'rgba(13,13,13,.16)'),
-                active ? 14 : 0);
+                active ? rgba(K, 1) : (theme.dark ? 'rgba(255,255,255,.20)' : 'rgba(13,13,13,.20)'),
+                active ? 12 : 0);
         }
 
         /* fijne binnenring die traag draait */
@@ -233,7 +239,7 @@ function mount(host, opt){
             ctx.beginPath();
             ctx.moveTo(Math.cos(va) * R * .30, Math.sin(va) * R * .30);
             ctx.lineTo(Math.cos(va) * R * .34, Math.sin(va) * R * .34);
-            ctx.strokeStyle = theme.dark ? 'rgba(255,255,255,.07)' : 'rgba(13,13,13,.06)';
+            ctx.strokeStyle = theme.dark ? 'rgba(255,255,255,.08)' : 'rgba(13,13,13,.09)';
             ctx.lineWidth = 1;
             ctx.stroke();
         }
@@ -246,15 +252,16 @@ function mount(host, opt){
         var min = t.getMinutes() + sec/60;
         var hr  = (t.getHours() % 12) + min/60;
 
+        var K = ink(pal.rawA);
         var g = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * 1.3);
-        g.addColorStop(0, rgba(pal.rawA, theme.dark ? .15 : .10));
+        g.addColorStop(0, rgba(pal.rawA, theme.dark ? .14 : .09));
         g.addColorStop(1, 'rgba(0,0,0,0)');
         ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
 
         var bodies = [
-            { r:R,        a:sec/60*TAU,  size:5,   tilt:.24, col:pal.rawA },
-            { r:R * .70,  a:min/60*TAU,  size:7,   tilt:-.18, col:mixHex(pal.rawA, '#ffffff', .3) },
-            { r:R * .42,  a:hr/12*TAU,   size:9.5, tilt:.34, col:mixHex(pal.rawA, '#000000', .25) }
+            { r:R,        a:sec/60*TAU,  size:5,   tilt:.24,  col:K },
+            { r:R * .70,  a:min/60*TAU,  size:7,   tilt:-.18, col:mixHex(K, theme.dark ? '#ffffff' : '#0d0d0d', .22) },
+            { r:R * .42,  a:hr/12*TAU,   size:9.5, tilt:.34,  col:mixHex(K, '#0d0d0d', .35) }
         ];
 
         bodies.forEach(function(b, i){
@@ -263,7 +270,7 @@ function mount(host, opt){
             ctx.rotate(b.tilt);
             ctx.beginPath();
             ctx.ellipse(0, 0, b.r, b.r * .62, 0, 0, TAU);
-            ctx.strokeStyle = theme.dark ? 'rgba(255,255,255,.09)' : 'rgba(13,13,13,.08)';
+            ctx.strokeStyle = theme.dark ? 'rgba(255,255,255,.11)' : 'rgba(13,13,13,.13)';
             ctx.lineWidth = 1;
             ctx.stroke();
 
@@ -275,12 +282,12 @@ function mount(host, opt){
                 dot(Math.cos(aa) * b.r, Math.sin(aa) * b.r * .62,
                     b.size * (1 - q/16) * .55, rgba(b.col, (1 - q/16) * .35), 0);
             }
-            dot(x, y, b.size, rgba(b.col, 1), 16);
-            dot(x - b.size*.3, y - b.size*.3, b.size*.32, 'rgba(255,255,255,.55)', 0);
+            dot(x, y, b.size, rgba(b.col, 1), 14);
+            dot(x - b.size*.3, y - b.size*.3, b.size*.32, 'rgba(255,255,255,.6)', 0);
             ctx.restore();
         });
 
-        dot(cx, cy, 3.4, rgba(pal.rawA, .55), 12);
+        dot(cx, cy, 3.4, rgba(K, .6), 10);
     }
 
     function drawBloom(t, pal){
@@ -288,8 +295,9 @@ function mount(host, opt){
         var sec = t.getSeconds(), ms = t.getMilliseconds();
         var min = t.getMinutes(), hr = t.getHours() % 12;
 
+        var K = ink(pal.rawA);
         var g = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * 1.3);
-        g.addColorStop(0, rgba(pal.rawA, theme.dark ? .16 : .11));
+        g.addColorStop(0, rgba(pal.rawA, theme.dark ? .15 : .09));
         g.addColorStop(1, 'rgba(0,0,0,0)');
         ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
 
@@ -300,8 +308,8 @@ function mount(host, opt){
             var grow = i === sec ? 1 + (1 - ms/1000) * 1.3 : 1;
             dot(cx + Math.cos(a) * R, cy + Math.sin(a) * R,
                 (on ? 2.6 : 1.4) * grow,
-                on ? rgba(pal.rawA, .3 + (i === sec ? .7 : .28)) :
-                     (theme.dark ? 'rgba(255,255,255,.11)' : 'rgba(13,13,13,.10)'),
+                on ? rgba(K, .38 + (i === sec ? .62 : .26)) :
+                     (theme.dark ? 'rgba(255,255,255,.13)' : 'rgba(13,13,13,.15)'),
                 i === sec ? 14 : 0);
         }
         /* middenring: 60 punten voor minuten */
@@ -311,8 +319,8 @@ function mount(host, opt){
             if(!mon && m % 5 !== 0) continue;
             dot(cx + Math.cos(ma) * R * .72, cy + Math.sin(ma) * R * .72,
                 mon ? (m === min ? 4.4 : 2.2) : 1.2,
-                mon ? rgba(pal.rawA, m === min ? 1 : .45)
-                    : (theme.dark ? 'rgba(255,255,255,.10)' : 'rgba(13,13,13,.09)'),
+                mon ? rgba(K, m === min ? 1 : .5)
+                    : (theme.dark ? 'rgba(255,255,255,.12)' : 'rgba(13,13,13,.13)'),
                 m === min ? 12 : 0);
         }
         /* binnenring: 12 bloemblaadjes voor uren */
@@ -327,8 +335,8 @@ function mount(host, opt){
             ctx.moveTo(0, -R * .16);
             ctx.quadraticCurveTo(R * .075, -len * .6, 0, -len);
             ctx.quadraticCurveTo(-R * .075, -len * .6, 0, -R * .16);
-            ctx.fillStyle = on2 ? rgba(pal.rawA, h === hr ? .85 : .30)
-                                : (theme.dark ? 'rgba(255,255,255,.06)' : 'rgba(13,13,13,.05)');
+            ctx.fillStyle = on2 ? rgba(K, h === hr ? .88 : .34)
+                                : (theme.dark ? 'rgba(255,255,255,.07)' : 'rgba(13,13,13,.07)');
             ctx.fill();
             ctx.restore();
         }
@@ -357,7 +365,7 @@ function mount(host, opt){
         setDigit(0, hh[0]); setDigit(1, hh[1]);
         setDigit(2, mm[0]); setDigit(3, mm[1]);
         partEl.textContent = pal.name;
-        host.style.setProperty('--kc-accent', pal.rawA);
+        host.style.setProperty('--kc-accent', ink(pal.rawA));
 
         /* parallax die naloopt */
         tilt.x += (tilt.tx - tilt.x) * .08;

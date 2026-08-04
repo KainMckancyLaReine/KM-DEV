@@ -1874,3 +1874,11 @@ html,body{max-width:100%;}
     .km-compound .kc-drop,.km-compound .kc-glow,
     .km-compound .kc-delta,.km-compound-tag{opacity:1;}
 }
+
+/* =========================================================
+   Mobiele hygiëne — iOS zoomt in zodra een invoerveld
+   kleiner is dan 16px. Alleen op smalle schermen forceren.
+   ========================================================= */
+@media(max-width:900px){
+    input,textarea,select{font-size:16px !important;}
+}

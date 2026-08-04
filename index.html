@@ -50,6 +50,33 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+/* Terugval als het CDN niet laadt (blokkade, offline, adblocker).
+   Zonder deze shim stopt de hele inline scriptblok bij de eerste
+   gsap-aanroep en werkt bijvoorbeeld het menu niet meer.
+   Met de shim is de pagina simpelweg niet geanimeerd. */
+(function(){
+    if(window.gsap) return;
+    var tl = {};
+    ['to','from','fromTo','set','add','addLabel','call','play','pause','reverse','restart',
+     'progress','timeScale','eventCallback','seek','then'].forEach(function(k){ tl[k] = function(){ return tl; }; });
+    tl.kill = function(){};
+    window.gsap = {
+        to:function(){ return tl; }, from:function(){ return tl; }, fromTo:function(){ return tl; },
+        set:function(){ return tl; }, timeline:function(){ return tl; },
+        registerPlugin:function(){}, killTweensOf:function(){}, getProperty:function(){ return 0; },
+        quickTo:function(){ return function(){}; },
+        ticker:{ add:function(){}, remove:function(){} },
+        utils:{ toArray:function(s){ return typeof s === 'string' ? [].slice.call(document.querySelectorAll(s)) : [].concat(s || []); },
+                clamp:function(a,b,v){ return Math.max(a, Math.min(b, v)); } }
+    };
+    window.ScrollTrigger = window.ScrollTrigger || {
+        create:function(){ return { kill:function(){} }; },
+        refresh:function(){}, update:function(){}, getAll:function(){ return []; },
+        batch:function(){}, matchMedia:function(){}, killAll:function(){}
+    };
+})();
+</script>
 <script src="i18n.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>

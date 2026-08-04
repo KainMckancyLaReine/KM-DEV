@@ -12,16 +12,30 @@
 <link rel="stylesheet" href="km-os.css">
 <style>
 /* ---------- hero ---------- */
-.hero{position:relative;padding:38px 34px 30px;overflow:hidden;isolation:isolate;}
-.hero-grid{
-    position:absolute;inset:0;pointer-events:none;opacity:.5;z-index:1;
-    background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
-    background-size:58px 58px;
-    mask-image:radial-gradient(ellipse 85% 100% at 40% 0%,#000 5%,transparent 78%);
-    -webkit-mask-image:radial-gradient(ellipse 85% 100% at 40% 0%,#000 5%,transparent 78%);
+.hero{
+    position:relative;padding:26px 34px 24px;overflow:hidden;isolation:isolate;
+    border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg, var(--paper) 0%, var(--bg) 100%);
 }
+.hero-grid{
+    position:absolute;inset:0;pointer-events:none;opacity:.42;z-index:1;
+    background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+    background-size:56px 56px;
+    mask-image:linear-gradient(180deg,#000,transparent 82%);
+    -webkit-mask-image:linear-gradient(180deg,#000,transparent 82%);
+}
+/* één zachte gloed achter de klok — geen waas over de hele hero */
+.hero-glow{
+    position:absolute;right:2%;top:50%;transform:translateY(-50%);
+    width:min(420px,38vw);aspect-ratio:1;border-radius:50%;pointer-events:none;z-index:0;
+    background:radial-gradient(circle, var(--glow, rgba(198,255,74,.16)), transparent 66%);
+    filter:blur(30px);opacity:.85;
+    transition:background 1.2s ease;
+}
+html[data-theme="dark"] .hero-glow{opacity:.55;}
 .hero-in{position:relative;z-index:2;max-width:1320px;margin:0 auto;}
-.hero-top{display:flex;align-items:flex-end;gap:30px;flex-wrap:wrap;}
+.hero-top{display:flex;align-items:center;gap:clamp(24px,4vw,56px);flex-wrap:wrap;}
+.hero-left{flex:1 1 340px;min-width:0;}
 .eyebrow{
     display:inline-flex;align-items:center;gap:9px;padding:5px 13px;border-radius:999px;
     background:var(--paper);background:color-mix(in srgb, var(--paper) 70%, transparent);border:1px solid var(--line);
@@ -29,8 +43,8 @@
     font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-soft);
 }
 .greet{
-    font-family:'Space Grotesk',sans-serif;font-size:clamp(34px,5vw,62px);
-    font-weight:700;letter-spacing:-.055em;line-height:.96;margin-top:16px;
+    font-family:'Space Grotesk',sans-serif;font-size:clamp(28px,3.5vw,46px);
+    font-weight:700;letter-spacing:-.05em;line-height:1;margin-top:13px;
 }
 .greet em{
     font-style:normal;
@@ -38,27 +52,27 @@
     -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
 }
 html[data-theme="dark"] .greet em{background:linear-gradient(100deg,var(--accent),#8fc7ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
-.greet-sub{margin-top:13px;color:var(--text-soft);font-size:16px;max-width:520px;line-height:1.6;}
+.greet-sub{margin-top:10px;color:var(--text-soft);font-size:14.5px;max-width:480px;line-height:1.55;}
 
-.clockbox{margin-left:auto;flex:0 0 auto;display:flex;flex-direction:column;align-items:center;}
+.clockbox{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;}
 .clockbox .m{
-    margin-top:12px;font-family:'Space Mono',monospace;font-size:9.5px;
-    letter-spacing:.18em;text-transform:uppercase;color:var(--text-faint);text-align:center;
+    margin-top:10px;font-family:'Space Mono',monospace;font-size:9px;
+    letter-spacing:.18em;text-transform:uppercase;color:var(--text-soft);text-align:center;
 }
-.clockbox .prog{width:150px;height:3px;border-radius:99px;background:var(--line);margin-top:9px;overflow:hidden;}
+.clockbox .prog{width:132px;height:2.5px;border-radius:99px;background:var(--line);margin-top:8px;overflow:hidden;}
 .clockbox .prog i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-ink));transition:width 1s linear;}
 
-.capture{display:flex;gap:10px;margin-top:26px;max-width:700px;position:relative;}
+.capture{display:flex;gap:9px;margin-top:18px;max-width:600px;position:relative;}
 .capture input{
     flex:1;border:1px solid var(--line);border-radius:999px;
     background:var(--paper);background:color-mix(in srgb, var(--paper) 82%, transparent);
     backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-    padding:15px 24px;outline:none;font-size:15.5px;
+    padding:12px 20px;outline:none;font-size:15px;
     transition:all .28s var(--ease);box-shadow:0 1px 2px rgba(13,13,13,.04),0 12px 30px -20px rgba(13,13,13,.6);
 }
 .capture input:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft),0 14px 34px -20px rgba(13,13,13,.6);}
 .capture .hint{
-    position:absolute;right:150px;top:50%;transform:translateY(-50%);pointer-events:none;
+    position:absolute;right:138px;top:50%;transform:translateY(-50%);pointer-events:none;
     font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;color:var(--text-faint);
     border:1px solid var(--line);border-radius:6px;padding:3px 7px;
 }
@@ -66,7 +80,7 @@ html[data-theme="dark"] .greet em{background:linear-gradient(100deg,var(--accent
 
 /* ---------- secties ---------- */
 .zone{max-width:1320px;margin:0 auto;padding:0 34px;}
-.zone-h{display:flex;align-items:center;gap:14px;margin:34px 0 16px;}
+.zone-h{display:flex;align-items:center;gap:14px;margin:26px 0 14px;}
 .zone-h h2{font-size:13px;font-family:'Space Mono',monospace;font-weight:400;letter-spacing:.22em;text-transform:uppercase;color:var(--text-faint);}
 .zone-h .line{flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent);}
 .zone-h a,.zone-h button{flex:0 0 auto;}
@@ -148,11 +162,12 @@ html[data-theme="dark"] .greet em{background:linear-gradient(100deg,var(--accent
 .nowtile .nv{font-family:'Space Grotesk',sans-serif;font-size:34px;font-weight:700;letter-spacing:-.04em;font-variant-numeric:tabular-nums;}
 
 @media(max-width:820px){
-    .hero{padding:20px 16px 20px;}
+    .hero{padding:18px 16px 18px;}
     .zone{padding:0 16px;}
-    .hero-top{gap:12px;align-items:flex-start;}
-    .clockbox{margin-left:0;align-items:flex-start;width:100%;}
-    .clockbox .m,.clockbox .prog{margin-left:auto;margin-right:auto;}
+    .hero-top{gap:16px;align-items:flex-start;flex-direction:column-reverse;}
+    .hero-left{width:100%;}
+    .hero-glow{right:-10%;top:12%;width:70vw;}
+    .clockbox{width:100%;}
     .capture{flex-direction:column;}
     .capture .hint{display:none;}
     .apps{grid-template-columns:1fr 1fr;gap:9px;}
@@ -171,26 +186,26 @@ html[data-theme="dark"] .greet em{background:linear-gradient(100deg,var(--accent
         <div class="os-scroll" id="scroll">
 
             <div class="hero">
-                <div class="aurora" id="aurora"><i></i><i></i><i></i></div>
+                <div class="hero-glow" id="heroGlow"></div>
                 <div class="hero-grid"></div>
                 <div class="hero-in">
                     <div class="hero-top">
-                        <div style="min-width:0;">
+                        <div class="hero-left">
                             <span class="eyebrow"><span class="dot-live"></span><span id="dateLine">—</span></span>
                             <h1 class="greet" id="greet">Goedemorgen, <em>Kain</em>.</h1>
                             <p class="greet-sub" id="sub">Je systeem draait.</p>
+                            <div class="capture">
+                                <input id="capture" placeholder="Leg iets vast — taak, idee, notitie…" autocomplete="off">
+                                <span class="hint">/</span>
+                                <button class="btn accent" id="captureBtn">Vastleggen</button>
+                            </div>
                         </div>
+
                         <div class="clockbox">
                             <div id="artClock"></div>
                             <div class="m" id="clockSub">—</div>
                             <div class="prog"><i id="dayProg" style="width:0"></i></div>
                         </div>
-                    </div>
-
-                    <div class="capture">
-                        <input id="capture" placeholder="Leg iets vast — taak, idee, notitie…" autocomplete="off">
-                        <span class="hint">/</span>
-                        <button class="btn accent" id="captureBtn">Vastleggen</button>
                     </div>
                 </div>
             </div>
@@ -334,12 +349,8 @@ if(KM.boot()){
         var bg = (WXBG[wx.cond.group] || WXBG.cloudy)[wx.isDay ? 0 : 1];
         var el = $('.wx-bg'); if(el) el.style.background = bg;
         var orb = $('.wx-orb'); if(orb) orb.style.setProperty('--wxg', wx.cond.glow);
-        var au = $('#aurora');
-        if(au){
-            au.style.setProperty('--au1', wx.isDay ? '#c6ff4a' : '#3f5a17');
-            au.style.setProperty('--au2', wx.cond.tint);
-            au.style.setProperty('--au3', wx.cond.group === 'storm' ? '#8b5cf6' : (wx.isDay ? '#8fc7ff' : '#2a3a5c'));
-        }
+        var gl = $('#heroGlow');
+        if(gl) gl.style.setProperty('--glow', wx.cond.glow);
     }
     function wxTile(){
         if(wxErr && !wx){

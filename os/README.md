@@ -138,6 +138,9 @@ Wat er in alle drie doorloopt:
 - **Zonneboog.** Zodra het weer binnen is tekent de chrono-modus een dunne boog van
   zonsopkomst tot ondergang, met een gloeiend stipje op de werkelijke stand van de zon.
 - **Parallax.** Het hele stuk kantelt zachtjes mee met je muis, en ademt langzaam.
+- **Contrast klopt in beide thema's.** De dagkleur kan bleek zijn (lime op de middag),
+  dus voor lijnen en punten wordt hij in lichte modus 45% naar ink getrokken. De zachte
+  gloed eronder gebruikt wél de rauwe kleur.
 
 ## Live
 
