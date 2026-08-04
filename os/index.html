@@ -108,6 +108,11 @@ html[data-theme="dark"] .greet em{background:linear-gradient(100deg,var(--accent
 .app-spark{position:absolute;right:15px;top:18px;opacity:.55;}
 
 /* ---------- status ---------- */
+.wx-credit{
+    position:absolute;right:16px;bottom:14px;display:flex;align-items:center;gap:7px;z-index:2;
+    font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;
+    color:rgba(255,255,255,.34);
+}
 .status{display:flex;gap:9px;flex-wrap:wrap;}
 .st{
     display:flex;align-items:center;gap:9px;padding:10px 15px;border-radius:999px;
@@ -227,6 +232,7 @@ html[data-theme="dark"] .greet em{background:linear-gradient(100deg,var(--accent
 </div>
 
 <script src="km-brand.js"></script>
+<script src="km-logos.js"></script>
 <script src="km-os.js"></script>
 <script src="km-viz.js"></script>
 <script src="km-live.js"></script>
@@ -375,6 +381,7 @@ if(KM.boot()){
             '</div>' +
             (wx.today.rain >= 40 ? '<div class="wx-alert">☔ ' + wx.today.rain + '% kans op neerslag vandaag — houd rekening met binnenwerk</div>' : '') +
             (wx.stale ? '<div class="wx-alert">⚠ Even geen verbinding — dit is de laatst opgehaalde stand</div>' : '') +
+            '<div class="wx-credit">' + KMlogos.logo('openmeteo', 15) + ' Open-Meteo</div>' +
             '<div class="wx-days">' + d.map(function(x, i){
                 return '<div class="wx-day"><div class="d">' + (i === 0 ? 'vandaag' : x.dow) + '</div>' +
                     W.icon(x.cond.group, 1, 26) +
@@ -675,7 +682,7 @@ if(KM.boot()){
             }
             if(a.id === 'stack') count = statusCount() + '/3 verbonden';
             return '<a class="app" href="' + a.file + '" style="--tint:' + a.tint + ';--tint-a:' + a.tint + '26;">' +
-                '<span class="app-ico">' + KMbrand.appIcon(a.id, 46, a.tint) + '</span>' +
+                '<span class="app-ico">' + KMbrand.appIcon(a.id, 46, a.tint, a.brand) + '</span>' +
                 (sp ? '<span class="app-spark">' + sp + '</span>' : '') +
                 '<h3 class="grotesk">' + KM.esc(a.name) + '</h3>' +
                 '<p>' + KM.esc(a.desc) + '</p>' +

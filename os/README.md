@@ -57,6 +57,28 @@ Het hele systeem draait op één materiaal-laag in `km-os.css`:
 - **Boot-sequence** — na het inloggen bouwt het logo zich op, trekt een lime lijn zich rond de
   squircle, en vliegen de app-iconen van onderen in
 
+## Merklogo's
+
+`km-logos.js` bevat de **echte logo's** van de diensten waar dit systeem op leunt.
+De paden komen uit [Simple Icons](https://simpleicons.org) (CC0), de kleuren zijn de
+officiële merkkleuren.
+
+| Merk | Waar |
+|---|---|
+| Figma | Design Studio — "Kopieer voor Figma" plakt de SVG bewerkbaar in een frame |
+| Notion | Het app-icoon van Notities |
+| Supabase | Integraties, in merkgroen met verloop |
+| PostHog · Vercel · GitHub | Integraties |
+| Open-Meteo | Credit onderin de weertegel |
+| Hugging Face · Replicate | De merkenrij bij Integraties |
+
+Figma tekenen we in kleur (de vijf vormen), Supabase krijgt een verloop over het
+officiële silhouet. Notion, Vercel, PostHog en GitHub zijn zwart zoals hun huisstijl
+voorschrijft; in donkere modus keren ze om naar wit.
+
+Merknamen en logo's zijn eigendom van de betreffende bedrijven en staan hier alleen
+om te laten zien welke dienst waar gebruikt wordt.
+
 ## Visuals
 
 `km-viz.js` levert acht SVG-visuals die overal hetzelfde werken en meebewegen met je thema:

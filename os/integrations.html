@@ -29,9 +29,10 @@
     transition:transform .5s var(--spring-soft);
 }
 .svc-ico::after{
-    content:'';position:absolute;inset:0;
+    content:'';position:absolute;inset:0;pointer-events:none;
     background:linear-gradient(180deg,rgba(255,255,255,.34),transparent 55%);
 }
+.svc-ico svg{position:relative;z-index:1;}
 .svc:hover .svc-ico{transform:scale(1.07) rotate(-4deg);}
 .svc-head h3{font-size:16.5px;font-weight:600;letter-spacing:-.028em;}
 .svc-head p{font-size:12.5px;color:var(--text-faint);margin-top:3px;}
@@ -94,6 +95,22 @@ html[data-theme="dark"] .step::before{background:var(--accent);color:var(--ink);
 .res.ok{border-color:var(--accent);background:var(--accent-soft);}
 .res.bad{border-color:var(--danger);color:var(--danger);}
 .note{font-size:13px;color:var(--text-faint);line-height:1.65;margin-top:10px;}
+.brands{display:grid;grid-template-columns:repeat(auto-fill,minmax(126px,1fr));gap:10px;}
+.brand{
+    display:flex;flex-direction:column;align-items:center;gap:9px;padding:18px 12px;
+    border:1px solid var(--mat-line);border-radius:var(--r-md);background:var(--paper);
+    box-shadow:var(--sh-1);text-align:center;
+    transition:transform .45s var(--spring-soft),box-shadow .3s,border-color .3s;
+    opacity:0;transform:translateY(12px);animation:svcIn .6s var(--spring-soft) forwards;
+}
+.brand:hover{transform:translateY(-4px);box-shadow:var(--sh-3);border-color:var(--text-faint);}
+.brand svg{transition:transform .5s var(--spring-soft);}
+.brand:hover svg{transform:scale(1.14) rotate(-5deg);}
+.brand b{font-size:13px;font-weight:600;letter-spacing:-.02em;}
+.brand span{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:var(--text-faint);}
+html[data-theme="dark"] .km-logo-vercel path,html[data-theme="dark"] .km-logo-notion path,
+html[data-theme="dark"] .km-logo-github path,html[data-theme="dark"] .km-logo-posthog path,
+html[data-theme="dark"] .km-logo-replicate path,html[data-theme="dark"] .km-logo-unsplash path{fill:#fff;}
 .note a{color:var(--accent-ink);}
 html[data-theme="dark"] .note a{color:var(--accent);}
 </style>
@@ -107,6 +124,7 @@ html[data-theme="dark"] .note a{color:var(--accent);}
 </div>
 
 <script src="km-brand.js"></script>
+<script src="km-logos.js"></script>
 <script src="km-os.js"></script>
 <script src="km-viz.js"></script>
 <script src="km-live.js"></script>
@@ -155,17 +173,34 @@ function render(){
         '<div class="sec-head"><h2 class="grotesk">Integraties</h2>' +
             '<span class="label">alles blijft werken zonder deze koppelingen</span></div>' +
 
-        svc('supabase', '🗄️', '#3ecf8e', 'Supabase', 'Je workspace synchroniseren naar de cloud',
+        svc('supabase', KMlogos.logo('supabase', 24, { flat:true, color:'#fff' }), '#3ECF8E', 'Supabase', 'Je workspace synchroniseren naar de cloud',
             sync() ? (C.supabase.auto ? 'auto-sync aan' : 'gekoppeld') : 'niet gekoppeld', sync(), supabaseBody()) +
 
-        svc('ai', '✨', '#8b5cf6', 'AI-proxy', 'Tekst, beeld en video via je eigen serverless functie',
+        svc('ai', KMlogos.logo('ai', 24, { color:'#fff' }), '#8b5cf6', 'AI-proxy', 'Tekst, beeld en video via je eigen serverless functie',
             C.ai.on ? 'actief' : 'uit', C.ai.on, aiBody()) +
 
-        svc('posthog', '📊', '#f54e00', 'PostHog', 'Zien hoe je je eigen systeem gebruikt',
+        svc('posthog', KMlogos.logo('posthog', 24, { color:'#fff' }), '#F54E00', 'PostHog', 'Zien hoe je je eigen systeem gebruikt',
             C.posthog.on && C.posthog.key ? 'events aan' : 'uit', !!(C.posthog.on && C.posthog.key), posthogBody()) +
 
-        svc('vercel', '▲', '#0d0d0d', 'Vercel', 'Deployen en de AI-proxy hosten',
+        svc('vercel', KMlogos.logo('vercel', 22, { color:'#fff' }), '#0d0d0d', 'Vercel', 'Deployen en de AI-proxy hosten',
             'handleiding', false, vercelBody()) +
+
+        '<div class="sec-head"><h2 class="grotesk">Waar dit systeem op leunt</h2></div>' +
+        '<div class="brands">' + [
+            ['supabase','Supabase','database'],
+            ['posthog','PostHog','analytics'],
+            ['vercel','Vercel','hosting'],
+            ['figma','Figma','ontwerp'],
+            ['notion','Notion','inspiratie'],
+            ['github','GitHub','versiebeheer'],
+            ['openmeteo','Open-Meteo','weer'],
+            ['huggingface','Hugging Face','modellen'],
+            ['replicate','Replicate','modellen']
+        ].map(function(b, i){
+            return '<div class="brand" style="animation-delay:' + (i*.05) + 's">' +
+                KMlogos.logo(b[0], 26, { color: KMlogos.color(b[0]) }) +
+                '<b>' + b[1] + '</b><span>' + b[2] + '</span></div>';
+        }).join('') + '</div>' +
 
         '<div class="sec-head"><h2 class="grotesk">Je data</h2></div>' +
         '<div class="svc" style="animation-delay:.3s;padding:22px;">' +

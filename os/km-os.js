@@ -348,7 +348,7 @@ var APPS = [
     { id:'plan',    name:'AI Scheduling',file:'schedule.html',     icon:'◷', desc:'Je week automatisch ingepland',             tint:'#2383e2' },
     { id:'video',   name:'Video Studio', file:'video.html',        icon:'▶', desc:'Storyboards en AI-video',                   tint:'#e0568a' },
     { id:'design',  name:'Design Studio',file:'design.html',       icon:'✦', desc:'On-brand visuals in seconden',              tint:'#e8a33d' },
-    { id:'notes',   name:'Notities',     file:'../dashboard.html', icon:'✎', desc:'Je eigen Notion-werkruimte',                tint:'#3f8f5c' },
+    { id:'notes',   name:'Notities',     file:'../dashboard.html', icon:'✎', desc:'Je eigen Notion-werkruimte',                tint:'#0d0d0d', brand:'notion' },
     { id:'stack',   name:'Integraties',  file:'integrations.html', icon:'⚙', desc:'Supabase, PostHog en Vercel',               tint:'#6f6d66' }
 ];
 
@@ -442,7 +442,7 @@ function drawLp(q){
     grid.innerHTML = list.length ? list.map(function(a, i){
         return '<a class="lp-app' + (i === lpSel ? ' sel' : '') + '" href="' + a.file + '" data-i="' + i + '" ' +
             'style="animation-delay:' + (.04 + i*.045) + 's">' +
-            (global.KMbrand ? KMbrand.appIcon(a.id, 86, a.tint) : '') +
+            (global.KMbrand ? KMbrand.appIcon(a.id, 86, a.tint, a.brand) : '') +
             '<b>' + esc(a.name) + '</b><span>' + esc(a.desc.split(',')[0]) + '</span></a>';
     }).join('') : '<div class="empty" style="grid-column:1/-1">Geen app gevonden</div>';
     lpEl._list = list;
@@ -510,7 +510,7 @@ function bootScreen(done){
             '<div class="boot-steps" id="bootStep"></div>' +
         '</div>' +
         '<div class="boot-dock">' + APPS.filter(function(a){ return a.id !== 'home'; }).slice(0,6).map(function(a, i){
-            return (global.KMbrand ? KMbrand.appIcon(a.id, 44, a.tint) : '').replace('<svg ',
+            return (global.KMbrand ? KMbrand.appIcon(a.id, 44, a.tint, a.brand) : '').replace('<svg ',
                 '<svg style="animation-delay:' + (1.5 + i*.09) + 's" ');
         }).join('') + '</div>';
     document.body.appendChild(el);

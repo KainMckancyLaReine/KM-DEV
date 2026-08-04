@@ -100,11 +100,18 @@ var GLYPHS = {
             'stroke="currentColor" stroke-width="5" stroke-linecap="round"/>'
 };
 
-function appIcon(id, size, tint){
+function appIcon(id, size, tint, brand){
     size = size || 56;
     var uid = 'a' + Math.random().toString(36).slice(2,7);
     var c = tint || '#c6ff4a';
-    return '<svg class="km-app-ico" viewBox="0 0 100 100" width="' + size + '" height="' + size + '" style="display:block;">' +
+    /* een app kan een echt merklogo dragen in plaats van onze eigen glyph */
+    var brandSvg = '';
+    if(brand && global.KMlogos && KMlogos.has(brand)){
+        brandSvg = KMlogos.logo(brand, size * .46, { color: contrast(c), style:'position:absolute;inset:0;margin:auto;' });
+    }
+    var open_ = brandSvg ? '<span class="km-app-wrap" style="position:relative;display:block;width:' + size + 'px;height:' + size + 'px;">' : '';
+    var close_ = brandSvg ? '</span>' : '';
+    return open_ + '<svg class="km-app-ico" viewBox="0 0 100 100" width="' + size + '" height="' + size + '" style="display:block;">' +
         '<defs>' +
             '<linearGradient id="' + uid + '" x1="0" y1="0" x2="0" y2="1">' +
                 '<stop offset="0" stop-color="' + lighten(c, 26) + '"/>' +
@@ -118,8 +125,10 @@ function appIcon(id, size, tint){
         '<path d="' + squirclePath(100, .225) + '" fill="url(#' + uid + ')"/>' +
         '<path d="' + squirclePath(100, .225) + '" fill="url(#' + uid + 'g)"/>' +
         '<path d="' + squirclePath(100, .225) + '" fill="none" stroke="rgba(255,255,255,.30)" stroke-width="1"/>' +
-        '<g style="color:' + contrast(c) + '">' + (GLYPHS[id] || GLYPHS.home) + '</g>' +
-    '</svg>';
+        (brandSvg ? '' : '<g style="color:' + contrast(c) + '">' + (GLYPHS[id] || GLYPHS.home) + '</g>') +
+    '</svg>' +
+    (brandSvg ? '<span style="position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;">' +
+        KMlogos.logo(brand, Math.round(size * .44), { color: contrast(c) }) + '</span>' : '') + close_;
 }
 
 /* ---------------------------------------------------------
